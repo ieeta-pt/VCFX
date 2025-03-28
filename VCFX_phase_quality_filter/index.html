@@ -12,13 +12,13 @@
         <meta name="author" content="VCFX Team">
       
       
-        <link rel="canonical" href="https://jorgeMFS.github.io/VCFX/VCFX_haplotype_phaser/">
+        <link rel="canonical" href="https://jorgeMFS.github.io/VCFX/VCFX_phase_quality_filter/">
       
       
-        <link rel="prev" href="../VCFX_quality_adjuster/">
+        <link rel="prev" href="../VCFX_impact_filter/">
       
       
-        <link rel="next" href="../VCFX_haplotype_extractor/">
+        <link rel="next" href="../VCFX_multiallelic_splitter/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>VCFX_haplotype_phaser - VCFX Documentation</title>
+        <title>VCFX_phase_quality_filter - VCFX Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vcfx_haplotype_phaser" class="md-skip">
+        <a href="#vcfx_phase_quality_filter" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              VCFX_haplotype_phaser
+              VCFX_phase_quality_filter
             
           </span>
         </div>
@@ -855,8 +855,10 @@
                 
   
   
+    
   
   
+  
     
     
     
@@ -869,13 +871,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
@@ -890,7 +890,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
             Data Filtering
@@ -1099,10 +1099,31 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../VCFX_phase_quality_filter/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    VCFX_phase_quality_filter
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1112,6 +1133,185 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#different-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Different Operators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Other Tools
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Operators
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pq-value-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      PQ Value Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Use Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2071,8 +2271,6 @@
                 
   
   
-    
-  
   
   
     
@@ -2087,11 +2285,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_8" >
         
           
           <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="">
@@ -2106,7 +2306,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_8">
             <span class="md-nav__icon md-icon"></span>
             Data Processing
@@ -2161,31 +2361,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    VCFX_haplotype_phaser
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../VCFX_haplotype_phaser/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2195,158 +2374,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Usage
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      Description
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#output-format" class="md-nav__link">
-    <span class="md-ellipsis">
-      Output Format
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Examples
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Basic Usage
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#custom-ld-threshold" class="md-nav__link">
-    <span class="md-ellipsis">
-      Custom LD Threshold
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#extract-top-blocks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Extract Top Blocks
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#count-number-of-blocks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Count Number of Blocks
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ld-calculation" class="md-nav__link">
-    <span class="md-ellipsis">
-      LD Calculation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#handling-special-cases" class="md-nav__link">
-    <span class="md-ellipsis">
-      Handling Special Cases
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
-    <span class="md-ellipsis">
-      Performance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Limitations
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2494,6 +2521,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#input-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output-format" class="md-nav__link">
     <span class="md-ellipsis">
       Output Format
@@ -2522,27 +2558,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#custom-ld-threshold" class="md-nav__link">
+  <a href="#different-operators" class="md-nav__link">
     <span class="md-ellipsis">
-      Custom LD Threshold
+      Different Operators
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#extract-top-blocks" class="md-nav__link">
+  <a href="#integration-with-other-tools" class="md-nav__link">
     <span class="md-ellipsis">
-      Extract Top Blocks
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#count-number-of-blocks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Count Number of Blocks
+      Integration with Other Tools
     </span>
   </a>
   
@@ -2554,27 +2581,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ld-calculation" class="md-nav__link">
+  <a href="#supported-operators" class="md-nav__link">
     <span class="md-ellipsis">
-      LD Calculation
+      Supported Operators
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#handling-special-cases" class="md-nav__link">
+  <a href="#pq-value-handling" class="md-nav__link">
     <span class="md-ellipsis">
-      Handling Special Cases
+      PQ Value Handling
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#error-handling" class="md-nav__link">
     <span class="md-ellipsis">
-      Performance
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
     </span>
   </a>
   
@@ -2584,6 +2620,24 @@
   <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       Limitations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Use Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
     </span>
   </a>
   
@@ -2608,11 +2662,11 @@
   
 
 
-<h1 id="vcfx_haplotype_phaser">VCFX_haplotype_phaser<a class="headerlink" href="#vcfx_haplotype_phaser" title="Permanent link">&para;</a></h1>
+<h1 id="vcfx_phase_quality_filter">VCFX_phase_quality_filter<a class="headerlink" href="#vcfx_phase_quality_filter" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>VCFX_haplotype_phaser analyzes genotype data to identify variants in linkage disequilibrium (LD) and groups them into haplotype blocks based on an LD threshold. This tool is useful for identifying sets of genetic variants that tend to be inherited together.</p>
+<p><code>VCFX_phase_quality_filter</code> is a tool for filtering variants based on their phasing quality (PQ) scores in the INFO field. It allows users to specify custom conditions for filtering variants based on their PQ values, supporting various comparison operators.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_haplotype_phaser<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>blocks.txt
+<div class="highlight"><pre><span></span><code>VCFX_phase_quality_filter<span class="w"> </span>--filter-pq<span class="w"> </span><span class="s2">&quot;PQ&lt;OP&gt;&lt;THRESHOLD&gt;&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -2624,96 +2678,110 @@
 </thead>
 <tbody>
 <tr>
-<td><code>-l</code>, <code>--ld-threshold &lt;VALUE&gt;</code></td>
-<td>r² threshold for LD-based grouping (0.0-1.0, default: 0.8)</td>
+<td><code>-h, --help</code></td>
+<td>Display help message and exit</td>
 </tr>
 <tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>Display help message and exit</td>
+<td><code>-f, --filter-pq</code></td>
+<td>Condition like 'PQ&gt;30', 'PQ&gt;=20', 'PQ!=10', etc.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>VCFX_haplotype_phaser identifies haplotype blocks by grouping variants that exhibit high linkage disequilibrium (LD). The tool:</p>
+<p><code>VCFX_phase_quality_filter</code> reads a VCF file and filters variants based on their phasing quality scores:</p>
 <ol>
-<li>Reads a VCF file from standard input</li>
-<li>Extracts genotype information for each variant across all samples</li>
-<li>Calculates pairwise LD (specifically r²) between consecutive variants</li>
-<li>Groups variants into blocks when they exceed the specified LD threshold</li>
-<li>Outputs block information showing which variants belong to the same haplotype block</li>
+<li>Extracts the PQ value from the INFO field of each variant</li>
+<li>Applies the specified comparison condition to the PQ value</li>
+<li>Keeps variants that satisfy the condition</li>
+<li>Discards variants that don't meet the criteria</li>
 </ol>
-<p>This is valuable for:
-- Identifying haplotypes without requiring family data
-- Understanding the correlation structure of variants in a genomic region
-- Reducing the dimensionality of genetic data for association testing
-- Planning genotyping strategies by selecting tag SNPs from different blocks</p>
+<p>The tool handles missing or invalid PQ values by treating them as 0.0, ensuring robust processing of incomplete data.</p>
+<h2 id="input-requirements">Input Requirements<a class="headerlink" href="#input-requirements" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Input must be a valid VCF file</li>
+<li>File can be piped through stdin</li>
+<li>PQ values should be present in the INFO field (optional)</li>
+<li>Supports both VCFv4.0 and VCFv4.2 formats</li>
+</ul>
 <h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
-<p>The output preserves the original VCF header, appends the haplotype block information, and then includes the original VCF data. The haplotype block section is formatted as follows:</p>
-<div class="highlight"><pre><span></span><code>#HAPLOTYPE_BLOCKS_START
-Block 1: 0:(chr1:1000), 1:(chr1:1050), 2:(chr1:1100)
-Block 2: 3:(chr1:2000), 4:(chr1:2050)
-Block 3: 5:(chr2:1000), 6:(chr2:1050)
-#HAPLOTYPE_BLOCKS_END
-</code></pre></div>
-<p>Each block line contains:
-- Block number (1-indexed)
-- List of grouped variants with their 0-indexed position in the VCF file
-- Chromosome and position of each variant in parentheses</p>
+<p>The output is a VCF file containing only the variants that satisfy the specified PQ condition:
+- Preserves all header lines
+- Maintains original VCF format
+- Includes only passing variants
+- Preserves all fields and annotations</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>./VCFX_haplotype_phaser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>haplotype_blocks.txt
+<p>Filter variants with PQ &gt; 30:</p>
+<div class="highlight"><pre><span></span><code>VCFX_phase_quality_filter<span class="w"> </span>--filter-pq<span class="w"> </span><span class="s2">&quot;PQ&gt;30&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>high_pq.vcf
 </code></pre></div>
-<h3 id="custom-ld-threshold">Custom LD Threshold<a class="headerlink" href="#custom-ld-threshold" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Use a higher LD threshold for more stringent block definition</span>
-./VCFX_haplotype_phaser<span class="w"> </span>--ld-threshold<span class="w"> </span><span class="m">0</span>.95<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>strict_blocks.txt
+<h3 id="different-operators">Different Operators<a class="headerlink" href="#different-operators" title="Permanent link">&para;</a></h3>
+<p>Various comparison operators are supported:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Keep variants with PQ &gt;= 20</span>
+VCFX_phase_quality_filter<span class="w"> </span>--filter-pq<span class="w"> </span><span class="s2">&quot;PQ&gt;=20&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>pq_ge_20.vcf
+
+<span class="c1"># Keep variants with PQ &lt;= 15</span>
+VCFX_phase_quality_filter<span class="w"> </span>--filter-pq<span class="w"> </span><span class="s2">&quot;PQ&lt;=15&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>pq_le_15.vcf
+
+<span class="c1"># Keep variants with PQ != 10</span>
+VCFX_phase_quality_filter<span class="w"> </span>--filter-pq<span class="w"> </span><span class="s2">&quot;PQ!=10&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>pq_ne_10.vcf
 </code></pre></div>
-<h3 id="extract-top-blocks">Extract Top Blocks<a class="headerlink" href="#extract-top-blocks" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Extract just the first 10 blocks</span>
-./VCFX_haplotype_phaser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="s2">&quot;#HAPLOTYPE_BLOCKS_START&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Block&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>top_blocks.txt
+<h3 id="integration-with-other-tools">Integration with Other Tools<a class="headerlink" href="#integration-with-other-tools" title="Permanent link">&para;</a></h3>
+<p>Combine with other VCFX tools:</p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>VCFX_validator<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>VCFX_phase_quality_filter<span class="w"> </span>--filter-pq<span class="w"> </span><span class="s2">&quot;PQ&gt;30&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>VCFX_metadata_summarizer
 </code></pre></div>
-<h3 id="count-number-of-blocks">Count Number of Blocks<a class="headerlink" href="#count-number-of-blocks" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Count the number of blocks identified</span>
-./VCFX_haplotype_phaser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Block&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
-</code></pre></div>
-<h2 id="ld-calculation">LD Calculation<a class="headerlink" href="#ld-calculation" title="Permanent link">&para;</a></h2>
-<p>The tool calculates LD between variants using the r² statistic:</p>
-<ol>
-<li>For each pair of variants, it computes:</li>
-<li>Genotype correlation coefficient (r) across samples</li>
-<li>Squared correlation coefficient (r²)</li>
-<li>The r² value ranges from 0 (no LD) to 1 (perfect LD)</li>
-<li>Variants are grouped into the same block if they have r² ≥ threshold with the last variant in the block</li>
-</ol>
-<p>For chromosome 1 specifically, the tool also requires the correlation coefficient (r) to be positive, ensuring that the variants are in positive LD (alleles tend to be inherited together rather than showing repulsion).</p>
-<h2 id="handling-special-cases">Handling Special Cases<a class="headerlink" href="#handling-special-cases" title="Permanent link">&para;</a></h2>
-<p>The tool implements several strategies for handling edge cases:</p>
-<ol>
-<li><strong>Chromosome boundaries</strong>: New blocks always start when the chromosome changes</li>
-<li><strong>Missing genotypes</strong>: Genotypes coded as "./." or with any missing allele are excluded from LD calculations</li>
-<li><strong>Low LD variants</strong>: Start a new block when LD falls below the threshold</li>
-<li><strong>No variant data</strong>: Reports an error if no variants are found</li>
-<li><strong>Invalid positions</strong>: Skips variants with non-numeric positions</li>
-<li><strong>Malformed genotypes</strong>: Handles and skips variants with improperly formatted genotypes</li>
-<li><strong>Empty VCF</strong>: Reports an error and exits cleanly</li>
-</ol>
-<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
-<p>VCFX_haplotype_phaser is designed for efficiency:</p>
-<ol>
-<li>Single-pass processing of variants with minimal memory usage</li>
-<li>Optimized LD calculation that handles missing data appropriately</li>
-<li>Scales efficiently with the number of samples and variants</li>
-<li>Processes large VCF files with thousands of variants in reasonable time</li>
-<li>Minimal computational overhead by using simplified LD calculations</li>
-</ol>
+<h2 id="supported-operators">Supported Operators<a class="headerlink" href="#supported-operators" title="Permanent link">&para;</a></h2>
+<p>The tool supports the following comparison operators:
+- <code>&gt;</code> - Greater than
+- <code>&gt;=</code> - Greater than or equal to
+- <code>&lt;</code> - Less than
+- <code>&lt;=</code> - Less than or equal to
+- <code>==</code> - Equal to
+- <code>!=</code> - Not equal to</p>
+<h2 id="pq-value-handling">PQ Value Handling<a class="headerlink" href="#pq-value-handling" title="Permanent link">&para;</a></h2>
+<p>The tool handles PQ values in the following ways:
+- Extracts PQ values from INFO field (e.g., "PQ=30")
+- Treats missing PQ values as 0.0
+- Handles invalid PQ values gracefully
+- Supports decimal values</p>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p>The tool handles various error conditions:
+- Missing --filter-pq argument
+- Invalid condition syntax
+- Malformed VCF lines
+- Missing or invalid PQ values
+- Invalid comparison operators</p>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Processes input streamingly</li>
+<li>Minimal memory usage</li>
+<li>Efficient for both small and large VCF files</li>
+<li>No need to load entire file into memory</li>
+</ul>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Only filters based on PQ values</li>
+<li>Does not modify PQ values</li>
+<li>Does not validate VCF format (use VCFX_validator for validation)</li>
+<li>Treats missing PQ values as 0.0</li>
+</ul>
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Uses a naive approach to LD calculation that may not account for population structure</li>
-<li>Genotypes are treated as simple sums (0/0=0, 0/1=1, 1/1=2) without considering phase</li>
-<li>Cannot merge blocks that are separated by a single low-LD variant</li>
-<li>No sliding window approach for finding blocks across non-adjacent variants</li>
-<li>Does not handle multi-allelic variants specially (treats them as bi-allelic)</li>
-<li>Does not incorporate physical distance in the blocking algorithm</li>
-<li>No output option for visualizing blocks graphically </li>
+<li>Filtering low-quality phasing results</li>
+<li>Quality control of phased variants</li>
+<li>Selecting high-confidence phased variants</li>
+<li>Removing poorly phased variants</li>
+<li>Quality-based subsetting of phased data</li>
+</ol>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Validate input VCF before filtering</li>
+<li>Use appropriate PQ thresholds based on your data</li>
+<li>Consider missing PQ values in your analysis</li>
+<li>Combine with other quality filters</li>
+<li>Document your filtering criteria </li>
 </ol>
 
 
