@@ -12,13 +12,13 @@
         <meta name="author" content="VCFX Team">
       
       
-        <link rel="canonical" href="https://jorgeMFS.github.io/VCFX/VCFX_alignment_checker/">
+        <link rel="canonical" href="https://jorgeMFS.github.io/VCFX/VCFX_region_subsampler/">
       
       
-        <link rel="prev" href="../VCFX_outlier_detector/">
+        <link rel="prev" href="../VCFX_phase_quality_filter/">
       
       
-        <link rel="next" href="../VCFX_cross_sample_concordance/">
+        <link rel="next" href="../VCFX_multiallelic_splitter/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>VCFX_alignment_checker - VCFX Documentation</title>
+        <title>VCFX_region_subsampler - VCFX Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vcfx_alignment_checker" class="md-skip">
+        <a href="#vcfx_region_subsampler" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              VCFX_alignment_checker
+              VCFX_region_subsampler
             
           </span>
         </div>
@@ -855,8 +855,10 @@
                 
   
   
+    
   
   
+  
     
     
     
@@ -869,13 +871,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
@@ -890,7 +890,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
             Data Filtering
@@ -1121,10 +1121,31 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../VCFX_region_subsampler/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    VCFX_region_subsampler
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1134,6 +1155,233 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Requirements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Input Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vcf-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      VCF Input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bed-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      BED Input
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-regions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multiple Regions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Other Tools
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#region-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Region Handling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Region Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coordinate-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coordinate System
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interval-merging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interval Merging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#region-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Region Validation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Use Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1447,8 +1695,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1463,11 +1709,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
         
           
           <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
@@ -1482,7 +1730,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
             Quality Control
@@ -1559,31 +1807,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    VCFX_alignment_checker
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../VCFX_alignment_checker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1593,215 +1820,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Usage
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      Description
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#input-requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      Input Requirements
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#output-format" class="md-nav__link">
-    <span class="md-ellipsis">
-      Output Format
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Examples
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Basic Usage
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pipeline-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Pipeline Integration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#discrepancy-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      Discrepancy Types
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Discrepancy Types">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ref_discrepancy" class="md-nav__link">
-    <span class="md-ellipsis">
-      REF_DISCREPANCY
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#alt_discrepancy" class="md-nav__link">
-    <span class="md-ellipsis">
-      ALT_DISCREPANCY
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#handling-special-cases" class="md-nav__link">
-    <span class="md-ellipsis">
-      Handling Special Cases
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Handling Special Cases">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#chromosome-naming" class="md-nav__link">
-    <span class="md-ellipsis">
-      Chromosome Naming
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#indels-and-complex-variants" class="md-nav__link">
-    <span class="md-ellipsis">
-      Indels and Complex Variants
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#missing-reference-sequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      Missing Reference Sequences
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#out-of-range-positions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Out-of-Range Positions
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Performance Considerations
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Limitations
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2579,6 +2597,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Input Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vcf-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      VCF Input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bed-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      BED Input
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2610,9 +2652,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pipeline-integration" class="md-nav__link">
+  <a href="#multiple-regions" class="md-nav__link">
     <span class="md-ellipsis">
-      Pipeline Integration
+      Multiple Regions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Other Tools
     </span>
   </a>
   
@@ -2624,28 +2675,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#discrepancy-types" class="md-nav__link">
+  <a href="#region-handling" class="md-nav__link">
     <span class="md-ellipsis">
-      Discrepancy Types
+      Region Handling
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Discrepancy Types">
+    <nav class="md-nav" aria-label="Region Handling">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ref_discrepancy" class="md-nav__link">
+  <a href="#coordinate-system" class="md-nav__link">
     <span class="md-ellipsis">
-      REF_DISCREPANCY
+      Coordinate System
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#alt_discrepancy" class="md-nav__link">
+  <a href="#interval-merging" class="md-nav__link">
     <span class="md-ellipsis">
-      ALT_DISCREPANCY
+      Interval Merging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#region-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Region Validation
     </span>
   </a>
   
@@ -2657,53 +2717,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#handling-special-cases" class="md-nav__link">
+  <a href="#error-handling" class="md-nav__link">
     <span class="md-ellipsis">
-      Handling Special Cases
+      Error Handling
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Handling Special Cases">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#chromosome-naming" class="md-nav__link">
-    <span class="md-ellipsis">
-      Chromosome Naming
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#indels-and-complex-variants" class="md-nav__link">
-    <span class="md-ellipsis">
-      Indels and Complex Variants
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#missing-reference-sequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      Missing Reference Sequences
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#out-of-range-positions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Out-of-Range Positions
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2720,6 +2738,24 @@
   <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       Limitations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Use Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
     </span>
   </a>
   
@@ -2744,11 +2780,11 @@
   
 
 
-<h1 id="vcfx_alignment_checker">VCFX_alignment_checker<a class="headerlink" href="#vcfx_alignment_checker" title="Permanent link">&para;</a></h1>
+<h1 id="vcfx_region_subsampler">VCFX_region_subsampler<a class="headerlink" href="#vcfx_region_subsampler" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p><code>VCFX_alignment_checker</code> identifies discrepancies between VCF variant entries and a reference genome FASTA file. This tool helps validate that the reference alleles in a VCF file match the corresponding positions in the reference genome.</p>
+<p><code>VCFX_region_subsampler</code> is a tool for filtering VCF variants based on genomic regions specified in a BED file. It keeps only variants whose positions fall within the specified regions, efficiently handling multiple regions and overlapping intervals.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_alignment_checker<span class="w"> </span>--alignment-discrepancy<span class="w"> </span>&lt;vcf_file&gt;<span class="w"> </span>&lt;reference.fasta&gt;<span class="w"> </span>&gt;<span class="w"> </span>discrepancies.txt
+<div class="highlight"><pre><span></span><code>VCFX_region_subsampler<span class="w"> </span>--region-bed<span class="w"> </span>FILE<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -2760,138 +2796,125 @@
 </thead>
 <tbody>
 <tr>
-<td><code>-a</code>, <code>--alignment-discrepancy</code></td>
-<td>Enable alignment discrepancy checking mode</td>
+<td><code>-h, --help</code></td>
+<td>Display help message and exit</td>
 </tr>
 <tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>Display help message and exit</td>
+<td><code>-b, --region-bed FILE</code></td>
+<td>BED file listing regions to keep</td>
 </tr>
 </tbody>
 </table>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p><code>VCFX_alignment_checker</code> compares VCF variants against a reference genome to validate sequence consistency. The tool:</p>
+<p><code>VCFX_region_subsampler</code> processes a VCF file and a BED file to:</p>
 <ol>
-<li>Loads a reference genome from a FASTA file into memory</li>
-<li>Parses each variant in the input VCF file</li>
-<li>For each variant:</li>
-<li>Retrieves the corresponding sequence from the reference genome</li>
-<li>Compares it with the REF and ALT values from the VCF</li>
-<li>Reports any discrepancies found</li>
-<li>Outputs a tab-separated report of all detected discrepancies</li>
+<li>Read and parse the BED file containing genomic regions</li>
+<li>Convert 0-based BED coordinates to 1-based VCF coordinates</li>
+<li>Merge overlapping or contiguous intervals for efficiency</li>
+<li>Filter VCF variants to keep only those falling within specified regions</li>
+<li>Preserve all VCF header information and variant details</li>
 </ol>
-<p>This tool is particularly useful for:
-- Validating VCF files against their reference genome
-- Identifying potential errors in variant calling
-- Detecting misalignments in variant positions
-- Quality control of VCF data before downstream analysis</p>
+<p>The tool uses binary search for efficient region lookup and handles multiple regions per chromosome.</p>
 <h2 id="input-requirements">Input Requirements<a class="headerlink" href="#input-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="vcf-input">VCF Input<a class="headerlink" href="#vcf-input" title="Permanent link">&para;</a></h3>
 <ul>
-<li>A VCF file with variant records</li>
-<li>A FASTA file containing the reference genome sequences</li>
-<li>VCF must contain standard CHROM, POS, REF, and ALT fields</li>
+<li>Must be a valid VCF file</li>
+<li>Can be piped through stdin</li>
+<li>Supports both VCFv4.0 and VCFv4.2 formats</li>
+<li>Must have at least 8 columns (CHROM through INFO)</li>
+</ul>
+<h3 id="bed-input">BED Input<a class="headerlink" href="#bed-input" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Standard BED format (chromosome, start, end)</li>
+<li>0-based coordinates (automatically converted to 1-based)</li>
+<li>One region per line</li>
+<li>Supports multiple regions per chromosome</li>
+<li>Invalid lines are skipped with warnings</li>
 </ul>
 <h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
-<p>The tool produces a tab-separated values (TSV) file with the following columns:</p>
-<table>
-<thead>
-<tr>
-<th>Column</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CHROM</td>
-<td>Chromosome of the variant</td>
-</tr>
-<tr>
-<td>POS</td>
-<td>Position of the variant</td>
-</tr>
-<tr>
-<td>ID</td>
-<td>Variant identifier</td>
-</tr>
-<tr>
-<td>REF</td>
-<td>Reference allele in the VCF</td>
-</tr>
-<tr>
-<td>ALT</td>
-<td>Alternate allele in the VCF</td>
-</tr>
-<tr>
-<td>Discrepancy_Type</td>
-<td>Type of discrepancy detected (REF_DISCREPANCY or ALT_DISCREPANCY)</td>
-</tr>
-<tr>
-<td>Reference_Value</td>
-<td>The actual sequence from the reference genome</td>
-</tr>
-<tr>
-<td>VCF_Value</td>
-<td>The value from the VCF that differs from the reference</td>
-</tr>
-</tbody>
-</table>
+<p>The output is a VCF file containing:
+- All original VCF header lines
+- Only variants falling within specified regions
+- Original variant information preserved
+- Same format as input VCF</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<p>Check for discrepancies between variants in a VCF file and a reference genome:
-<div class="highlight"><pre><span></span><code>VCFX_alignment_checker<span class="w"> </span>--alignment-discrepancy<span class="w"> </span>variants.vcf<span class="w"> </span>reference.fa<span class="w"> </span>&gt;<span class="w"> </span>discrepancies.txt
-</code></pre></div></p>
-<h3 id="pipeline-integration">Pipeline Integration<a class="headerlink" href="#pipeline-integration" title="Permanent link">&para;</a></h3>
-<p>Integrate with other tools for comprehensive validation:
-<div class="highlight"><pre><span></span><code>VCFX_alignment_checker<span class="w"> </span>--alignment-discrepancy<span class="w"> </span>variants.vcf<span class="w"> </span>reference.fa<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;REF_DISCREPANCY&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>ref_errors.tsv
-</code></pre></div></p>
-<h2 id="discrepancy-types">Discrepancy Types<a class="headerlink" href="#discrepancy-types" title="Permanent link">&para;</a></h2>
-<h3 id="ref_discrepancy">REF_DISCREPANCY<a class="headerlink" href="#ref_discrepancy" title="Permanent link">&para;</a></h3>
-<p>Indicates that the REF field in the VCF doesn't match the reference genome at the specified position. This type of discrepancy suggests potential issues with:
-- Incorrect variant calling
-- Reference genome version mismatch
-- Coordinate system errors</p>
-<h3 id="alt_discrepancy">ALT_DISCREPANCY<a class="headerlink" href="#alt_discrepancy" title="Permanent link">&para;</a></h3>
-<p>Indicates that the ALT field doesn't correspond to an expected variation from the reference. For SNPs, this can happen when:
-- The variant quality is low
-- The variant caller made an error
-- There are assembly or alignment issues</p>
-<h2 id="handling-special-cases">Handling Special Cases<a class="headerlink" href="#handling-special-cases" title="Permanent link">&para;</a></h2>
-<h3 id="chromosome-naming">Chromosome Naming<a class="headerlink" href="#chromosome-naming" title="Permanent link">&para;</a></h3>
-<p>The tool attempts to normalize chromosome names between the VCF and reference FASTA by:
-- Adding 'chr' prefix when appropriate
-- Checking for standard naming conventions (1-22, X, Y, MT)
-- This normalization helps handle common mismatches between different naming conventions</p>
-<h3 id="indels-and-complex-variants">Indels and Complex Variants<a class="headerlink" href="#indels-and-complex-variants" title="Permanent link">&para;</a></h3>
-<p>For insertions, deletions, and complex variants:
-- The tool compares the available bases (minimum length of REF and ALT)
-- It checks if the REF allele matches the reference genome
-- It also checks if the ALT allele differs from the reference as expected</p>
-<h3 id="missing-reference-sequences">Missing Reference Sequences<a class="headerlink" href="#missing-reference-sequences" title="Permanent link">&para;</a></h3>
-<p>If a chromosome in the VCF isn't found in the reference genome:
-- A warning is issued to stderr
-- The variant is skipped from discrepancy checking
-- This helps identify potential naming mismatches between files</p>
-<h3 id="out-of-range-positions">Out-of-Range Positions<a class="headerlink" href="#out-of-range-positions" title="Permanent link">&para;</a></h3>
-<p>For positions beyond the reference sequence length:
-- The tool issues a warning
-- The variant is excluded from the discrepancy report
-- This can help identify coordinate system issues</p>
+<p>Filter variants using a single region:</p>
+<div class="highlight"><pre><span></span><code>VCFX_region_subsampler<span class="w"> </span>--region-bed<span class="w"> </span>regions.bed<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>filtered.vcf
+</code></pre></div>
+<h3 id="multiple-regions">Multiple Regions<a class="headerlink" href="#multiple-regions" title="Permanent link">&para;</a></h3>
+<p>Filter using multiple regions across chromosomes:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># regions.bed:</span>
+chr1<span class="w">    </span><span class="m">0</span><span class="w">    </span><span class="m">100</span>
+chr2<span class="w">    </span><span class="m">100</span><span class="w">  </span><span class="m">200</span>
+VCFX_region_subsampler<span class="w"> </span>--region-bed<span class="w"> </span>regions.bed<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>filtered.vcf
+</code></pre></div>
+<h3 id="integration-with-other-tools">Integration with Other Tools<a class="headerlink" href="#integration-with-other-tools" title="Permanent link">&para;</a></h3>
+<p>Combine with other VCFX tools:</p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>VCFX_validator<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>VCFX_region_subsampler<span class="w"> </span>--region-bed<span class="w"> </span>regions.bed<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>VCFX_metadata_summarizer
+</code></pre></div>
+<h2 id="region-handling">Region Handling<a class="headerlink" href="#region-handling" title="Permanent link">&para;</a></h2>
+<h3 id="coordinate-system">Coordinate System<a class="headerlink" href="#coordinate-system" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Input BED: 0-based coordinates</li>
+<li>Internal processing: 1-based coordinates</li>
+<li>Automatic conversion between systems</li>
+</ul>
+<h3 id="interval-merging">Interval Merging<a class="headerlink" href="#interval-merging" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Overlapping intervals are merged</li>
+<li>Contiguous intervals are combined</li>
+<li>Maintains efficiency for large region sets</li>
+</ul>
+<h3 id="region-validation">Region Validation<a class="headerlink" href="#region-validation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Skips invalid BED lines</li>
+<li>Handles negative intervals</li>
+<li>Ignores zero-length intervals</li>
+<li>Reports warnings for invalid entries</li>
+</ul>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p>The tool handles various error conditions:
+- Missing --region-bed argument
+- Invalid BED file format
+- Invalid VCF lines
+- Missing or malformed coordinates
+- Data lines before header</p>
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Loads the entire reference genome into memory for faster lookups</li>
-<li>Processes the VCF file sequentially, line by line</li>
-<li>Memory usage scales with the size of the reference genome</li>
-<li>Discrepancy checking is computationally efficient after loading the reference</li>
+<li>Uses binary search for region lookup</li>
+<li>Merges overlapping intervals for efficiency</li>
+<li>Processes input streamingly</li>
+<li>Memory efficient for large region sets</li>
+<li>Handles large VCF files</li>
 </ul>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Requires loading the entire reference genome into memory, which can be memory-intensive for large genomes</li>
-<li>Chromosome name normalization may not handle all naming conventions</li>
-<li>Doesn't account for circularity in mitochondrial or bacterial genomes</li>
-<li>No specialized handling for structural variants</li>
-<li>Minimal sanity checks for FASTA format integrity</li>
-<li>Cannot check variants spanning multiple chromosomes </li>
+<li>Only filters by position (CHROM, POS)</li>
+<li>Does not validate VCF format (use VCFX_validator for validation)</li>
+<li>Requires at least 8 columns in VCF</li>
+<li>Skips data lines before #CHROM header</li>
+<li>Treats invalid BED lines as warnings, not errors</li>
 </ul>
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Extracting variants from specific genomic regions</li>
+<li>Focusing analysis on particular chromosomal segments</li>
+<li>Creating region-specific VCF subsets</li>
+<li>Preparing data for region-based analysis</li>
+<li>Filtering variants for specific genomic features</li>
+</ol>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Validate input VCF before filtering</li>
+<li>Verify BED file format and coordinates</li>
+<li>Check region coverage before processing</li>
+<li>Monitor warning messages for invalid regions</li>
+<li>Document region selection criteria </li>
+</ol>
 
 
 
