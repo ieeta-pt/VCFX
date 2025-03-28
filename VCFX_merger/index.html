@@ -12,13 +12,13 @@
         <meta name="author" content="VCFX Team">
       
       
-        <link rel="canonical" href="https://jorgeMFS.github.io/VCFX/VCFX_header_parser/">
+        <link rel="canonical" href="https://jorgeMFS.github.io/VCFX/VCFX_merger/">
       
       
-        <link rel="prev" href="../VCFX_info_summarizer/">
+        <link rel="prev" href="../VCFX_duplicate_remover/">
       
       
-        <link rel="next" href="../VCFX_annotation_extractor/">
+        <link rel="next" href="../VCFX_custom_annotator/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>VCFX_header_parser - VCFX Documentation</title>
+        <title>VCFX_merger - VCFX Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vcfx_header_parser" class="md-skip">
+        <a href="#vcfx_merger" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              VCFX_header_parser
+              VCFX_merger
             
           </span>
         </div>
@@ -1589,8 +1589,10 @@
                 
   
   
+    
   
   
+  
     
     
     
@@ -1603,13 +1605,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" checked>
         
           
           <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="">
@@ -1624,7 +1624,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
             File Management
@@ -1767,126 +1767,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../VCFX_merger/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    VCFX_merger
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    
-    
-    
-      
-      
-        
-          
-          
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
-            
-  
-  <span class="md-ellipsis">
-    Annotation and Reporting
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3_7">
-            <span class="md-nav__icon md-icon"></span>
-            Annotation and Reporting
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../VCFX_custom_annotator/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    VCFX_custom_annotator
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../VCFX_info_summarizer/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    VCFX_info_summarizer
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -1903,7 +1783,7 @@
           
   
   <span class="md-ellipsis">
-    VCFX_header_parser
+    VCFX_merger
     
   </span>
   
@@ -1915,7 +1795,7 @@
         
   
   <span class="md-ellipsis">
-    VCFX_header_parser
+    VCFX_merger
     
   </span>
   
@@ -1974,6 +1854,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#input-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output-format" class="md-nav__link">
     <span class="md-ellipsis">
       Output Format
@@ -2002,27 +1891,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#extracting-sample-names" class="md-nav__link">
+  <a href="#multiple-files" class="md-nav__link">
     <span class="md-ellipsis">
-      Extracting Sample Names
+      Multiple Files
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#counting-contigs" class="md-nav__link">
+  <a href="#integration-with-other-tools" class="md-nav__link">
     <span class="md-ellipsis">
-      Counting Contigs
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#verifying-vcf-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      Verifying VCF Version
+      Integration with Other Tools
     </span>
   </a>
   
@@ -2034,18 +1914,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#handling-special-cases" class="md-nav__link">
+  <a href="#error-handling" class="md-nav__link">
     <span class="md-ellipsis">
-      Handling Special Cases
+      Error Handling
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#performance-considerations" class="md-nav__link">
     <span class="md-ellipsis">
-      Performance
+      Performance Considerations
     </span>
   </a>
   
@@ -2060,10 +1940,148 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Use Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Annotation and Reporting
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            Annotation and Reporting
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VCFX_custom_annotator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VCFX_custom_annotator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VCFX_info_summarizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VCFX_info_summarizer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VCFX_header_parser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VCFX_header_parser
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -2441,6 +2459,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#input-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output-format" class="md-nav__link">
     <span class="md-ellipsis">
       Output Format
@@ -2469,27 +2496,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#extracting-sample-names" class="md-nav__link">
+  <a href="#multiple-files" class="md-nav__link">
     <span class="md-ellipsis">
-      Extracting Sample Names
+      Multiple Files
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#counting-contigs" class="md-nav__link">
+  <a href="#integration-with-other-tools" class="md-nav__link">
     <span class="md-ellipsis">
-      Counting Contigs
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#verifying-vcf-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      Verifying VCF Version
+      Integration with Other Tools
     </span>
   </a>
   
@@ -2501,18 +2519,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#handling-special-cases" class="md-nav__link">
+  <a href="#error-handling" class="md-nav__link">
     <span class="md-ellipsis">
-      Handling Special Cases
+      Error Handling
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#performance-considerations" class="md-nav__link">
     <span class="md-ellipsis">
-      Performance
+      Performance Considerations
     </span>
   </a>
   
@@ -2522,6 +2540,24 @@
   <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       Limitations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Use Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
     </span>
   </a>
   
@@ -2546,11 +2582,11 @@
   
 
 
-<h1 id="vcfx_header_parser">VCFX_header_parser<a class="headerlink" href="#vcfx_header_parser" title="Permanent link">&para;</a></h1>
+<h1 id="vcfx_merger">VCFX_merger<a class="headerlink" href="#vcfx_merger" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>VCFX_header_parser is a simple utility that extracts and displays all header lines from a VCF file. This tool makes it easy to examine metadata and structural information without processing the variant data.</p>
+<p><code>VCFX_merger</code> is a tool for merging multiple VCF files by variant position. It combines multiple VCF files while maintaining proper sorting by chromosome and position, and preserves the VCF header information from the first input file.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_header_parser<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>header.txt
+<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>file1.vcf,file2.vcf,...<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&gt;<span class="w"> </span>merged.vcf
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -2562,80 +2598,86 @@
 </thead>
 <tbody>
 <tr>
-<td><code>-h</code>, <code>--help</code></td>
+<td><code>-m, --merge</code></td>
+<td>Comma-separated list of VCF files to merge</td>
+</tr>
+<tr>
+<td><code>-h, --help</code></td>
 <td>Display help message and exit</td>
 </tr>
 </tbody>
 </table>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>VCFX_header_parser reads a VCF file from standard input and outputs only the header lines (lines starting with "#"). The tool:</p>
+<p><code>VCFX_merger</code> reads multiple VCF files and combines them into a single output file while:</p>
 <ol>
-<li>Reads the VCF file line by line</li>
-<li>Extracts all lines beginning with "#", which include:</li>
-<li>VCF version information (<code>##fileformat=VCFv4.2</code>)</li>
-<li>Reference genome information (<code>##reference=file:///path/to/reference.fa</code>)</li>
-<li>Contig definitions (<code>##contig=&lt;ID=chr1,length=248956422&gt;</code>)</li>
-<li>INFO field definitions (<code>##INFO=&lt;ID=AF,Number=A,Type=Float,Description="Allele Frequency"&gt;</code>)</li>
-<li>FILTER definitions (<code>##FILTER=&lt;ID=PASS,Description="All filters passed"&gt;</code>)</li>
-<li>FORMAT definitions (<code>##FORMAT=&lt;ID=GT,Number=1,Type=String,Description="Genotype"&gt;</code>)</li>
-<li>Sample column header line (<code>#CHROM  POS  ID  REF  ALT  QUAL  FILTER  INFO  FORMAT  SAMPLE1  SAMPLE2</code>)</li>
-<li>Stops reading when it encounters the first non-header line (any line not starting with "#")</li>
-<li>Outputs all collected header lines to standard output</li>
+<li>Preserving the VCF header information from the first input file</li>
+<li>Sorting all variants by chromosome and position</li>
+<li>Maintaining the original VCF format and field structure</li>
+<li>Handling multiple input files efficiently</li>
 </ol>
-<p>This tool is useful for:
-- Examining metadata without processing large variant datasets
-- Extracting sample names from a VCF file
-- Checking VCF file structure and compliance with specifications
-- Creating header templates for new VCF files
-- Documenting file provenance and contents</p>
+<p>The tool processes the input files sequentially and merges all variants while ensuring proper sorting. It is particularly useful when you need to combine multiple VCF files from different sources or samples into a single, properly sorted VCF file.</p>
+<h2 id="input-requirements">Input Requirements<a class="headerlink" href="#input-requirements" title="Permanent link">&para;</a></h2>
+<ul>
+<li>All input files must be in valid VCF format</li>
+<li>Files should have consistent header structures</li>
+<li>The first file's header information will be used in the output</li>
+<li>Files can contain any number of variants</li>
+</ul>
 <h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
-<p>The output consists of all header lines from the input VCF file, in the same order they appeared in the original file:</p>
-<div class="highlight"><pre><span></span><code>##fileformat=VCFv4.2
-##source=VCFX
-##FILTER=&lt;ID=PASS,Description=&quot;All filters passed&quot;&gt;
-##contig=&lt;ID=chr1,length=248956422&gt;
-#CHROM  POS  ID  REF  ALT  QUAL  FILTER  INFO  FORMAT  SAMPLE1  SAMPLE2
-</code></pre></div>
+<p>The output is a standard VCF file with:
+- Header information from the first input file
+- All variants sorted by chromosome and position
+- Original VCF format preserved
+- Tab-delimited fields maintained</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>./VCFX_header_parser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>header.txt
+<p>Merge two VCF files:</p>
+<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>sample1.vcf,sample2.vcf<span class="w"> </span>&gt;<span class="w"> </span>merged.vcf
 </code></pre></div>
-<h3 id="extracting-sample-names">Extracting Sample Names<a class="headerlink" href="#extracting-sample-names" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Extract the sample names (all columns after FORMAT in the #CHROM line)</span>
-./VCFX_header_parser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;^#CHROM&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-f10-<span class="w"> </span>&gt;<span class="w"> </span>sample_names.txt
+<h3 id="multiple-files">Multiple Files<a class="headerlink" href="#multiple-files" title="Permanent link">&para;</a></h3>
+<p>Merge three or more VCF files:</p>
+<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>file1.vcf,file2.vcf,file3.vcf<span class="w"> </span>&gt;<span class="w"> </span>combined.vcf
 </code></pre></div>
-<h3 id="counting-contigs">Counting Contigs<a class="headerlink" href="#counting-contigs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Count the number of contigs defined in the header</span>
-./VCFX_header_parser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;##contig&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+<h3 id="integration-with-other-tools">Integration with Other Tools<a class="headerlink" href="#integration-with-other-tools" title="Permanent link">&para;</a></h3>
+<p>Merge files and then process the result:</p>
+<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>sample1.vcf,sample2.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_sorter<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_validator<span class="w"> </span>&gt;<span class="w"> </span>final.vcf
 </code></pre></div>
-<h3 id="verifying-vcf-version">Verifying VCF Version<a class="headerlink" href="#verifying-vcf-version" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Check the VCF file format version</span>
-./VCFX_header_parser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;##fileformat&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="o">=</span><span class="w"> </span>-f2
-</code></pre></div>
-<h2 id="handling-special-cases">Handling Special Cases<a class="headerlink" href="#handling-special-cases" title="Permanent link">&para;</a></h2>
-<p>The tool implements simple strategies for handling edge cases:</p>
-<ol>
-<li><strong>Empty files</strong>: If the input file is empty, no output is produced</li>
-<li><strong>Files without headers</strong>: If the file has no header lines, no output is produced</li>
-<li><strong>Malformed headers</strong>: All lines starting with "#" are considered header lines, even if they don't follow VCF specifications</li>
-<li><strong>Line endings</strong>: Both Unix (LF) and Windows (CRLF) line endings are handled correctly</li>
-<li><strong>Partial headers</strong>: If the file ends in the middle of the header section, all header lines up to that point are output</li>
-</ol>
-<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
-<p>VCFX_header_parser is designed for simplicity and efficiency:</p>
-<ol>
-<li>Processes input line-by-line without loading the entire file into memory</li>
-<li>Stops processing as soon as it encounters the first non-header line</li>
-<li>Highly efficient for large VCF files where headers constitute a small portion of the total file size</li>
-<li>Minimal memory footprint since only the current line being processed is stored in memory</li>
-</ol>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p>The tool handles various error conditions:</p>
+<ul>
+<li>Missing input files: Reports an error if any specified input file cannot be opened</li>
+<li>Invalid VCF format: Preserves the original format but does not validate it</li>
+<li>Empty files: Handles empty input files gracefully</li>
+<li>Missing --merge argument: Displays help message</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Memory usage scales with the number of variants across all input files</li>
+<li>Processing time depends on the total number of variants and the number of input files</li>
+<li>Files are processed sequentially to minimize memory usage</li>
+<li>Sorting is performed in memory after all variants are collected</li>
+</ul>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Only supports standard VCF format files</li>
+<li>Does not perform VCF validation (use VCFX_validator for validation)</li>
+<li>Preserves only the header information from the first input file</li>
+<li>Requires all input files to have consistent field structures</li>
+</ul>
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
 <ol>
-<li>No validation of header syntax or compliance with VCF specifications</li>
-<li>Cannot modify or filter specific header lines</li>
-<li>No ability to sort or organize header lines</li>
-<li>No special handling for duplicate header entries</li>
-<li>Cannot add or merge headers from multiple files </li>
+<li>Combining multiple sample VCFs into a single file</li>
+<li>Merging region-specific VCF files</li>
+<li>Combining results from different variant callers</li>
+<li>Creating a unified VCF file from multiple analysis runs</li>
+</ol>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Validate input files before merging</li>
+<li>Use consistent VCF versions across input files</li>
+<li>Consider file sizes and available memory when merging many files</li>
+<li>Verify the output with VCFX_validator after merging</li>
+<li>Use VCFX_sorter if additional sorting is needed </li>
 </ol>
 
 

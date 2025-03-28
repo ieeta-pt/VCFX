@@ -12,13 +12,13 @@
         <meta name="author" content="VCFX Team">
       
       
-        <link rel="canonical" href="https://jorgeMFS.github.io/VCFX/VCFX_header_parser/">
+        <link rel="canonical" href="https://jorgeMFS.github.io/VCFX/VCFX_ld_calculator/">
       
       
-        <link rel="prev" href="../VCFX_info_summarizer/">
+        <link rel="prev" href="../VCFX_ancestry_assigner/">
       
       
-        <link rel="next" href="../VCFX_annotation_extractor/">
+        <link rel="next" href="../VCFX_phase_checker/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>VCFX_header_parser - VCFX Documentation</title>
+        <title>VCFX_ld_calculator - VCFX Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vcfx_header_parser" class="md-skip">
+        <a href="#vcfx_ld_calculator" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              VCFX_header_parser
+              VCFX_ld_calculator
             
           </span>
         </div>
@@ -537,8 +537,10 @@
                 
   
   
+    
   
   
+  
     
     
     
@@ -551,13 +553,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
         
           
           <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
@@ -572,7 +572,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_2">
             <span class="md-nav__icon md-icon"></span>
             Data Analysis
@@ -825,10 +825,31 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../VCFX_ld_calculator/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    VCFX_ld_calculator
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -838,6 +859,140 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#region-specific-ld" class="md-nav__link">
+    <span class="md-ellipsis">
+      Region-Specific LD
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Other Tools
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-special-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Special Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1797,8 +1952,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1813,11 +1966,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
         
           
           <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
@@ -1832,7 +1987,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7">
             <span class="md-nav__icon md-icon"></span>
             Annotation and Reporting
@@ -1887,31 +2042,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    VCFX_header_parser
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../VCFX_header_parser/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1921,149 +2055,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Usage
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Options
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      Description
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#output-format" class="md-nav__link">
-    <span class="md-ellipsis">
-      Output Format
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Examples
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Basic Usage
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#extracting-sample-names" class="md-nav__link">
-    <span class="md-ellipsis">
-      Extracting Sample Names
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#counting-contigs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Counting Contigs
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#verifying-vcf-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      Verifying VCF Version
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#handling-special-cases" class="md-nav__link">
-    <span class="md-ellipsis">
-      Handling Special Cases
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
-    <span class="md-ellipsis">
-      Performance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Limitations
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2469,27 +2460,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#extracting-sample-names" class="md-nav__link">
+  <a href="#region-specific-ld" class="md-nav__link">
     <span class="md-ellipsis">
-      Extracting Sample Names
+      Region-Specific LD
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#counting-contigs" class="md-nav__link">
+  <a href="#integration-with-other-tools" class="md-nav__link">
     <span class="md-ellipsis">
-      Counting Contigs
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#verifying-vcf-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      Verifying VCF Version
+      Integration with Other Tools
     </span>
   </a>
   
@@ -2546,11 +2528,11 @@
   
 
 
-<h1 id="vcfx_header_parser">VCFX_header_parser<a class="headerlink" href="#vcfx_header_parser" title="Permanent link">&para;</a></h1>
+<h1 id="vcfx_ld_calculator">VCFX_ld_calculator<a class="headerlink" href="#vcfx_ld_calculator" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>VCFX_header_parser is a simple utility that extracts and displays all header lines from a VCF file. This tool makes it easy to examine metadata and structural information without processing the variant data.</p>
+<p><code>VCFX_ld_calculator</code> calculates pairwise linkage disequilibrium (LD) statistics between genetic variants in a VCF file, expressed as r² values. It can analyze variants across an entire file or within a specified genomic region.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_header_parser<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>header.txt
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -2562,81 +2544,80 @@
 </thead>
 <tbody>
 <tr>
+<td><code>--region &lt;chr:start-end&gt;</code></td>
+<td>Only compute LD for variants in the specified region</td>
+</tr>
+<tr>
 <td><code>-h</code>, <code>--help</code></td>
 <td>Display help message and exit</td>
 </tr>
 </tbody>
 </table>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>VCFX_header_parser reads a VCF file from standard input and outputs only the header lines (lines starting with "#"). The tool:</p>
+<p><code>VCFX_ld_calculator</code> reads a VCF file and computes the pairwise linkage disequilibrium (r²) between genetic variants. Linkage disequilibrium is a measure of the non-random association between alleles at different loci, which is important for understanding genetic structure, identifying haplotype blocks, and designing association studies.</p>
+<p>The tool operates as follows:</p>
 <ol>
-<li>Reads the VCF file line by line</li>
-<li>Extracts all lines beginning with "#", which include:</li>
-<li>VCF version information (<code>##fileformat=VCFv4.2</code>)</li>
-<li>Reference genome information (<code>##reference=file:///path/to/reference.fa</code>)</li>
-<li>Contig definitions (<code>##contig=&lt;ID=chr1,length=248956422&gt;</code>)</li>
-<li>INFO field definitions (<code>##INFO=&lt;ID=AF,Number=A,Type=Float,Description="Allele Frequency"&gt;</code>)</li>
-<li>FILTER definitions (<code>##FILTER=&lt;ID=PASS,Description="All filters passed"&gt;</code>)</li>
-<li>FORMAT definitions (<code>##FORMAT=&lt;ID=GT,Number=1,Type=String,Description="Genotype"&gt;</code>)</li>
-<li>Sample column header line (<code>#CHROM  POS  ID  REF  ALT  QUAL  FILTER  INFO  FORMAT  SAMPLE1  SAMPLE2</code>)</li>
-<li>Stops reading when it encounters the first non-header line (any line not starting with "#")</li>
-<li>Outputs all collected header lines to standard output</li>
+<li>It reads the VCF file from standard input</li>
+<li>It collects diploid genotypes for each variant, encoding them as:</li>
+<li>0: Homozygous reference (0/0)</li>
+<li>1: Heterozygous (0/1 or 1/0)</li>
+<li>2: Homozygous alternate (1/1)</li>
+<li>-1: Missing data or other scenarios (including multi-allelic variants)</li>
+<li>For each pair of variants within the specified region (or the entire file if no region is specified), it computes pairwise r² values, ignoring samples with missing genotypes</li>
+<li>It outputs a matrix of r² values along with variant identifiers</li>
 </ol>
-<p>This tool is useful for:
-- Examining metadata without processing large variant datasets
-- Extracting sample names from a VCF file
-- Checking VCF file structure and compliance with specifications
-- Creating header templates for new VCF files
-- Documenting file provenance and contents</p>
+<p>The r² calculation uses the standard formula:
+- Let X and Y be the genotype arrays for two variants
+- Calculate means of X and Y (meanX, meanY)
+- Calculate covariance: cov = average(XY) - meanX * meanY
+- Calculate variances: varX = average(X²) - meanX², varY similarly
+- r = cov / sqrt(varX * varY)
+- r² = r * r</p>
 <h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
-<p>The output consists of all header lines from the input VCF file, in the same order they appeared in the original file:</p>
-<div class="highlight"><pre><span></span><code>##fileformat=VCFv4.2
-##source=VCFX
-##FILTER=&lt;ID=PASS,Description=&quot;All filters passed&quot;&gt;
-##contig=&lt;ID=chr1,length=248956422&gt;
-#CHROM  POS  ID  REF  ALT  QUAL  FILTER  INFO  FORMAT  SAMPLE1  SAMPLE2
+<p>The output is a tab-delimited matrix of r² values with a header identifying the variants:</p>
+<div class="highlight"><pre><span></span><code>#LD_MATRIX_START
+         chr1:100 chr1:200 chr1:300
+chr1:100      1.0     0.4     0.2
+chr1:200     0.4      1.0     0.6
+chr1:300     0.2     0.6      1.0
 </code></pre></div>
+<p>If only one or no variants are found in the region, the tool outputs a message indicating that no pairwise LD could be calculated.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>./VCFX_header_parser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>header.txt
+<p>Calculate LD for all variants in a VCF file:</p>
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
 </code></pre></div>
-<h3 id="extracting-sample-names">Extracting Sample Names<a class="headerlink" href="#extracting-sample-names" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Extract the sample names (all columns after FORMAT in the #CHROM line)</span>
-./VCFX_header_parser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;^#CHROM&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-f10-<span class="w"> </span>&gt;<span class="w"> </span>sample_names.txt
+<h3 id="region-specific-ld">Region-Specific LD<a class="headerlink" href="#region-specific-ld" title="Permanent link">&para;</a></h3>
+<p>Calculate LD only for variants in a specific genomic region:</p>
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>--region<span class="w"> </span>chr1:10000-20000<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
 </code></pre></div>
-<h3 id="counting-contigs">Counting Contigs<a class="headerlink" href="#counting-contigs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Count the number of contigs defined in the header</span>
-./VCFX_header_parser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;##contig&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
-</code></pre></div>
-<h3 id="verifying-vcf-version">Verifying VCF Version<a class="headerlink" href="#verifying-vcf-version" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Check the VCF file format version</span>
-./VCFX_header_parser<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;##fileformat&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="o">=</span><span class="w"> </span>-f2
+<h3 id="integration-with-other-tools">Integration with Other Tools<a class="headerlink" href="#integration-with-other-tools" title="Permanent link">&para;</a></h3>
+<p>Filter for common variants first, then calculate LD:</p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_af_subsetter<span class="w"> </span>--min-af<span class="w"> </span><span class="m">0</span>.05<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_ld_calculator<span class="w"> </span>&gt;<span class="w"> </span>common_variants_ld.txt
 </code></pre></div>
 <h2 id="handling-special-cases">Handling Special Cases<a class="headerlink" href="#handling-special-cases" title="Permanent link">&para;</a></h2>
-<p>The tool implements simple strategies for handling edge cases:</p>
-<ol>
-<li><strong>Empty files</strong>: If the input file is empty, no output is produced</li>
-<li><strong>Files without headers</strong>: If the file has no header lines, no output is produced</li>
-<li><strong>Malformed headers</strong>: All lines starting with "#" are considered header lines, even if they don't follow VCF specifications</li>
-<li><strong>Line endings</strong>: Both Unix (LF) and Windows (CRLF) line endings are handled correctly</li>
-<li><strong>Partial headers</strong>: If the file ends in the middle of the header section, all header lines up to that point are output</li>
-</ol>
+<ul>
+<li><strong>Missing Genotypes</strong>: Samples with missing genotypes (./.  or .|.) are skipped when calculating LD between variant pairs</li>
+<li><strong>Multi-allelic Variants</strong>: Genotypes involving alleles beyond the reference and first alternate (e.g., 1/2, 2/2) are treated as missing data</li>
+<li><strong>Single Variant</strong>: If only one variant is found in the region, the tool outputs a message stating that no pairwise LD can be calculated</li>
+<li><strong>Empty Region</strong>: If no variants are found in the specified region, the tool outputs a message stating that no pairwise LD can be calculated</li>
+<li><strong>Invalid Region Format</strong>: If the region format is invalid, the tool will display an error message</li>
+</ul>
 <h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
-<p>VCFX_header_parser is designed for simplicity and efficiency:</p>
-<ol>
-<li>Processes input line-by-line without loading the entire file into memory</li>
-<li>Stops processing as soon as it encounters the first non-header line</li>
-<li>Highly efficient for large VCF files where headers constitute a small portion of the total file size</li>
-<li>Minimal memory footprint since only the current line being processed is stored in memory</li>
-</ol>
+<ul>
+<li>Time complexity is O(n²m) where n is the number of variants and m is the number of samples</li>
+<li>Memory usage scales linearly with the number of variants and samples</li>
+<li>For large datasets with many variants, consider using the <code>--region</code> option to limit the analysis to specific genomic regions</li>
+<li>The tool processes the VCF file line by line, so it can handle large files without loading the entire file into memory</li>
+</ul>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
-<ol>
-<li>No validation of header syntax or compliance with VCF specifications</li>
-<li>Cannot modify or filter specific header lines</li>
-<li>No ability to sort or organize header lines</li>
-<li>No special handling for duplicate header entries</li>
-<li>Cannot add or merge headers from multiple files </li>
-</ol>
+<ul>
+<li>Only supports biallelic variants; multi-allelic variants are treated as missing data</li>
+<li>Requires diploid genotypes; haploid genotypes will be treated as missing data</li>
+<li>Assumes standard VCF format with GT field in the FORMAT column</li>
+<li>Does not support phased vs. unphased distinction; both "/" and "|" separators are treated the same</li>
+<li>No built-in visualization of LD patterns; additional tools would be needed for heatmap creation </li>
+</ul>
 
 
 

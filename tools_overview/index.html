@@ -681,6 +681,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#linkage-disequilibrium-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linkage Disequilibrium Analysis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#normalization-and-splitting" class="md-nav__link">
     <span class="md-ellipsis">
       Normalization and Splitting
@@ -999,6 +1008,28 @@
   
   <span class="md-ellipsis">
     VCFX_ancestry_assigner
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VCFX_ld_calculator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VCFX_ld_calculator
     
   </span>
   
@@ -1929,6 +1960,28 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VCFX_merger/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VCFX_merger
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2500,6 +2553,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#linkage-disequilibrium-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linkage Disequilibrium Analysis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#normalization-and-splitting" class="md-nav__link">
     <span class="md-ellipsis">
       Normalization and Splitting
@@ -2567,6 +2629,7 @@
 <li><a href="../VCFX_variant_counter/">VCFX_variant_counter</a> - Count variants in VCF files</li>
 <li><a href="../VCFX_ancestry_inferrer/">VCFX_ancestry_inferrer</a> - Infer ancestry from genetic data</li>
 <li><a href="../VCFX_ancestry_assigner/">VCFX_ancestry_assigner</a> - Assign ancestry to samples</li>
+<li><a href="../VCFX_ld_calculator/">VCFX_ld_calculator</a> - Calculate pairwise linkage disequilibrium (r²) between variants</li>
 </ul>
 <h3 id="data-filtering">Data Filtering<a class="headerlink" href="#data-filtering" title="Permanent link">&para;</a></h3>
 <p>Tools for selecting variants based on specific criteria:</p>
@@ -2615,6 +2678,7 @@
 <li><a href="../VCFX_diff_tool/">VCFX_diff_tool</a> - Find differences between VCF files</li>
 <li><a href="../VCFX_subsampler/">VCFX_subsampler</a> - Subsample variants from a VCF file</li>
 <li><a href="../VCFX_duplicate_remover/">VCFX_duplicate_remover</a> - Remove duplicate variants</li>
+<li><a href="../VCFX_merger/">VCFX_merger</a> - Merge multiple VCF files by position</li>
 </ul>
 <h3 id="annotation-and-reporting">Annotation and Reporting<a class="headerlink" href="#annotation-and-reporting" title="Permanent link">&para;</a></h3>
 <p>Tools for annotating and extracting information from VCF files:</p>
@@ -2656,6 +2720,12 @@ cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</s
 <div class="highlight"><pre><span></span><code><span class="c1"># Extract samples and check concordance</span>
 cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_sample_extractor<span class="w"> </span>--samples<span class="w"> </span>SAMPLE1,SAMPLE2<span class="w"> </span>&gt;<span class="w"> </span>samples.vcf
 cat<span class="w"> </span>samples.vcf<span class="w"> </span>reference.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_concordance_checker<span class="w"> </span>&gt;<span class="w"> </span>concordance_report.tsv
+</code></pre></div>
+<h3 id="linkage-disequilibrium-analysis">Linkage Disequilibrium Analysis<a class="headerlink" href="#linkage-disequilibrium-analysis" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Calculate LD in a specific region after filtering for common variants</span>
+cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>VCFX_af_subsetter<span class="w"> </span>--min-af<span class="w"> </span><span class="m">0</span>.05<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>VCFX_ld_calculator<span class="w"> </span>--region<span class="w"> </span>chr1:10000-20000<span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
 </code></pre></div>
 <h3 id="normalization-and-splitting">Normalization and Splitting<a class="headerlink" href="#normalization-and-splitting" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Normalize indels and split multiallelic variants</span>
