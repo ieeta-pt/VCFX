@@ -509,9 +509,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-3-using-docker-coming-soon" class="md-nav__link">
+  <a href="#method-3-using-bioconda" class="md-nav__link">
     <span class="md-ellipsis">
-      Method 3: Using Docker (Coming Soon)
+      Method 3: Using Bioconda
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-4-using-docker-coming-soon" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 4: Using Docker (Coming Soon)
     </span>
   </a>
   
@@ -2493,9 +2502,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-3-using-docker-coming-soon" class="md-nav__link">
+  <a href="#method-3-using-bioconda" class="md-nav__link">
     <span class="md-ellipsis">
-      Method 3: Using Docker (Coming Soon)
+      Method 3: Using Bioconda
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-4-using-docker-coming-soon" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 4: Using Docker (Coming Soon)
     </span>
   </a>
   
@@ -2644,7 +2662,27 @@ make
 make<span class="w"> </span>VCFX_tool_name
 </code></pre></div>
 <p>Replace <code>VCFX_tool_name</code> with the actual tool name (e.g., <code>VCFX_allele_freq_calc</code>).</p>
-<h3 id="method-3-using-docker-coming-soon">Method 3: Using Docker (Coming Soon)<a class="headerlink" href="#method-3-using-docker-coming-soon" title="Permanent link">&para;</a></h3>
+<h3 id="method-3-using-bioconda">Method 3: Using Bioconda<a class="headerlink" href="#method-3-using-bioconda" title="Permanent link">&para;</a></h3>
+<p>VCFX is available as a package in Bioconda, which provides easy installation through the conda package manager.</p>
+<ol>
+<li>
+<p>First, ensure you have conda installed (either <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a> or <a href="https://www.anaconda.com/download">Anaconda</a>).</p>
+</li>
+<li>
+<p>Set up the Bioconda channels:
+   <div class="highlight"><pre><span></span><code>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>defaults
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>bioconda
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+</code></pre></div></p>
+</li>
+<li>
+<p>Install VCFX:
+   <div class="highlight"><pre><span></span><code>conda<span class="w"> </span>install<span class="w"> </span>vcfx
+</code></pre></div></p>
+</li>
+</ol>
+<p>This method automatically handles all dependencies and provides a ready-to-use installation of VCFX.</p>
+<h3 id="method-4-using-docker-coming-soon">Method 4: Using Docker (Coming Soon)<a class="headerlink" href="#method-4-using-docker-coming-soon" title="Permanent link">&para;</a></h3>
 <p>We are working on providing Docker images for VCFX to simplify the installation process.</p>
 <h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Permanent link">&para;</a></h2>
 <p>To verify that VCFX tools are installed correctly, you can run:</p>

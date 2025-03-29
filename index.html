@@ -428,6 +428,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building from Source
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-bioconda-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Bioconda (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2518,6 +2542,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building from Source
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-bioconda-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Bioconda (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2697,6 +2745,7 @@
 <h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
 <p>To begin using VCFX, first follow the <a href="#installation">installation instructions</a> below, then explore the <a href="#tool-categories">tool categories</a> to find the right components for your workflow.</p>
 <h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h3>
+<h4 id="building-from-source">Building from Source<a class="headerlink" href="#building-from-source" title="Permanent link">&para;</a></h4>
 <p>VCFX tools are built using CMake. To build the entire toolkit:</p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jorgeMFS/VCFX.git
 <span class="nb">cd</span><span class="w"> </span>VCFX
@@ -2708,6 +2757,17 @@ make
 <p>To build a specific tool:</p>
 <div class="highlight"><pre><span></span><code>make<span class="w"> </span>VCFX_tool_name
 </code></pre></div>
+<h4 id="using-bioconda-recommended">Using Bioconda (Recommended)<a class="headerlink" href="#using-bioconda-recommended" title="Permanent link">&para;</a></h4>
+<p>VCFX is available in the Bioconda channel, providing an easy installation method:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Set up Bioconda channels if you haven&#39;t already</span>
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>defaults
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>bioconda
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+
+<span class="c1"># Install VCFX</span>
+conda<span class="w"> </span>install<span class="w"> </span>vcfx
+</code></pre></div>
+<p>See the <a href="installation/">Installation Guide</a> for more detailed options.</p>
 <h3 id="basic-example">Basic Example<a class="headerlink" href="#basic-example" title="Permanent link">&para;</a></h3>
 <p>Here's a simple example of using VCFX to analyze variants:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Calculate allele frequencies for SNPs only</span>
