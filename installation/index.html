@@ -509,27 +509,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#method-1-building-from-source-recommended" class="md-nav__link">
+  <a href="#method-1-using-bioconda-recommended" class="md-nav__link">
     <span class="md-ellipsis">
-      Method 1: Building from Source (Recommended)
+      Method 1: Using Bioconda (Recommended)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-2-building-individual-tools" class="md-nav__link">
+  <a href="#method-2-building-from-source" class="md-nav__link">
     <span class="md-ellipsis">
-      Method 2: Building Individual Tools
+      Method 2: Building from Source
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-3-using-docker-coming-soon" class="md-nav__link">
+  <a href="#method-3-building-individual-tools" class="md-nav__link">
     <span class="md-ellipsis">
-      Method 3: Using Docker (Coming Soon)
+      Method 3: Building Individual Tools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-4-using-docker-coming-soon" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 4: Using Docker (Coming Soon)
     </span>
   </a>
   
@@ -2573,27 +2582,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#method-1-building-from-source-recommended" class="md-nav__link">
+  <a href="#method-1-using-bioconda-recommended" class="md-nav__link">
     <span class="md-ellipsis">
-      Method 1: Building from Source (Recommended)
+      Method 1: Using Bioconda (Recommended)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-2-building-individual-tools" class="md-nav__link">
+  <a href="#method-2-building-from-source" class="md-nav__link">
     <span class="md-ellipsis">
-      Method 2: Building Individual Tools
+      Method 2: Building from Source
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-3-using-docker-coming-soon" class="md-nav__link">
+  <a href="#method-3-building-individual-tools" class="md-nav__link">
     <span class="md-ellipsis">
-      Method 3: Using Docker (Coming Soon)
+      Method 3: Building Individual Tools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-4-using-docker-coming-soon" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 4: Using Docker (Coming Soon)
     </span>
   </a>
   
@@ -2712,8 +2730,19 @@
 <li>Git (for cloning the repository)</li>
 </ul>
 <h2 id="installation-methods">Installation Methods<a class="headerlink" href="#installation-methods" title="Permanent link">&para;</a></h2>
-<h3 id="method-1-building-from-source-recommended">Method 1: Building from Source (Recommended)<a class="headerlink" href="#method-1-building-from-source-recommended" title="Permanent link">&para;</a></h3>
-<p>This is the recommended method as it ensures you have the latest version of VCFX.</p>
+<h3 id="method-1-using-bioconda-recommended">Method 1: Using Bioconda (Recommended)<a class="headerlink" href="#method-1-using-bioconda-recommended" title="Permanent link">&para;</a></h3>
+<p>VCFX is available in the Bioconda channel, providing an easy installation method:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Set up Bioconda channels if you haven&#39;t already</span>
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>defaults
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>bioconda
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+
+<span class="c1"># Install VCFX</span>
+conda<span class="w"> </span>install<span class="w"> </span>vcfx
+</code></pre></div>
+<p>This method automatically handles all dependencies and provides a ready-to-use installation of VCFX.</p>
+<h3 id="method-2-building-from-source">Method 2: Building from Source<a class="headerlink" href="#method-2-building-from-source" title="Permanent link">&para;</a></h3>
+<p>This method ensures you have the latest version of VCFX.</p>
 <ol>
 <li>
 <p>Clone the VCFX repository:
@@ -2736,13 +2765,13 @@ make
 </li>
 </ol>
 <p>After installation, you should be able to run VCFX tools from your terminal.</p>
-<h3 id="method-2-building-individual-tools">Method 2: Building Individual Tools<a class="headerlink" href="#method-2-building-individual-tools" title="Permanent link">&para;</a></h3>
+<h3 id="method-3-building-individual-tools">Method 3: Building Individual Tools<a class="headerlink" href="#method-3-building-individual-tools" title="Permanent link">&para;</a></h3>
 <p>If you only need specific tools, you can build them individually:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>VCFX/build
 make<span class="w"> </span>VCFX_tool_name
 </code></pre></div>
 <p>Replace <code>VCFX_tool_name</code> with the actual tool name (e.g., <code>VCFX_allele_freq_calc</code>).</p>
-<h3 id="method-3-using-docker-coming-soon">Method 3: Using Docker (Coming Soon)<a class="headerlink" href="#method-3-using-docker-coming-soon" title="Permanent link">&para;</a></h3>
+<h3 id="method-4-using-docker-coming-soon">Method 4: Using Docker (Coming Soon)<a class="headerlink" href="#method-4-using-docker-coming-soon" title="Permanent link">&para;</a></h3>
 <p>We are working on providing Docker images for VCFX to simplify the installation process.</p>
 <h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Permanent link">&para;</a></h2>
 <p>To verify that VCFX tools are installed correctly, you can run:</p>
