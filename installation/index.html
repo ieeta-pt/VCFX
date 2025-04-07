@@ -2744,25 +2744,23 @@ conda<span class="w"> </span>install<span class="w"> </span>vcfx
 <h3 id="method-2-building-from-source">Method 2: Building from Source<a class="headerlink" href="#method-2-building-from-source" title="Permanent link">&para;</a></h3>
 <p>This method ensures you have the latest version of VCFX.</p>
 <ol>
-<li>
-<p>Clone the VCFX repository:
-   <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jorgeMFS/VCFX.git
+<li>Clone the VCFX repository:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jorgeMFS/VCFX.git
 <span class="nb">cd</span><span class="w"> </span>VCFX
-</code></pre></div></p>
-</li>
-<li>
-<p>Create a build directory and build the tools:
-   <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>build
+</code></pre></div>
+<ol>
+<li>Create a build directory and build the tools:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>build
 <span class="nb">cd</span><span class="w"> </span>build
 cmake<span class="w"> </span>..
 make
-</code></pre></div></p>
-</li>
-<li>
-<p>(Optional) Install the tools to your system:
+</code></pre></div>
+<ol>
+<li>(Optional) Install the tools to your system:
    <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>make<span class="w"> </span>install
-</code></pre></div></p>
-</li>
+</code></pre></div></li>
 </ol>
 <p>After installation, you should be able to run VCFX tools from your terminal.</p>
 <h3 id="method-3-building-individual-tools">Method 3: Building Individual Tools<a class="headerlink" href="#method-3-building-individual-tools" title="Permanent link">&para;</a></h3>
