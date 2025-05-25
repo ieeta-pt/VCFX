@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -51,6 +51,8 @@
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../styles/custom.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -135,7 +137,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -277,6 +279,25 @@
         </a>
       </li>
     
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../python_api/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Python API
+
+      </a>
+    </li>
   
 
       
@@ -2550,6 +2571,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../python_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../CONTRIBUTING/" class="md-nav__link">
         
   
@@ -2826,13 +2869,13 @@ conda<span class="w"> </span>install<span class="w"> </span>vcfx
 <h3 id="method-2-using-docker">Method 2: Using Docker<a class="headerlink" href="#method-2-using-docker" title="Permanent link">&para;</a></h3>
 <p>The simplest way to use VCFX is with Docker, which requires no compilation:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Pull the VCFX Docker image (only needed once)</span>
-docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/ieeta-pt/vcfx:latest
+docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/jorgemfs/vcfx:latest
 
 <span class="c1"># Run a VCFX tool</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>ghcr.io/ieeta-pt/vcfx:latest<span class="w"> </span>VCFX_tool_name<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>ghcr.io/jorgemfs/vcfx:latest<span class="w"> </span>VCFX_tool_name<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
 
 <span class="c1"># Process files by mounting a directory with your data</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>/path/to/your/data:/data<span class="w"> </span>ghcr.io/ieeta-pt/vcfx:latest<span class="w"> </span><span class="s1">&#39;cat /data/input.vcf | VCFX_tool_name &gt; /data/output.tsv&#39;</span>
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>/path/to/your/data:/data<span class="w"> </span>ghcr.io/jorgemfs/vcfx:latest<span class="w"> </span><span class="s1">&#39;cat /data/input.vcf | VCFX_tool_name &gt; /data/output.tsv&#39;</span>
 </code></pre></div>
 <p>This method is ideal for:
 - Quick testing without installing anything locally
@@ -2856,10 +2899,13 @@ cmake<span class="w"> </span>..
 make
 </code></pre></div>
 <ol>
-<li>(Optional) Install the tools to your system:
-   <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>make<span class="w"> </span>install
+<li>(Optional) Install the tools:
+   <div class="highlight"><pre><span></span><code>make<span class="w"> </span>install
 </code></pre></div></li>
 </ol>
+<p>By default the tools are installed into <code>~/.local</code>, so no administrator
+   privileges are required. You can change the destination with
+   <code>cmake -DCMAKE_INSTALL_PREFIX=/your/path ..</code> if desired.</p>
 <p>After installation, you should be able to run VCFX tools from your terminal.</p>
 <h3 id="method-4-building-individual-tools">Method 4: Building Individual Tools<a class="headerlink" href="#method-4-building-individual-tools" title="Permanent link">&para;</a></h3>
 <p>If you only need specific tools, you can build them individually:</p>
@@ -3017,10 +3063,10 @@ docker-compose<span class="w"> </span>run<span class="w"> </span>--rm<span class
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
       
     
   </body>

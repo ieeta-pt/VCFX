@@ -2,278 +2,282 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/CONTRIBUTING/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/LICENSE/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_af_subsetter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_alignment_checker/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_allele_balance_calc/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_allele_balance_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_allele_counter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_allele_freq_calc/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_ancestry_assigner/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_ancestry_inferrer/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_annotation_extractor/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_compressor/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_concordance_checker/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_cross_sample_concordance/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_custom_annotator/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_diff_tool/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_distance_calculator/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_dosage_calculator/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_duplicate_remover/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_fasta_converter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_field_extractor/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_file_splitter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_format_converter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_genotype_query/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_gl_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_haplotype_extractor/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_haplotype_phaser/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_header_parser/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_hwe_tester/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_impact_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_inbreeding_calculator/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_indel_normalizer/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_indexer/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_info_aggregator/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_info_parser/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_info_summarizer/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_ld_calculator/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_merger/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_metadata_summarizer/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_missing_data_handler/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_missing_detector/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_multiallelic_splitter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_nonref_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_outlier_detector/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_phase_checker/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_phase_quality_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_phred_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_population_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_position_subsetter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_probability_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_quality_adjuster/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_record_filter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_ref_comparator/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_reformatter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_region_subsampler/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_sample_extractor/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_sorter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_subsampler/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_sv_handler/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_validator/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_variant_classifier/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/VCFX_variant_counter/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/citation/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/docker/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/installation/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
+    </url>
+    <url>
+         <loc>https://ieeta-pt.github.io/VCFX/python_api/</loc>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/quickstart/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/tool_template/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
     <url>
          <loc>https://ieeta-pt.github.io/VCFX/tools_overview/</loc>
-         <lastmod>2025-04-30</lastmod>
+         <lastmod>2025-05-25</lastmod>
     </url>
 </urlset>
