@@ -65,3 +65,11 @@ tmp/
 .ruff_cache/
 python/VERSION
 __pycache__/
+
+# Benchmark artifacts
+benchmarks/data/
+benchmarks/results/
+benchmarks/tasks.mk
+benchmarks/results.csv
+
+!benchmarks/Makefile

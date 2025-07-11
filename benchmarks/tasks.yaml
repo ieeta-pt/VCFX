@@ -1,0 +1,7 @@
+tasks:
+  - name: count_chr20
+    tool: VCFX_VARIANT_COUNTER
+    input: chr20_1_1M.vcf.gz
+  - name: count_gnomad
+    tool: VCFX_VARIANT_COUNTER
+    input: gnomad_sv_chr2.vcf.gz
