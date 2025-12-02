@@ -85,65 +85,65 @@ The VCFX toolkit includes tools in the following categories:
 
 Tools for extracting statistical information and insights from variant data:
 
-- [VCFX_allele_freq_calc](VCFX_allele_freq_calc.md) - Calculate allele frequencies
-- [VCFX_variant_classifier](VCFX_variant_classifier.md) - Classify variants into SNP, INDEL, MNV, or STRUCTURAL
-- [VCFX_inbreeding_calculator](VCFX_inbreeding_calculator.md) - Calculate inbreeding coefficients
-- [VCFX_dosage_calculator](VCFX_dosage_calculator.md) - Calculate allele dosage from genotypes
+- [VCFX_allele_freq_calc](analysis/VCFX_allele_freq_calc.md) - Calculate allele frequencies
+- [VCFX_variant_classifier](analysis/VCFX_variant_classifier.md) - Classify variants into SNP, INDEL, MNV, or STRUCTURAL
+- [VCFX_inbreeding_calculator](analysis/VCFX_inbreeding_calculator.md) - Calculate inbreeding coefficients
+- [VCFX_dosage_calculator](analysis/VCFX_dosage_calculator.md) - Calculate allele dosage from genotypes
 - [View all analysis tools...](tools_overview.md#data-analysis)
 
 ### Data Filtering
 
 Tools for selecting variants based on specific criteria:
 
-- [VCFX_phase_checker](VCFX_phase_checker.md) - Filter variants to keep only fully phased genotypes
-- [VCFX_phred_filter](VCFX_phred_filter.md) - Filter variants based on Phred-scaled quality scores
-- [VCFX_record_filter](VCFX_record_filter.md) - Filter variants based on various VCF fields
+- [VCFX_phase_checker](filtering/VCFX_phase_checker.md) - Filter variants to keep only fully phased genotypes
+- [VCFX_phred_filter](filtering/VCFX_phred_filter.md) - Filter variants based on Phred-scaled quality scores
+- [VCFX_record_filter](filtering/VCFX_record_filter.md) - Filter variants based on various VCF fields
 - [View all filtering tools...](tools_overview.md#data-filtering)
 
 ### Data Transformation
 
 Tools for converting or reformatting VCF data:
 
-- [VCFX_multiallelic_splitter](VCFX_multiallelic_splitter.md) - Split multiallelic variants into biallelic records
-- [VCFX_sample_extractor](VCFX_sample_extractor.md) - Extract specific samples from a VCF file
-- [VCFX_indel_normalizer](VCFX_indel_normalizer.md) - Normalize indel representations
+- [VCFX_multiallelic_splitter](transformation/VCFX_multiallelic_splitter.md) - Split multiallelic variants into biallelic records
+- [VCFX_sample_extractor](transformation/VCFX_sample_extractor.md) - Extract specific samples from a VCF file
+- [VCFX_indel_normalizer](transformation/VCFX_indel_normalizer.md) - Normalize indel representations
 - [View all transformation tools...](tools_overview.md#data-transformation)
 
 ### Quality Control
 
 Tools for validating and checking data quality:
 
-- [VCFX_concordance_checker](VCFX_concordance_checker.md) - Check concordance between samples in a VCF file
-- [VCFX_missing_detector](VCFX_missing_detector.md) - Detect and report missing data
-- [VCFX_validator](VCFX_validator.md) - Validate VCF format compliance
+- [VCFX_concordance_checker](quality-control/VCFX_concordance_checker.md) - Check concordance between samples in a VCF file
+- [VCFX_missing_detector](quality-control/VCFX_missing_detector.md) - Detect and report missing data
+- [VCFX_validator](quality-control/VCFX_validator.md) - Validate VCF format compliance
 - [View all quality control tools...](tools_overview.md#quality-control)
 
 ### File Management
 
 Tools for handling VCF files:
 
-- [VCFX_indexer](VCFX_indexer.md) - Create an index file for random access
-- [VCFX_file_splitter](VCFX_file_splitter.md) - Split VCF files into smaller chunks
-- [VCFX_compressor](VCFX_compressor.md) - Compress VCF files efficiently
+- [VCFX_indexer](file-management/VCFX_indexer.md) - Create an index file for random access
+- [VCFX_file_splitter](file-management/VCFX_file_splitter.md) - Split VCF files into smaller chunks
+- [VCFX_compressor](file-management/VCFX_compressor.md) - Compress VCF files efficiently
 - [View all file management tools...](tools_overview.md#file-management)
 
 ### Annotation and Reporting
 
 Tools for annotating and extracting information from VCF files:
 
-- [VCFX_custom_annotator](VCFX_custom_annotator.md) - Add custom annotations to VCF files
-- [VCFX_info_summarizer](VCFX_info_summarizer.md) - Summarize INFO fields
-- ... (include a few more key tools)
+- [VCFX_custom_annotator](annotation/VCFX_custom_annotator.md) - Add custom annotations to VCF files
+- [VCFX_info_summarizer](annotation/VCFX_info_summarizer.md) - Summarize INFO fields
+- [VCFX_field_extractor](annotation/VCFX_field_extractor.md) - Extract specific fields from VCF files
 - [View all annotation tools...](tools_overview.md#annotation-and-reporting)
 
 ### Data Processing
 
 Tools for processing variants and samples:
 
-- [VCFX_missing_data_handler](VCFX_missing_data_handler.md) - Handle missing data
-- [VCFX_quality_adjuster](VCFX_quality_adjuster.md) - Adjust quality scores
-- [VCFX_haplotype_phaser](VCFX_haplotype_phaser.md) - Phase haplotypes
-- [VCFX_haplotype_extractor](VCFX_haplotype_extractor.md) - Extract haplotype information
+- [VCFX_missing_data_handler](processing/VCFX_missing_data_handler.md) - Handle missing data
+- [VCFX_quality_adjuster](processing/VCFX_quality_adjuster.md) - Adjust quality scores
+- [VCFX_haplotype_phaser](processing/VCFX_haplotype_phaser.md) - Phase haplotypes
+- [VCFX_haplotype_extractor](processing/VCFX_haplotype_extractor.md) - Extract haplotype information
 - [View all processing tools...](tools_overview.md#data-processing)
 
 For a complete list of all tools and detailed usage examples, see the [tools overview](tools_overview.md).
