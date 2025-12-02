@@ -1,0 +1,5 @@
+##fileformat=VCFv4.2
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	N	A	60	PASS	.
+chr1	200	.	ANA	T	80	PASS	.
+chr1	300	.	G	NNN	70	PASS	.

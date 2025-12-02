@@ -4,7 +4,8 @@ Usage:
   VCFX_cross_sample_concordance [options] < input.vcf > concordance_results.txt
 
 Options:
-  -h, --help    Display this help message and exit
+  -h, --help              Display this help message and exit
+  -s, --samples LIST      Comma-separated list of samples to check
 
 Description:
   Reads a multi-sample VCF from stdin, normalizes each sample's genotype

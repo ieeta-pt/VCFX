@@ -1,0 +1,8 @@
+##fileformat=VCFv4.2
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele frequency">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total alleles">
+##INFO=<ID=DB,Number=0,Type=Flag,Description="In dbSNP">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	rs123	A	T	60	PASS	AC=5;AF=0.25;AN=20;DB
+chr1	200	.	G	C,T	80	PASS	AC=3,2;AF=0.15,0.10;AN=20
