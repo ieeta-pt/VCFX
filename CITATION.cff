@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it."
 title: "VCFX: A Minimalist, Modular Toolkit for Streamlined Variant Analysis"
-version: "1.0.3"
+version: "1.0.4"
 authors:
   - family-names: Silva
     given-names: Jorge Miguel
