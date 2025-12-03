@@ -7,6 +7,7 @@
 #include <poll.h> // Add this for poll() function
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -286,10 +287,9 @@ void VCFXVariantClassifier::classifyStream(std::istream &in, std::ostream &out) 
                 continue;
             }
 
-            // Additional validation for malformed input
-            // 1. Validate CHROM format (should start with "chr")
-            if (fields[0].substr(0, 3) != "chr") {
-                std::cerr << "Warning: invalid chromosome format => skipping.\n";
+            // Validate CHROM is not empty (accept any chromosome format: chr20, 20, chrM, MT, etc.)
+            if (fields[0].empty()) {
+                std::cerr << "Warning: empty chromosome field => skipping.\n";
                 continue;
             }
 

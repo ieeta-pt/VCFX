@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
 
 class VCFXVariantCounter {
   public:
@@ -19,6 +20,10 @@ class VCFXVariantCounter {
     int countVariants(std::istream &in);
     int countVariantsGzip(std::istream &in);
     bool processLine(const std::string &line, int lineNumber, int &count);
+
+    // Memory-mapped file support for direct file access
+    int countVariantsMmap(const char *filename);
+    bool processLineMmap(std::string_view line, int lineNumber, int &count);
 };
 
 #endif
