@@ -5,7 +5,6 @@
 #include <getopt.h>
 #include <iostream>
 #include <poll.h> // Add this for poll() function
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -95,10 +94,15 @@ void VCFXVariantClassifier::displayHelp() {
 
 std::vector<std::string> VCFXVariantClassifier::split(const std::string &s, char delim) const {
     std::vector<std::string> out;
-    std::stringstream ss(s);
-    std::string t;
-    while (std::getline(ss, t, delim)) {
-        out.push_back(t);
+    out.reserve(16);  // Typical VCF has 9+ columns
+    size_t start = 0;
+    size_t end;
+    while ((end = s.find(delim, start)) != std::string::npos) {
+        out.emplace_back(s, start, end - start);
+        start = end + 1;
+    }
+    if (start <= s.size()) {
+        out.emplace_back(s, start);
     }
     return out;
 }
@@ -217,19 +221,28 @@ std::string VCFXVariantClassifier::appendClassification(const std::string &line)
         }
         fields[7] += "VCF_CLASS=" + cstr;
     }
-    // reconstruct line
-    std::ostringstream oss;
+    // reconstruct line efficiently without ostringstream
+    std::string result;
+    result.reserve(line.size() + 32);  // Original + extra for classification
     for (size_t i = 0; i < fields.size(); i++) {
         if (i > 0)
-            oss << "\t";
-        oss << fields[i];
+            result += '\t';
+        result += fields[i];
     }
-    return oss.str();
+    return result;
 }
 
 void VCFXVariantClassifier::classifyStream(std::istream &in, std::ostream &out) {
+    // Add I/O buffering for performance
+    constexpr size_t BUFFER_SIZE = 1 << 20;  // 1MB
+    std::vector<char> inBuffer(BUFFER_SIZE);
+    std::vector<char> outBuffer(BUFFER_SIZE);
+    in.rdbuf()->pubsetbuf(inBuffer.data(), BUFFER_SIZE);
+    out.rdbuf()->pubsetbuf(outBuffer.data(), BUFFER_SIZE);
+
     bool foundChromHeader = false;
     std::string line;
+    line.reserve(65536);  // Pre-allocate for large VCF lines
     if (appendInfo) {
         // we produce a valid VCF. We'll pass all # lines unmodified
         while (true) {
@@ -353,6 +366,10 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    // Disable stdio synchronization for performance
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
     if (vcfx::handle_common_flags(argc, argv, "VCFX_variant_classifier", show_help))
         return 0;
     VCFXVariantClassifier app;

@@ -158,13 +158,19 @@ static std::string_view extractGT(std::string_view sample, int gtIndex) {
 static void calculateAlleleFrequency(std::istream &in, std::ostream &out) {
     // Use larger buffer for faster I/O
     constexpr size_t BUFFER_SIZE = 1 << 20; // 1MB buffer
-    std::vector<char> buffer(BUFFER_SIZE);
-    in.rdbuf()->pubsetbuf(buffer.data(), BUFFER_SIZE);
+    std::vector<char> inBuffer(BUFFER_SIZE);
+    std::vector<char> outBuffer(BUFFER_SIZE);
+    in.rdbuf()->pubsetbuf(inBuffer.data(), BUFFER_SIZE);
+    out.rdbuf()->pubsetbuf(outBuffer.data(), BUFFER_SIZE);
 
     std::string line;
     line.reserve(65536); // Reserve space for large VCF lines with many samples
 
     bool foundChromHeader = false;
+
+    // FORMAT field caching - avoid re-parsing same format
+    std::string cachedFormat;
+    int cachedGtIndex = -1;
 
     // Print a single TSV header for our results
     out << "CHROM\tPOS\tID\tREF\tALT\tAllele_Frequency\n";
@@ -203,9 +209,12 @@ static void calculateAlleleFrequency(std::istream &in, std::ostream &out) {
         std::string_view alt = fields[4];
         std::string_view fmt = fields[8];
 
-        // Find GT index in FORMAT field
-        int gtIndex = -1;
-        {
+        // Use cached GT index if FORMAT hasn't changed (common case)
+        int gtIndex;
+        if (fmt == cachedFormat) {
+            gtIndex = cachedGtIndex;
+        } else {
+            gtIndex = -1;
             size_t start = 0;
             int idx = 0;
             while (start < fmt.size()) {
@@ -221,6 +230,8 @@ static void calculateAlleleFrequency(std::istream &in, std::ostream &out) {
                 if (end == std::string_view::npos) break;
                 start = end + 1;
             }
+            cachedFormat = std::string(fmt);
+            cachedGtIndex = gtIndex;
         }
 
         if (gtIndex < 0) {
@@ -255,6 +266,10 @@ static void calculateAlleleFrequency(std::istream &in, std::ostream &out) {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    // Disable stdio synchronization for performance
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
     if (vcfx::handle_common_flags(argc, argv, "VCFX_allele_freq_calc", show_help))
         return 0;
     // Parse arguments for help

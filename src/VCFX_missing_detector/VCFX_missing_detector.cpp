@@ -144,11 +144,17 @@ static std::string_view extractGT(std::string_view sample, int gtIndex) {
 void VCFXMissingDetector::detectMissingGenotypes(std::istream &in, std::ostream &out) {
     // Use larger buffer for faster I/O
     constexpr size_t BUFFER_SIZE = 1 << 20; // 1MB buffer
-    std::vector<char> buffer(BUFFER_SIZE);
-    in.rdbuf()->pubsetbuf(buffer.data(), BUFFER_SIZE);
+    std::vector<char> inBuffer(BUFFER_SIZE);
+    std::vector<char> outBuffer(BUFFER_SIZE);
+    in.rdbuf()->pubsetbuf(inBuffer.data(), BUFFER_SIZE);
+    out.rdbuf()->pubsetbuf(outBuffer.data(), BUFFER_SIZE);
 
     std::string line;
     line.reserve(65536); // Reserve space for large VCF lines
+
+    // FORMAT field caching - avoid re-parsing same format
+    std::string cachedFormat;
+    int cachedGtIndex = -1;
 
     while (std::getline(in, line)) {
         if (line.empty()) {
@@ -170,10 +176,13 @@ void VCFXMissingDetector::detectMissingGenotypes(std::istream &in, std::ostream 
             continue;
         }
 
-        // Find GT index in FORMAT field (index 8)
+        // Find GT index in FORMAT field - use cache
         std::string_view format = fields[8];
-        int gtIndex = -1;
-        {
+        int gtIndex;
+        if (format == cachedFormat) {
+            gtIndex = cachedGtIndex;
+        } else {
+            gtIndex = -1;
             size_t start = 0;
             int idx = 0;
             while (start < format.size()) {
@@ -189,6 +198,8 @@ void VCFXMissingDetector::detectMissingGenotypes(std::istream &in, std::ostream 
                 if (end == std::string_view::npos) break;
                 start = end + 1;
             }
+            cachedFormat = std::string(format);
+            cachedGtIndex = gtIndex;
         }
 
         // Check sample columns for missing genotypes
@@ -256,6 +267,10 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    // Disable stdio synchronization for performance
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
     if (vcfx::handle_common_flags(argc, argv, "VCFX_missing_detector", show_help))
         return 0;
     VCFXMissingDetector missingDetector;
