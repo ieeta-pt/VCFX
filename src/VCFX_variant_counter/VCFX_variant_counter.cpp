@@ -148,9 +148,9 @@ int VCFXVariantCounter::countVariants(std::istream &in) {
 }
 
 int VCFXVariantCounter::countVariantsGzip(std::istream &in) {
-    constexpr int CHUNK = 16384;
-    char inBuf[CHUNK];
-    char outBuf[CHUNK];
+    constexpr int CHUNK = 65536;  // Larger chunk for better performance
+    std::vector<char> inBuf(CHUNK);
+    std::vector<char> outBuf(CHUNK);
     z_stream strm;
     std::memset(&strm, 0, sizeof(strm));
     if (inflateInit2(&strm, 15 + 32) != Z_OK) {
@@ -160,16 +160,18 @@ int VCFXVariantCounter::countVariantsGzip(std::istream &in) {
     int count = 0;
     int lineNumber = 0;
     std::string buffer;
+    buffer.reserve(65536);
+    size_t bufferOffset = 0;  // Track consumed data offset
     int ret = Z_OK;
     do {
-        in.read(inBuf, CHUNK);
+        in.read(inBuf.data(), CHUNK);
         strm.avail_in = static_cast<uInt>(in.gcount());
         if (strm.avail_in == 0 && in.eof())
             break;
-        strm.next_in = reinterpret_cast<Bytef *>(inBuf);
+        strm.next_in = reinterpret_cast<Bytef *>(inBuf.data());
         do {
             strm.avail_out = CHUNK;
-            strm.next_out = reinterpret_cast<Bytef *>(outBuf);
+            strm.next_out = reinterpret_cast<Bytef *>(outBuf.data());
             ret = inflate(&strm, Z_NO_FLUSH);
             if (ret == Z_STREAM_ERROR || ret == Z_NEED_DICT || ret == Z_DATA_ERROR || ret == Z_MEM_ERROR) {
                 std::cerr << "Error: decompression failed.\n";
@@ -178,26 +180,36 @@ int VCFXVariantCounter::countVariantsGzip(std::istream &in) {
             }
             size_t have = CHUNK - strm.avail_out;
             if (have > 0) {
-                buffer.append(outBuf, have);
+                buffer.append(outBuf.data(), have);
+                // Process complete lines using offset tracking (O(1) per line vs O(n) erase)
                 size_t pos;
-                while ((pos = buffer.find('\n')) != std::string::npos) {
-                    std::string line = buffer.substr(0, pos);
-                    buffer.erase(0, pos + 1);
+                while ((pos = buffer.find('\n', bufferOffset)) != std::string::npos) {
+                    std::string_view line(buffer.data() + bufferOffset, pos - bufferOffset);
+                    bufferOffset = pos + 1;
                     lineNumber++;
-                    if (!processLine(line, lineNumber, count)) {
+                    if (!processLineMmap(line, lineNumber, count)) {
                         inflateEnd(&strm);
                         return -1;
                     }
+                }
+                // Erase consumed data only when buffer gets large
+                if (bufferOffset > 0 && bufferOffset > buffer.size() / 2) {
+                    buffer.erase(0, bufferOffset);
+                    bufferOffset = 0;
                 }
             }
         } while (strm.avail_out == 0);
     } while (ret != Z_STREAM_END);
 
-    if (!buffer.empty()) {
-        lineNumber++;
-        if (!processLine(buffer, lineNumber, count)) {
-            inflateEnd(&strm);
-            return -1;
+    // Process remaining data
+    if (bufferOffset < buffer.size()) {
+        std::string_view remaining(buffer.data() + bufferOffset, buffer.size() - bufferOffset);
+        if (!remaining.empty()) {
+            lineNumber++;
+            if (!processLineMmap(remaining, lineNumber, count)) {
+                inflateEnd(&strm);
+                return -1;
+            }
         }
     }
     inflateEnd(&strm);
