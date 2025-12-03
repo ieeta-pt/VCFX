@@ -33,7 +33,8 @@ def generate_tool_command(task: dict) -> str:
     elif tool == "VCFTOOLS":
         if "count" in task["name"] or "stress" in task["name"]:
             # vcftools doesn't have --counts, so we'll count sites using --freq
-            return f"$({tool}) --vcf {input_file} --freq --stdout 2>/dev/null | grep -v '^CHROM' | wc -l"
+            cmd = f"$({tool}) --vcf {input_file} --freq --stdout 2>/dev/null"
+            return f"{cmd} | grep -v '^CHROM' | wc -l"
         elif "allele_freq" in task["name"]:
             return f"$({tool}) --vcf {input_file} --freq --stdout"
         elif "classify" in task["name"]:
@@ -63,7 +64,7 @@ def generate_conditional_rule(task: dict) -> str:
     input_file = f"$(DATA_DIR)/{task['input']}"
     output_file = f"results/{task_name}.csv"
     command = generate_tool_command(task)
-    
+
     if tool in ["BCFTOOLS", "VCFTOOLS", "GATK", "VCFLIB"]:
         # For comparison tools, make the rule conditional on tool availability
         tool_check = tool.lower()
@@ -73,7 +74,7 @@ def generate_conditional_rule(task: dict) -> str:
             # vcflib tools have different names
             vcflib_command = task.get("command", "")
             tool_check = vcflib_command
-        
+
         return f"""
 {output_file}: {input_file}
 \t@if command -v {tool_check} >/dev/null 2>&1; then \\
@@ -99,12 +100,17 @@ def main(task_yaml: str) -> None:
     print("RESULTS_DIR := $(ROOT_DIR)/benchmarks/results")
     print("BENCH_SCRIPTS := $(ROOT_DIR)/benchmarks/scripts")
     print("VCFX_BIN_DIR ?= $(ROOT_DIR)/build/src")
-    print("VCFX_VARIANT_COUNTER := $(VCFX_BIN_DIR)/VCFX_variant_counter/VCFX_variant_counter")
-    print("VCFX_ALLELE_FREQ_CALC := $(VCFX_BIN_DIR)/VCFX_allele_freq_calc/VCFX_allele_freq_calc")
-    print("VCFX_VARIANT_CLASSIFIER := $(VCFX_BIN_DIR)/VCFX_variant_classifier/VCFX_variant_classifier")
-    print("VCFX_MISSING_DETECTOR := $(VCFX_BIN_DIR)/VCFX_missing_detector/VCFX_missing_detector")
-    print("VCFX_RECORD_FILTER := $(VCFX_BIN_DIR)/VCFX_record_filter/VCFX_record_filter")
-    print("VCFX_VALIDATOR := $(VCFX_BIN_DIR)/VCFX_validator/VCFX_validator")
+    tools = [
+        "VCFX_variant_counter",
+        "VCFX_allele_freq_calc",
+        "VCFX_variant_classifier",
+        "VCFX_missing_detector",
+        "VCFX_record_filter",
+        "VCFX_validator",
+    ]
+    for tool in tools:
+        var = tool.upper()
+        print(f"{var} := $(VCFX_BIN_DIR)/{tool}/{tool}")
     print("BCFTOOLS ?= bcftools")
     print("VCFTOOLS ?= vcftools")
     print("GATK ?= gatk")
@@ -115,7 +121,7 @@ def main(task_yaml: str) -> None:
     # Generate task list
     names = " ".join(t["name"] for t in tasks)
     print(f"TASKS := {names}")
-    
+
     # Generate rules for each task
     for task in tasks:
         print(generate_conditional_rule(task))
