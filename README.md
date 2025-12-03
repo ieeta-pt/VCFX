@@ -84,6 +84,18 @@ Run tests with `pytest` and `ctest` from the build directory. Code style is enfo
 pre-commit install
 ```
 
+## Benchmarks
+
+Install the benchmark dependencies with conda as described in section 5 of this README. Then run:
+
+```bash
+cd benchmarks
+make datasets
+make tools-check
+make all
+```
+
+The runtime summary will be written to `benchmarks/results.csv` and visualization notebooks are under `benchmarks/notebooks/`.
 ## Citation
 
 If you use VCFX in your research please cite:

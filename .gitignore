@@ -64,3 +64,45 @@ tmp/
 .mypy_cache/
 .ruff_cache/
 python/VERSION
+__pycache__/
+
+# Benchmark artifacts
+benchmarks/data/
+benchmarks/results/
+benchmarks/tasks.mk
+benchmarks/results.csv
+benchmarks/*.png
+benchmarks/*.pdf
+benchmarks/*.csv
+benchmarks/*.log
+benchmarks/*.md
+benchmarks/out.log
+benchmarks/harness_small.mk
+benchmarks/tasks_small.mk
+benchmarks/tasks_small.yaml
+benchmarks/scripts/*.py
+!benchmarks/scripts/run_task.sh
+!benchmarks/scripts/run_task_detailed.sh
+
+# Benchmark plotting scripts (temporary)
+benchmarks/create_*.py
+benchmarks/generate_*.py
+
+!benchmarks/Makefile
+!benchmarks/harness.mk
+!benchmarks/mk_tasks.py
+
+# Python build artifacts
+python/dist/
+python/*.egg-info/
+*.egg-info/
+dist/
+
+# Testing artifacts
+Testing/
+validation_report.txt
+tasks.mk
+benchmark_progress.log
+
+# Compressed test files (generated)
+tests/data/*.vcf.gz

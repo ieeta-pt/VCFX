@@ -50,6 +50,21 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
 endif()
 
+# Enable Link-Time Optimization for Release builds (significant perf improvement)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ipo_supported OUTPUT ipo_output)
+    if(ipo_supported)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+        message(STATUS "LTO enabled for Release build")
+    else()
+        message(STATUS "LTO not supported: ${ipo_output}")
+    endif()
+endif()
+
+# Find threading library
+find_package(Threads REQUIRED)
+
 # Locate zlib if we need it (some tools do)
 # On macOS with Homebrew, you might need to specify paths. E.g.:
 # list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/zlib" "/opt/homebrew/opt/zlib")

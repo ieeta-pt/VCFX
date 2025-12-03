@@ -8,3 +8,4 @@ Thank you for contributing to VCFX! Before submitting your pull request, please 
 - [ ] Documentation has been updated where applicable (e.g. `README.md`, `docs/*`).
 
 Provide a brief description of the changes below.
+

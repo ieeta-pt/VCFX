@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 // ---------------------------------------------------------
@@ -25,72 +26,151 @@ static void printHelp() {
 }
 
 // ---------------------------------------------------------
-// Utility: split a string by a delimiter
+// Utility: fast split using string_view (C++17)
 // ---------------------------------------------------------
+static std::vector<std::string_view> split_sv(std::string_view s, char delimiter) {
+    std::vector<std::string_view> tokens;
+    tokens.reserve(16);
+    size_t start = 0;
+    size_t end;
+    while ((end = s.find(delimiter, start)) != std::string_view::npos) {
+        tokens.push_back(s.substr(start, end - start));
+        start = end + 1;
+    }
+    if (start <= s.size()) {
+        tokens.push_back(s.substr(start));
+    }
+    return tokens;
+}
+
+// Legacy split for compatibility
 static std::vector<std::string> split(const std::string &s, char delimiter) {
     std::vector<std::string> tokens;
-    std::stringstream ss(s);
-    std::string token;
-    while (std::getline(ss, token, delimiter)) {
-        tokens.push_back(token);
+    tokens.reserve(16);
+    size_t start = 0;
+    size_t end;
+    while ((end = s.find(delimiter, start)) != std::string::npos) {
+        tokens.emplace_back(s, start, end - start);
+        start = end + 1;
+    }
+    if (start <= s.size()) {
+        tokens.emplace_back(s, start);
     }
     return tokens;
 }
 
 // ---------------------------------------------------------
 // parseGenotype: counts how many are alt vs total among numeric alleles
+// Zero-allocation version using string_view
 // ---------------------------------------------------------
-static void parseGenotype(const std::string &genotype, int &alt_count, int &total_count) {
+static void parseGenotype(std::string_view genotype, int &alt_count, int &total_count) {
     // e.g. genotype might be "0/1" or "2|3", etc.
-    // First, unify the separators by replacing '|' with '/'
-    std::string gt = genotype;
-    for (char &c : gt) {
-        if (c == '|')
-            c = '/';
-    }
+    size_t start = 0;
+    size_t len = genotype.size();
 
-    // Split on '/'
-    auto alleles = split(gt, '/');
+    while (start < len) {
+        // Find next separator (/ or |)
+        size_t end = start;
+        while (end < len && genotype[end] != '/' && genotype[end] != '|') {
+            end++;
+        }
 
-    for (const auto &allele : alleles) {
+        std::string_view allele = genotype.substr(start, end - start);
+        start = end + 1;
+
         if (allele.empty() || allele == ".") {
-            // Skip missing
             continue;
         }
-        // Check if it's numeric
+
+        // Fast numeric check and value extraction
+        bool isZero = true;
         bool numeric = true;
         for (char c : allele) {
-            if (!std::isdigit(c)) {
+            if (!std::isdigit(static_cast<unsigned char>(c))) {
                 numeric = false;
                 break;
             }
+            if (c != '0') {
+                isZero = false;
+            }
         }
+
         if (!numeric) {
-            // Not a numeric allele -> skip
             continue;
         }
-        // If it's "0", it's reference; otherwise it's alt
-        if (allele == "0") {
-            // The reference allele still contributes to the total
-            total_count += 1;
-        } else {
-            // Any non-zero numeric allele => alt
-            alt_count += 1;
-            total_count += 1;
+
+        total_count++;
+        if (!isZero) {
+            alt_count++;
         }
     }
 }
 
 // ---------------------------------------------------------
+// Helper: find nth tab position in a line (0-indexed)
+// Returns position after the tab, or npos if not found
+// ---------------------------------------------------------
+static size_t findNthTab(const std::string &line, int n) {
+    size_t pos = 0;
+    for (int i = 0; i < n && pos != std::string::npos; ++i) {
+        pos = line.find('\t', pos);
+        if (pos != std::string::npos) pos++;
+    }
+    return pos;
+}
+
+// ---------------------------------------------------------
+// Helper: extract field at given index using string_view
+// ---------------------------------------------------------
+static std::string_view getField(const std::string &line, size_t start, size_t &next) {
+    size_t end = line.find('\t', start);
+    if (end == std::string::npos) {
+        next = std::string::npos;
+        return std::string_view(line.data() + start, line.size() - start);
+    }
+    next = end + 1;
+    return std::string_view(line.data() + start, end - start);
+}
+
+// ---------------------------------------------------------
+// Helper: extract GT from sample field at given gtIndex
+// ---------------------------------------------------------
+static std::string_view extractGT(std::string_view sample, int gtIndex) {
+    size_t start = 0;
+    for (int i = 0; i < gtIndex && start < sample.size(); ++i) {
+        size_t colon = sample.find(':', start);
+        if (colon == std::string_view::npos) {
+            return std::string_view();
+        }
+        start = colon + 1;
+    }
+    size_t end = sample.find(':', start);
+    if (end == std::string_view::npos) {
+        return sample.substr(start);
+    }
+    return sample.substr(start, end - start);
+}
+
+// ---------------------------------------------------------
 // Main calculation: read VCF from 'in', write results to 'out'
+// Optimized for minimal allocations
 // ---------------------------------------------------------
 static void calculateAlleleFrequency(std::istream &in, std::ostream &out) {
-    std::string line;
+    // Use larger buffer for faster I/O
+    constexpr size_t BUFFER_SIZE = 1 << 20; // 1MB buffer
+    std::vector<char> inBuffer(BUFFER_SIZE);
+    std::vector<char> outBuffer(BUFFER_SIZE);
+    in.rdbuf()->pubsetbuf(inBuffer.data(), BUFFER_SIZE);
+    out.rdbuf()->pubsetbuf(outBuffer.data(), BUFFER_SIZE);
 
-    // We'll track how many samples are in the VCF, though we only need it
-    // to confirm that columns 10..N contain sample data
-    int sample_count = 0;
+    std::string line;
+    line.reserve(65536); // Reserve space for large VCF lines with many samples
+
     bool foundChromHeader = false;
+
+    // FORMAT field caching - avoid re-parsing same format
+    std::string cachedFormat;
+    int cachedGtIndex = -1;
 
     // Print a single TSV header for our results
     out << "CHROM\tPOS\tID\tREF\tALT\tAllele_Frequency\n";
@@ -101,79 +181,82 @@ static void calculateAlleleFrequency(std::istream &in, std::ostream &out) {
         }
 
         if (line[0] == '#') {
-            // If this is the #CHROM line, figure out how many samples
-            if (line.rfind("#CHROM", 0) == 0) {
+            if (line.size() >= 6 && line.compare(0, 6, "#CHROM") == 0) {
                 foundChromHeader = true;
-                auto fields = split(line, '\t');
-                if (fields.size() > 9) {
-                    sample_count = static_cast<int>(fields.size() - 9);
-                }
             }
-            // Skip printing VCF headers in our output
             continue;
         }
 
-        // We expect #CHROM line before actual data lines
         if (!foundChromHeader) {
-            std::cerr << "Warning: Data line encountered before #CHROM header. Skipping line:\n" << line << "\n";
+            std::cerr << "Warning: Data line encountered before #CHROM header. Skipping.\n";
             continue;
         }
 
-        // Split the data line
-        auto fields = split(line, '\t');
+        // Parse fields using string_view for efficiency
+        std::string_view lineView(line);
+        auto fields = split_sv(lineView, '\t');
+
         if (fields.size() < 9) {
-            std::cerr << "Warning: Skipping invalid VCF line (fewer than 9 fields):\n" << line << "\n";
+            std::cerr << "Warning: Skipping invalid VCF line (fewer than 9 fields).\n";
             continue;
         }
 
-        // Standard VCF columns:
-        //  0:CHROM, 1:POS, 2:ID, 3:REF, 4:ALT, 5:QUAL, 6:FILTER, 7:INFO, 8:FORMAT, 9+:samples
-        const std::string &chrom = fields[0];
-        const std::string &pos = fields[1];
-        const std::string &id = fields[2];
-        const std::string &ref = fields[3];
-        const std::string &alt = fields[4];
-        const std::string &fmt = fields[8];
+        // Standard VCF columns via string_view (no allocation)
+        std::string_view chrom = fields[0];
+        std::string_view pos = fields[1];
+        std::string_view id = fields[2];
+        std::string_view ref = fields[3];
+        std::string_view alt = fields[4];
+        std::string_view fmt = fields[8];
 
-        // Look for the "GT" field index in the FORMAT column
-        auto formatFields = split(fmt, ':');
-        int gtIndex = -1;
-        for (size_t i = 0; i < formatFields.size(); ++i) {
-            if (formatFields[i] == "GT") {
-                gtIndex = static_cast<int>(i);
-                break;
+        // Use cached GT index if FORMAT hasn't changed (common case)
+        int gtIndex;
+        if (fmt == cachedFormat) {
+            gtIndex = cachedGtIndex;
+        } else {
+            gtIndex = -1;
+            size_t start = 0;
+            int idx = 0;
+            while (start < fmt.size()) {
+                size_t end = fmt.find(':', start);
+                std::string_view field = (end == std::string_view::npos)
+                    ? fmt.substr(start)
+                    : fmt.substr(start, end - start);
+                if (field == "GT") {
+                    gtIndex = idx;
+                    break;
+                }
+                idx++;
+                if (end == std::string_view::npos) break;
+                start = end + 1;
             }
+            cachedFormat = std::string(fmt);
+            cachedGtIndex = gtIndex;
         }
+
         if (gtIndex < 0) {
-            // No GT field found => we cannot parse genotypes
-            // skip this line
             continue;
         }
 
         int alt_count = 0;
         int total_count = 0;
 
-        // For each sample column (starting at index 9)
+        // Process each sample column (starting at index 9)
         for (size_t i = 9; i < fields.size(); ++i) {
-            // example sample string: "0/1:30,10:99:..." if GT is first
-            auto sampleTokens = split(fields[i], ':');
-            if (static_cast<size_t>(gtIndex) >= sampleTokens.size()) {
-                // This sample has no GT data
-                continue;
+            std::string_view gt = extractGT(fields[i], gtIndex);
+            if (!gt.empty()) {
+                parseGenotype(gt, alt_count, total_count);
             }
-            // parse its genotype
-            parseGenotype(sampleTokens[gtIndex], alt_count, total_count);
         }
 
-        // Compute allele frequency = alt_count / total_count
-        double freq = 0.0;
-        if (total_count > 0) {
-            freq = static_cast<double>(alt_count) / static_cast<double>(total_count);
-        }
+        // Compute allele frequency
+        double freq = (total_count > 0)
+            ? static_cast<double>(alt_count) / static_cast<double>(total_count)
+            : 0.0;
 
-        // Print the row with a fixed decimal precision
-        out << chrom << "\t" << pos << "\t" << id << "\t" << ref << "\t" << alt << "\t" << std::fixed
-            << std::setprecision(4) << freq << "\n";
+        // Print the row - need to convert string_view to output
+        out << chrom << "\t" << pos << "\t" << id << "\t" << ref << "\t" << alt << "\t"
+            << std::fixed << std::setprecision(4) << freq << "\n";
     }
 }
 
@@ -183,6 +266,10 @@ static void calculateAlleleFrequency(std::istream &in, std::ostream &out) {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    // Disable stdio synchronization for performance
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
     if (vcfx::handle_common_flags(argc, argv, "VCFX_allele_freq_calc", show_help))
         return 0;
     // Parse arguments for help

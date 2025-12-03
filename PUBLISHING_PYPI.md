@@ -154,3 +154,5 @@ After publishing:
 2. Create a GitHub release if not already done
 3. Announce the release to users
 4. Update any dependent projects 
+
+For additional guidance or questions, consult the maintainers via GitHub issues.

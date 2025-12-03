@@ -1,0 +1,234 @@
+tasks:
+  # =============================================================================
+  # VARIANT COUNTING BENCHMARKS
+  # =============================================================================
+  - name: vcfx_count_chr20
+    tool: VCFX_VARIANT_COUNTER
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Count variants in chr20 using VCFX"
+    
+  - name: bcftools_count_chr20
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS\\n'"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Count variants in chr20 using bcftools"
+    comparison_to: vcfx_count_chr20
+    
+  - name: vcftools_count_chr20
+    tool: VCFTOOLS
+    command: "--freq"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Count variants in chr20 using vcftools"
+    comparison_to: vcfx_count_chr20
+
+  # =============================================================================
+  # ALLELE FREQUENCY CALCULATION BENCHMARKS
+  # =============================================================================
+  - name: vcfx_allele_freq_chr20
+    tool: VCFX_ALLELE_FREQ_CALC
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Calculate allele frequencies for chr20 using VCFX"
+    
+  - name: vcftools_allele_freq_chr20
+    tool: VCFTOOLS
+    command: "--vcf --freq"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Calculate allele frequencies for chr20 using vcftools"
+    comparison_to: vcfx_allele_freq_chr20
+    
+  - name: bcftools_allele_freq_chr20
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS\\t%REF\\t%ALT\\t%AC\\t%AN\\n'"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Extract allele frequencies for chr20 using bcftools"
+    comparison_to: vcfx_allele_freq_chr20
+
+  # =============================================================================
+  # VARIANT CLASSIFICATION BENCHMARKS - DISABLED DUE TO FORMAT INCOMPATIBILITY
+  # =============================================================================
+  # NOTE: VCFX_variant_classifier expects 'chr20' format but data uses '20'
+
+  # =============================================================================
+  # MISSING DATA DETECTION BENCHMARKS
+  # =============================================================================
+  - name: vcfx_missing_chr20
+    tool: VCFX_MISSING_DETECTOR
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Detect missing data in chr20 using VCFX"
+    
+  - name: vcftools_missing_chr20
+    tool: VCFTOOLS
+    command: "--vcf --missing-indv"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Detect missing data in chr20 using vcftools"
+    comparison_to: vcfx_missing_chr20
+    
+  - name: bcftools_missing_chr20
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS[\\t%GT]\\n'"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Extract genotype data to detect missing calls using bcftools"
+    comparison_to: vcfx_missing_chr20
+
+  # =============================================================================
+  # FILTERING BENCHMARKS
+  # =============================================================================
+  - name: bcftools_filter_chr20
+    tool: BCFTOOLS
+    command: "view -i 'QUAL>20'"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Filter variants in chr20 using bcftools"
+    
+  - name: vcftools_filter_chr20
+    tool: VCFTOOLS
+    command: "--vcf --minQ 20"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Filter variants in chr20 using vcftools"
+
+  # =============================================================================
+  # PERFORMANCE STRESS TESTS - REPEATED RUNS
+  # =============================================================================
+  - name: vcfx_stress_chr20_run1
+    tool: VCFX_VARIANT_COUNTER
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 1: Count variants in chr20"
+    
+  - name: vcfx_stress_chr20_run2
+    tool: VCFX_VARIANT_COUNTER
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 2: Count variants in chr20"
+    
+  - name: vcfx_stress_chr20_run3
+    tool: VCFX_VARIANT_COUNTER
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 3: Count variants in chr20"
+    
+  - name: bcftools_stress_chr20_run1
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS\\n'"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 1: Count variants in chr20 using bcftools"
+    
+  - name: bcftools_stress_chr20_run2
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS\\n'"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 2: Count variants in chr20 using bcftools"
+    
+  - name: bcftools_stress_chr20_run3
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS\\n'"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 3: Count variants in chr20 using bcftools"
+    
+  - name: vcftools_stress_chr20_run1
+    tool: VCFTOOLS
+    command: "--freq"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 1: Count variants in chr20 using vcftools"
+    
+  - name: vcftools_stress_chr20_run2
+    tool: VCFTOOLS
+    command: "--freq"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 2: Count variants in chr20 using vcftools"
+    
+  - name: vcftools_stress_chr20_run3
+    tool: VCFTOOLS
+    command: "--freq"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Stress test run 3: Count variants in chr20 using vcftools"
+
+  # =============================================================================
+  # MULTI-CHROMOSOME BENCHMARKS
+  # =============================================================================
+  - name: vcfx_count_chr21
+    tool: VCFX_VARIANT_COUNTER
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Count variants in chr21 using VCFX"
+    
+  - name: bcftools_count_chr21
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS\\n'"
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Count variants in chr21 using bcftools"
+    comparison_to: vcfx_count_chr21
+    
+  - name: vcftools_count_chr21
+    tool: VCFTOOLS
+    command: "--freq"
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Count variants in chr21 using vcftools"
+    comparison_to: vcfx_count_chr21
+
+  # =============================================================================
+  # COMPREHENSIVE ALLELE FREQUENCY TESTS
+  # =============================================================================
+  - name: vcfx_allele_freq_chr21
+    tool: VCFX_ALLELE_FREQ_CALC
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Calculate allele frequencies for chr21 using VCFX"
+
+  - name: vcftools_allele_freq_chr21
+    tool: VCFTOOLS
+    command: "--vcf --freq"
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Calculate allele frequencies for chr21 using vcftools"
+    comparison_to: vcfx_allele_freq_chr21
+
+  - name: bcftools_allele_freq_chr21
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS\\t%REF\\t%ALT\\t%AC\\t%AN\\n'"
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Extract allele frequencies for chr21 using bcftools"
+    comparison_to: vcfx_allele_freq_chr21
+
+  # =============================================================================
+  # VCF VALIDATION BENCHMARKS
+  # =============================================================================
+  - name: vcfx_validate_chr21_stdin
+    tool: VCFX_VALIDATOR
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Validate chr21 VCF using VCFX (stdin mode)"
+
+  - name: vcfx_validate_chr21_mmap
+    tool: VCFX_VALIDATOR_MMAP
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Validate chr21 VCF using VCFX (memory-mapped mode)"
+
+  - name: bcftools_validate_chr21
+    tool: BCFTOOLS
+    command: "view -H"
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Parse chr21 VCF header using bcftools (validation baseline)"
+    comparison_to: vcfx_validate_chr21_stdin
+
+  - name: vcfx_validate_chr20_stdin
+    tool: VCFX_VALIDATOR
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Validate chr20 VCF using VCFX (stdin mode)"
+
+  - name: vcfx_validate_chr20_mmap
+    tool: VCFX_VALIDATOR_MMAP
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Validate chr20 VCF using VCFX (memory-mapped mode)"
+
+  - name: bcftools_validate_chr20
+    tool: BCFTOOLS
+    command: "view -H"
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Parse chr20 VCF header using bcftools (validation baseline)"
+    comparison_to: vcfx_validate_chr20_stdin
+
+  # =============================================================================
+  # WARM-UP RUNS (prime file cache before main benchmarks)
+  # =============================================================================
+  - name: warmup_chr20
+    tool: VCFX_VARIANT_COUNTER
+    input: chr20.1kg.phase3.v5a.vcf
+    description: "Warm-up run to prime file cache for chr20"
+
+  - name: warmup_chr21
+    tool: VCFX_VARIANT_COUNTER
+    input: chr21.1kg.phase3.v5a.vcf
+    description: "Warm-up run to prime file cache for chr21"

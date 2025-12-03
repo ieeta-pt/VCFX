@@ -140,3 +140,4 @@ For each sample's genotype, the tool performs the following normalization steps:
 - No option to adjust concordance thresholds (e.g., requiring 90% sample agreement)
 - Cannot output detailed per-sample information for discordant variants 
 
+
