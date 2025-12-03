@@ -1,6 +1,21 @@
 [data-md-color-scheme="slate"] {
-  --md-primary-fg-color: #90caf9;
-  --md-accent-fg-color: #90caf9;
+  --md-primary-fg-color: #1a237e;
+  --md-primary-fg-color--light: #3949ab;
+  --md-primary-fg-color--dark: #0d1442;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #ffffffb3;
+  --md-accent-fg-color: #82b1ff;
   --md-default-fg-color: #e0e0e0;
   --md-default-bg-color: #121212;
+}
+
+/* Header text in dark mode */
+[data-md-color-scheme="slate"] .md-header {
+  background-color: #1a237e;
+}
+
+[data-md-color-scheme="slate"] .md-header__title,
+[data-md-color-scheme="slate"] .md-header__button,
+[data-md-color-scheme="slate"] .md-header nav {
+  color: #ffffff;
 }
