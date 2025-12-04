@@ -138,7 +138,9 @@ nav:
       - VCFX_quality_adjuster: processing/VCFX_quality_adjuster.md
       - VCFX_haplotype_phaser: processing/VCFX_haplotype_phaser.md
       - VCFX_haplotype_extractor: processing/VCFX_haplotype_extractor.md
-  - Python API: python_api.md
+  - API Reference:
+    - C++ API: cpp_api.md
+    - Python API: python_api.md
   - Contributing: CONTRIBUTING.md
   - Citation: citation.md
   - License: LICENSE.md
