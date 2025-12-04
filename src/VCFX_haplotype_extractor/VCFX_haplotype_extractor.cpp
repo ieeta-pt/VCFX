@@ -53,6 +53,7 @@ bool HaplotypeExtractor::parseHeader(const std::string &headerLine) {
 // ---------------------------------------------------------------------
 std::vector<std::string> HaplotypeExtractor::splitString(const std::string &str, char delimiter) {
     std::vector<std::string> tokens;
+    tokens.reserve(16);
     std::stringstream ss(str);
     std::string tmp;
     while (std::getline(ss, tmp, delimiter)) {
@@ -357,6 +358,8 @@ bool HaplotypeExtractor::processVariantStreaming(const std::vector<std::string> 
 bool HaplotypeExtractor::extractHaplotypes(std::istream &in, std::ostream &out) {
     bool foundHeader = false;
     std::vector<HaplotypeBlock> haplotypeBlocks;
+    std::vector<std::string> fields;
+    fields.reserve(16);
 
     std::string line;
     while (std::getline(in, line)) {
@@ -375,7 +378,7 @@ bool HaplotypeExtractor::extractHaplotypes(std::istream &in, std::ostream &out) 
             std::cerr << "Error: no #CHROM header found before data.\n";
             return false;
         }
-        auto fields = splitString(line, '\t');
+        vcfx::split_tabs(line, fields);
         processVariant(fields, haplotypeBlocks);
     }
 
@@ -396,6 +399,8 @@ bool HaplotypeExtractor::extractHaplotypesStreaming(std::istream &in, std::ostre
     bool headerWritten = false;
     HaplotypeBlock currentBlock;
     bool hasCurrentBlock = false;
+    std::vector<std::string> fields;
+    fields.reserve(16);
 
     std::string line;
     while (std::getline(in, line)) {
@@ -418,7 +423,7 @@ bool HaplotypeExtractor::extractHaplotypesStreaming(std::istream &in, std::ostre
             return false;
         }
 
-        auto fields = splitString(line, '\t');
+        vcfx::split_tabs(line, fields);
         processVariantStreaming(fields, currentBlock, hasCurrentBlock, out, headerWritten);
     }
 

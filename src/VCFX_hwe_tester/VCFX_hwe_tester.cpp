@@ -197,6 +197,8 @@ double VCFXHWETester::calculateHWE(int homRef, int het, int homAlt) {
 
 void VCFXHWETester::performHWE(std::istream &in) {
     std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);
     // output header
     std::cout << "CHROM\tPOS\tID\tREF\tALT\tHWE_pvalue\n";
     while (std::getline(in, line)) {
@@ -204,14 +206,7 @@ void VCFXHWETester::performHWE(std::istream &in) {
             continue;
         if (line[0] == '#')
             continue;
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string f;
-            while (std::getline(ss, f, '\t')) {
-                fields.push_back(f);
-            }
-        }
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 10)
             continue;
         std::string chrom = fields[0];

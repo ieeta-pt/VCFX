@@ -129,12 +129,16 @@ static void calculateConcordance(std::istream &in, std::ostream &out, const std:
     size_t discordantCount = 0;
     size_t skippedBecauseNoGenotypes = 0; // if all samples are missing/un-parseable
 
+    // Declare fields vector outside loop for reuse
+    std::vector<std::string> headers;
+    headers.reserve(16);
+
     // 1) Read until we find the #CHROM line
     //    then parse sample names from columns 9+
     while (!gotChromHeader && std::getline(in, line)) {
         if (line.rfind("#CHROM", 0) == 0) {
             // parse columns
-            auto headers = split(line, '\t');
+            vcfx::split_tabs(line, headers);
             // from index=9 onwards => sample names
             for (size_t i = 9; i < headers.size(); ++i) {
                 sampleNames.push_back(headers[i]);
@@ -164,13 +168,17 @@ static void calculateConcordance(std::istream &in, std::ostream &out, const std:
         return;
     }
 
+    // Declare fields vector outside loop for reuse
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     // 2) Now read the data lines
     while (std::getline(in, line)) {
         // skip header lines or empties
         if (line.empty() || line[0] == '#') {
             continue;
         }
-        auto fields = split(line, '\t');
+        vcfx::split_tabs(line, fields);
         // minimal VCF => 8 columns + samples => need at least 10 if there's 1 sample
         if (fields.size() < 8) {
             // invalid line

@@ -17,11 +17,11 @@ echo "=== Testing VCFX_diff_tool ==="
 
 # Test 1: Basic functionality with identical files
 echo "Test 1: Basic functionality with identical files"
-cat > file1.vcf << EOF
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
-1       100     rs1     A       G       100     PASS    .
-1       200     rs2     C       T       100     PASS    .
-2       300     rs3     G       A       100     PASS    .
+cat > file1.vcf << 'EOF'
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	100	rs1	A	G	100	PASS	.
+1	200	rs2	C	T	100	PASS	.
+2	300	rs3	G	A	100	PASS	.
 EOF
 
 cp file1.vcf file2.vcf
@@ -37,13 +37,13 @@ echo "✓ Test 1 passed"
 
 # Test 2: Files with different variants
 echo "Test 2: Files with different variants"
-cat > file2.vcf << EOF
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
-1       100     rs1     A       G       100     PASS    .
-1       200     rs2     C       T       100     PASS    .
-2       300     rs3     G       A       100     PASS    .
-2       400     rs4     T       C       100     PASS    .
-3       500     rs5     A       G       100     PASS    .
+cat > file2.vcf << 'EOF'
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	100	rs1	A	G	100	PASS	.
+1	200	rs2	C	T	100	PASS	.
+2	300	rs3	G	A	100	PASS	.
+2	400	rs4	T	C	100	PASS	.
+3	500	rs5	A	G	100	PASS	.
 EOF
 
 output=$("$DIFF_TOOL" --file1 file1.vcf --file2 file2.vcf)
@@ -69,14 +69,14 @@ echo "✓ Test 2 passed"
 
 # Test 3: Multi-allelic variant handling
 echo "Test 3: Multi-allelic variant handling"
-cat > file1.vcf << EOF
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
-1       100     rs1     A       G,T     100     PASS    .
+cat > file1.vcf << 'EOF'
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	100	rs1	A	G,T	100	PASS	.
 EOF
 
-cat > file2.vcf << EOF
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
-1       100     rs1     A       T,G     100     PASS    .
+cat > file2.vcf << 'EOF'
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	100	rs1	A	T,G	100	PASS	.
 EOF
 
 output=$("$DIFF_TOOL" --file1 file1.vcf --file2 file2.vcf)
@@ -90,19 +90,19 @@ echo "✓ Test 3 passed"
 
 # Test 4: Header handling
 echo "Test 4: Header handling"
-cat > file1.vcf << EOF
+cat > file1.vcf << 'EOF'
 ##fileformat=VCFv4.2
 ##contig=<ID=1,length=1000>
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
-1       100     rs1     A       G       100     PASS    .
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	100	rs1	A	G	100	PASS	.
 EOF
 
-cat > file2.vcf << EOF
+cat > file2.vcf << 'EOF'
 ##fileformat=VCFv4.2
 ##contig=<ID=1,length=1000>
 ##contig=<ID=2,length=2000>
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
-1       100     rs1     A       G       100     PASS    .
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	100	rs1	A	G	100	PASS	.
 EOF
 
 output=$("$DIFF_TOOL" --file1 file1.vcf --file2 file2.vcf)
@@ -116,17 +116,17 @@ echo "✓ Test 4 passed"
 
 # Test 5: Invalid VCF line handling
 echo "Test 5: Invalid VCF line handling"
-cat > file1.vcf << EOF
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
-1       100     rs1     A       G       100     PASS    .
+cat > file1.vcf << 'EOF'
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	100	rs1	A	G	100	PASS	.
 invalid_line
-1       200     rs2     C       T       100     PASS    .
+1	200	rs2	C	T	100	PASS	.
 EOF
 
-cat > file2.vcf << EOF
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
-1       100     rs1     A       G       100     PASS    .
-1       200     rs2     C       T       100     PASS    .
+cat > file2.vcf << 'EOF'
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	100	rs1	A	G	100	PASS	.
+1	200	rs2	C	T	100	PASS	.
 EOF
 
 output=$("$DIFF_TOOL" --file1 file1.vcf --file2 file2.vcf)

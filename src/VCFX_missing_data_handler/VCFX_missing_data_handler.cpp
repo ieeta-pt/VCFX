@@ -7,6 +7,8 @@
 #include <getopt.h>
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 
 /**
  * @brief Displays the help message for the missing data handler tool.
@@ -97,6 +99,10 @@ static bool processVCF(std::istream &in, std::ostream &out, bool fillMissing, co
     std::string line;
     bool header_found = false;
 
+    // Reusable vector for tab splitting
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(in, line)) {
         if (line.empty()) {
             out << "\n";
@@ -116,7 +122,7 @@ static bool processVCF(std::istream &in, std::ostream &out, bool fillMissing, co
         }
 
         // parse columns
-        auto fields = splitString(line, '\t');
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 9) {
             // invalid => pass as is
             out << line << "\n";

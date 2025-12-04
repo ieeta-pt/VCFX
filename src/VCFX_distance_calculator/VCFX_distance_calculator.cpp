@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <limits>
-#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -30,7 +29,7 @@ void printHelp() {
 // parseVCFLine: Parses a VCF data line and extracts CHROM and POS.
 // Returns false if the line is a header or cannot be parsed.
 // --------------------------------------------------------------------------
-bool parseVCFLine(const std::string &line, VCFVariant &variant) {
+bool parseVCFLine(const std::string &line, VCFVariant &variant, std::vector<std::string> &fields) {
     // Skip header lines or empty lines.
     if (line.empty() || line[0] == '#')
         return false;
@@ -43,22 +42,21 @@ bool parseVCFLine(const std::string &line, VCFVariant &variant) {
         pos += 1; // Move past the tab
     }
 
-    std::stringstream ss(fixed_line);
-    std::string chrom, pos_str;
+    vcfx::split_tabs(fixed_line, fields);
 
     // We expect at least two tab-delimited columns: CHROM and POS.
-    if (!std::getline(ss, chrom, '\t') || !std::getline(ss, pos_str, '\t')) {
+    if (fields.size() < 2) {
         return false;
     }
 
     // Reject specific invalid chromosome names
-    if (chrom == "not_a_chromosome") {
+    if (fields[0] == "not_a_chromosome") {
         return false;
     }
 
     try {
-        variant.chrom = chrom;
-        variant.pos = std::stoi(pos_str);
+        variant.chrom = fields[0];
+        variant.pos = std::stoi(fields[1]);
     } catch (...) {
         return false;
     }
@@ -90,6 +88,10 @@ bool calculateDistances(std::istream &in, std::ostream &out) {
     // Map to accumulate summary statistics per chromosome.
     std::unordered_map<std::string, ChromStats> chromStats;
 
+    // Reuse vector across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     // Output TSV header.
     out << "CHROM\tPOS\tPREV_POS\tDISTANCE\n";
 
@@ -111,7 +113,7 @@ bool calculateDistances(std::istream &in, std::ostream &out) {
         }
 
         VCFVariant variant;
-        if (!parseVCFLine(line, variant)) {
+        if (!parseVCFLine(line, variant, fields)) {
             std::cerr << "Warning: Skipping malformed VCF line: " << line << "\n";
             continue;
         }

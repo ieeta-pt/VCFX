@@ -106,6 +106,10 @@ void VCFXFastaConverter::convertVCFtoFasta(std::istream &in, std::ostream &out) 
 
     bool headerParsed = false;
 
+    // Reusable buffer for parsing
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(in, line)) {
         if (line.empty()) {
             continue;
@@ -114,18 +118,12 @@ void VCFXFastaConverter::convertVCFtoFasta(std::istream &in, std::ostream &out) 
         if (line[0] == '#') {
             // Parse the #CHROM header to get sample columns
             if (line.rfind("#CHROM", 0) == 0) {
-                std::stringstream ss(line);
-                std::string field;
-                // Skip the first 9 columns
-                for (int i = 0; i < 9; ++i) {
-                    if (!std::getline(ss, field, '\t')) {
-                        break;
-                    }
-                }
-                // Remaining fields are sample names
-                while (std::getline(ss, field, '\t')) {
-                    sampleNames.push_back(field);
-                    sampleSequences[field] = "";
+                std::vector<std::string> headers;
+                vcfx::split_tabs(line, headers);
+                // Sample names start at column 9
+                for (size_t i = 9; i < headers.size(); ++i) {
+                    sampleNames.push_back(headers[i]);
+                    sampleSequences[headers[i]] = "";
                 }
                 headerParsed = true;
             }
@@ -138,14 +136,8 @@ void VCFXFastaConverter::convertVCFtoFasta(std::istream &in, std::ostream &out) 
         }
 
         // Parse data line
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string fld;
-            while (std::getline(ss, fld, '\t')) {
-                fields.push_back(fld);
-            }
-        }
+        fields.clear();
+        vcfx::split_tabs(line, fields);
         // minimal check
         if (fields.size() < (9 + sampleNames.size())) {
             // not enough columns

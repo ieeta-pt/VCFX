@@ -202,6 +202,8 @@ bool VCFXRegionSubsampler::isInAnyRegion(const std::string &chrom, int pos) cons
 void VCFXRegionSubsampler::processVCF(std::istream &in, std::ostream &out) {
     bool foundChromHeader = false;
     std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);
 
     while (true) {
         if (!std::getline(in, line))
@@ -222,14 +224,7 @@ void VCFXRegionSubsampler::processVCF(std::istream &in, std::ostream &out) {
             continue;
         }
 
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string col;
-            while (std::getline(ss, col, '\t')) {
-                fields.push_back(col);
-            }
-        }
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 8) {
             std::cerr << "Warning: line has <8 columns => skipping.\n";
             continue;

@@ -194,22 +194,21 @@ bool VCFXDiffTool::loadVariants(const std::string &filePath, std::unordered_set<
     }
 
     std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);
     while (std::getline(infile, line)) {
         if (line.empty() || line[0] == '#') {
             // skip headers and empty lines
             continue;
         }
 
-        std::stringstream ss(line);
-        std::string chrom, pos, id, ref, alt;
-
-        // minimal parse
-        if (!(ss >> chrom >> pos >> id >> ref >> alt)) {
+        vcfx::split_tabs(line, fields);
+        if (fields.size() < 5) {
             std::cerr << "Warning: Skipping invalid VCF line:\n" << line << "\n";
             continue;
         }
 
-        std::string key = generateVariantKey(chrom, pos, ref, alt);
+        std::string key = generateVariantKey(fields[0], fields[1], fields[3], fields[4]);
         variants.insert(key);
     }
     return true;

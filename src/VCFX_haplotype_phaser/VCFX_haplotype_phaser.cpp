@@ -107,6 +107,8 @@ void VCFXHaplotypePhaser::phaseHaplotypes(std::istream &in, std::ostream &out, d
     // Read header lines until first non-# line
     bool foundFirstVariant = false;
     std::string firstVariantLine;
+    std::vector<std::string> tokens;
+    tokens.reserve(16);
 
     while (!foundFirstVariant && std::getline(in, line)) {
         if (line.empty()) {
@@ -116,12 +118,7 @@ void VCFXHaplotypePhaser::phaseHaplotypes(std::istream &in, std::ostream &out, d
             // if it's #CHROM, parse sample columns
             if (!foundHeader && line.rfind("#CHROM", 0) == 0) {
                 // parse
-                std::stringstream ss(line);
-                std::string f;
-                std::vector<std::string> tokens;
-                while (std::getline(ss, f, '\t')) {
-                    tokens.push_back(f);
-                }
+                vcfx::split_tabs(line, tokens);
                 // from col=9 onward => samples
                 for (size_t c = 9; c < tokens.size(); c++) {
                     sampleNames.push_back(tokens[c]);
@@ -143,6 +140,8 @@ void VCFXHaplotypePhaser::phaseHaplotypes(std::istream &in, std::ostream &out, d
     }
 
     int variantIndex = 0;
+    std::vector<std::string> fields;
+    fields.reserve(16);
 
     // Process variants
     auto processVariantLine = [&](const std::string &varLine) {
@@ -150,14 +149,7 @@ void VCFXHaplotypePhaser::phaseHaplotypes(std::istream &in, std::ostream &out, d
             return;
         }
 
-        std::stringstream ss(varLine);
-        std::vector<std::string> fields;
-        {
-            std::string t;
-            while (std::getline(ss, t, '\t')) {
-                fields.push_back(t);
-            }
-        }
+        vcfx::split_tabs(varLine, fields);
 
         if (fields.size() < 10) {
             std::cerr << "Warning: skipping line with <10 fields: " << varLine << "\n";
@@ -257,6 +249,10 @@ void VCFXHaplotypePhaser::phaseHaplotypesStreaming(std::istream &in, std::ostrea
 
     // Output header marker
     bool headerMarkerWritten = false;
+    std::vector<std::string> tokens;
+    tokens.reserve(16);
+    std::vector<std::string> fields;
+    fields.reserve(16);
 
     // Read header lines until first non-# line
     while (std::getline(in, line)) {
@@ -265,12 +261,7 @@ void VCFXHaplotypePhaser::phaseHaplotypesStreaming(std::istream &in, std::ostrea
         }
         if (line[0] == '#') {
             if (!foundHeader && line.rfind("#CHROM", 0) == 0) {
-                std::stringstream ss(line);
-                std::string f;
-                std::vector<std::string> tokens;
-                while (std::getline(ss, f, '\t')) {
-                    tokens.push_back(f);
-                }
+                vcfx::split_tabs(line, tokens);
                 for (size_t c = 9; c < tokens.size(); c++) {
                     sampleNames.push_back(tokens[c]);
                 }
@@ -292,14 +283,7 @@ void VCFXHaplotypePhaser::phaseHaplotypesStreaming(std::istream &in, std::ostrea
         }
 
         // Parse variant line
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string t;
-            while (std::getline(ss, t, '\t')) {
-                fields.push_back(t);
-            }
-        }
+        vcfx::split_tabs(line, fields);
 
         if (fields.size() < 10) {
             std::cerr << "Warning: skipping line with <10 fields\n";

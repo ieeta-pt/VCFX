@@ -1,13 +1,13 @@
-#include "vcfx_core.h" 
+#include "vcfx_core.h"
 #include "vcfx_io.h"
 #include <algorithm>
 #include <cstdlib>
 #include <getopt.h>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 
 // ---------------------------------------------------------
 // Data structure for command-line arguments
@@ -169,6 +169,10 @@ static bool calculateConcordance(std::istream &in, std::ostream &out, const Conc
     // CHROM POS ID REF ALT(S) Sample1_GT Sample2_GT Concordance
     out << "CHROM\tPOS\tID\tREF\tALT\t" << args.sample1 << "_GT\t" << args.sample2 << "_GT\tConcordance\n";
 
+    // Reusable vector for tab splitting
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(in, line)) {
         if (line.empty()) {
             continue;
@@ -176,7 +180,7 @@ static bool calculateConcordance(std::istream &in, std::ostream &out, const Conc
         if (line[0] == '#') {
             // If it's the #CHROM line, parse sample columns
             if (!foundChromHeader && line.rfind("#CHROM", 0) == 0) {
-                headerFields = splitString(line, '\t');
+                vcfx::split_tabs(line, headerFields);
                 // find sample1, sample2
                 std::unordered_map<std::string, int> sampleMap;
                 for (size_t i = 9; i < headerFields.size(); ++i) {
@@ -206,7 +210,7 @@ static bool calculateConcordance(std::istream &in, std::ostream &out, const Conc
         }
 
         // parse data line
-        auto fields = splitString(line, '\t');
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 8) {
             // invalid
             continue;

@@ -122,12 +122,8 @@ void VCFXAncestryAssigner::displayHelp() {
 // Expects: CHROM  POS  REF  ALT  pop1Freq  pop2Freq ...
 // ---------------------------------------------------------
 bool VCFXAncestryAssigner::parseFrequencyLine(const std::string &line) {
-    std::stringstream ss(line);
     std::vector<std::string> fields;
-    std::string field;
-    while (std::getline(ss, field, '\t')) {
-        fields.push_back(field);
-    }
+    vcfx::split_tabs(line, fields);
 
     // Must have at least CHROM, POS, REF, ALT, plus the populations
     if (fields.size() < 4 + populations.size()) {
@@ -175,12 +171,8 @@ bool VCFXAncestryAssigner::loadAncestralFrequencies(std::istream &in) {
 
     // Parse the header
     {
-        std::stringstream ss(line);
         std::vector<std::string> headers;
-        std::string h;
-        while (std::getline(ss, h, '\t')) {
-            headers.push_back(h);
-        }
+        vcfx::split_tabs(line, headers);
         // We need at least 5 columns: CHROM, POS, REF, ALT, plus 1 pop
         if (headers.size() < 5) {
             std::cerr << "Error: Frequency header must have at least 5 columns.\n";
@@ -219,6 +211,10 @@ void VCFXAncestryAssigner::assignAncestry(std::istream &vcfIn, std::ostream &out
     // For each sample: number of variants used in scoring
     std::unordered_map<std::string, int> sampleVariantCounts;
 
+    // Reusable buffer for parsing
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(vcfIn, line)) {
         if (line.empty()) {
             continue;
@@ -229,12 +225,8 @@ void VCFXAncestryAssigner::assignAncestry(std::istream &vcfIn, std::ostream &out
             // If #CHROM line, parse for sample columns
             if (line.rfind("#CHROM", 0) == 0) {
                 haveHeader = true;
-                std::stringstream ss(line);
                 std::vector<std::string> headers;
-                std::string f;
-                while (std::getline(ss, f, '\t')) {
-                    headers.push_back(f);
-                }
+                vcfx::split_tabs(line, headers);
                 // Identify columns
                 for (size_t i = 0; i < headers.size(); ++i) {
                     if (headers[i] == "#CHROM" || headers[i] == "CHROM")
@@ -269,12 +261,8 @@ void VCFXAncestryAssigner::assignAncestry(std::istream &vcfIn, std::ostream &out
         }
 
         // Parse VCF line
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        std::string field;
-        while (std::getline(ss, field, '\t')) {
-            fields.push_back(field);
-        }
+        fields.clear();
+        vcfx::split_tabs(line, fields);
 
         if (fields.size() < 9) {
             std::cerr << "Warning: Skipping malformed VCF line:\n" << line << "\n";

@@ -73,6 +73,10 @@ void VCFXMetadataSummarizer::displayHelp() {
 void VCFXMetadataSummarizer::summarizeMetadata(std::istream &in) {
     std::string line;
 
+    // Performance: reuse containers across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (true) {
         if (!std::getline(in, line))
             break;
@@ -87,14 +91,7 @@ void VCFXMetadataSummarizer::summarizeMetadata(std::istream &in) {
             // if it's #CHROM => parse sample names
             else if (line.rfind("#CHROM", 0) == 0) {
                 // parse columns
-                std::stringstream ss(line);
-                std::vector<std::string> fields;
-                {
-                    std::string f;
-                    while (std::getline(ss, f, '\t')) {
-                        fields.push_back(f);
-                    }
-                }
+                vcfx::split_tabs(line, fields);
                 // from col=9 onward => samples
                 if (fields.size() > 9) {
                     this->numSamples = (int)fields.size() - 9;

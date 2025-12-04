@@ -110,6 +110,8 @@ void VCFXInfoAggregator::aggregateInfo(std::istream &in, std::ostream &out,
     bool foundChromHeader = false;
 
     std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);
     while (true) {
         if (!std::getline(in, line))
             break;
@@ -135,14 +137,7 @@ void VCFXInfoAggregator::aggregateInfo(std::istream &in, std::ostream &out,
         // parse columns
         // minimal vcf => CHROM POS ID REF ALT QUAL FILTER INFO ...
         // We only need the 8th col => INFO
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string f;
-            while (std::getline(ss, f, '\t')) {
-                fields.push_back(f);
-            }
-        }
+        vcfx::split_tabs(line, fields);
         // pass line unmodified
         out << line << "\n";
 

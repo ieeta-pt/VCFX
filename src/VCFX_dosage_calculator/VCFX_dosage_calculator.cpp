@@ -66,6 +66,11 @@ void VCFXDosageCalculator::calculateDosage(std::istream &in, std::ostream &out) 
     std::string line;
     bool headerParsed = false;
     std::vector<std::string> headerFields;
+    headerFields.reserve(16);
+
+    // Reuse vectors across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
 
     // Print output header. The output columns are:
     // CHROM, POS, ID, REF, ALT, Dosages
@@ -80,11 +85,7 @@ void VCFXDosageCalculator::calculateDosage(std::istream &in, std::ostream &out) 
         if (line[0] == '#') {
             // Parse header line with "#CHROM" to get sample names.
             if (line.rfind("#CHROM", 0) == 0) {
-                std::stringstream ss(line);
-                std::string field;
-                while (std::getline(ss, field, '\t')) {
-                    headerFields.push_back(field);
-                }
+                vcfx::split_tabs(line, headerFields);
                 headerParsed = true;
             }
             // Skip printing header lines in output.
@@ -97,12 +98,7 @@ void VCFXDosageCalculator::calculateDosage(std::istream &in, std::ostream &out) 
         }
 
         // Split the variant line into fields (VCF standard: at least 10 fields expected)
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        std::string field;
-        while (std::getline(ss, field, '\t')) {
-            fields.push_back(field);
-        }
+        vcfx::split_tabs(line, fields);
 
         // We expect at least 10 columns: CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO, FORMAT, and at least one sample.
         if (fields.size() < 10) {
@@ -205,11 +201,14 @@ void VCFXDosageCalculator::calculateDosage(std::istream &in, std::ostream &out) 
 // ---------------------------------------------------------------------------
 std::vector<std::string> VCFXDosageCalculator::split(const std::string &str, char delimiter) {
     std::vector<std::string> tokens;
-    std::stringstream ss(str);
-    std::string token;
-    while (std::getline(ss, token, delimiter)) {
-        tokens.push_back(token);
+    tokens.reserve(8);
+    size_t start = 0;
+    size_t end;
+    while ((end = str.find(delimiter, start)) != std::string::npos) {
+        tokens.emplace_back(str, start, end - start);
+        start = end + 1;
     }
+    tokens.emplace_back(str, start);
     return tokens;
 }
 

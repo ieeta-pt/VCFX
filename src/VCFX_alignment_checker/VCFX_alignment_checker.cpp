@@ -188,6 +188,10 @@ void VCFXAlignmentChecker::checkDiscrepancies(std::istream &vcfIn, std::ostream 
     bool headerParsed = false;
     int chrIndex = -1, posIndex = -1, refIndex = -1, altIndex = -1;
 
+    // Reusable buffer for parsing
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     // Print a header for the discrepancies table
     out << "CHROM\tPOS\tID\tREF\tALT\tDiscrepancy_Type\tReference_Value\tVCF_Value\n";
 
@@ -200,12 +204,8 @@ void VCFXAlignmentChecker::checkDiscrepancies(std::istream &vcfIn, std::ostream 
         if (line[0] == '#') {
             // If it's the #CHROM line, parse the column indices
             if (line.rfind("#CHROM", 0) == 0) {
-                std::stringstream ss(line);
-                std::string field;
                 std::vector<std::string> headers;
-                while (std::getline(ss, field, '\t')) {
-                    headers.push_back(field);
-                }
+                vcfx::split_tabs(line, headers);
                 if (!headers.empty() && !headers[0].empty() && headers[0][0] == '#') {
                     headers[0].erase(0, 1); // drop leading '#'
                 }
@@ -235,12 +235,8 @@ void VCFXAlignmentChecker::checkDiscrepancies(std::istream &vcfIn, std::ostream 
         }
 
         // Split line into fields
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        std::string field;
-        while (std::getline(ss, field, '\t')) {
-            fields.push_back(field);
-        }
+        fields.clear();
+        vcfx::split_tabs(line, fields);
 
         // Basic sanity check
         if (fields.size() < static_cast<size_t>(altIndex + 1)) {
@@ -265,8 +261,9 @@ void VCFXAlignmentChecker::checkDiscrepancies(std::istream &vcfIn, std::ostream 
         std::vector<std::string> alts;
         {
             std::stringstream altSS(alt);
-            while (std::getline(altSS, field, ',')) {
-                alts.push_back(field);
+            std::string altAllele;
+            while (std::getline(altSS, altAllele, ',')) {
+                alts.push_back(altAllele);
             }
         }
 

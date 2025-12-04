@@ -159,12 +159,18 @@ bool VCFXAncestryInferrer::loadPopulationFrequencies(const std::string &freqFile
 
         // Parse line
         // e.g. "chr1   12345   A   G   EUR  0.45"
-        std::stringstream ss(line);
-        std::string chrom, pos, ref, alt, pop, freqStr;
-        if (!(ss >> chrom >> pos >> ref >> alt >> pop >> freqStr)) {
+        std::vector<std::string> fields;
+        vcfx::split_tabs(line, fields);
+        if (fields.size() < 6) {
             std::cerr << "Warning: Invalid line in frequency file (#" << lineNum << "): " << line << "\n";
             continue;
         }
+        const std::string &chrom = fields[0];
+        const std::string &pos = fields[1];
+        const std::string &ref = fields[2];
+        const std::string &alt = fields[3];
+        const std::string &pop = fields[4];
+        const std::string &freqStr = fields[5];
 
         double freq = 0.0;
         try {
@@ -212,6 +218,10 @@ bool VCFXAncestryInferrer::inferAncestry(std::istream &vcfInput, std::ostream &o
     // Then we pick the highest for each sample
     std::unordered_map<std::string, std::unordered_map<std::string, double>> sampleScores;
 
+    // Reusable buffer for parsing
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     // Check if the input stream is valid
     if (!vcfInput) {
         std::cerr << "Error: Invalid VCF input stream.\n";
@@ -231,13 +241,7 @@ bool VCFXAncestryInferrer::inferAncestry(std::istream &vcfInput, std::ostream &o
             if (line.rfind("#CHROM", 0) == 0) {
                 foundChromHeader = true;
                 headerFields.clear();
-                {
-                    std::stringstream ss(line);
-                    std::string tok;
-                    while (std::getline(ss, tok, '\t')) {
-                        headerFields.push_back(tok);
-                    }
-                }
+                vcfx::split_tabs(line, headerFields);
 
                 // Validate header has at least the required fields
                 if (headerFields.size() < 9) {
@@ -265,14 +269,8 @@ bool VCFXAncestryInferrer::inferAncestry(std::istream &vcfInput, std::ostream &o
 
         // Parse data line
         // Format (minimally): CHROM POS ID REF ALT QUAL FILTER INFO FORMAT [samples...]
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string f;
-            while (std::getline(ss, f, '\t')) {
-                fields.push_back(f);
-            }
-        }
+        fields.clear();
+        vcfx::split_tabs(line, fields);
 
         if (fields.size() < 10) {
             // Not enough columns to have samples, skip line

@@ -284,6 +284,10 @@ void VCFXLDCalculator::computeLD(std::istream &in, std::ostream &out, const std:
     std::vector<LDVariant> variants;
     int numSamples = 0;
 
+    // Performance: reuse containers across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     // parse header => get sample col
     // pass header lines as is
     std::string line;
@@ -300,15 +304,10 @@ void VCFXLDCalculator::computeLD(std::istream &in, std::ostream &out, const std:
             if (!foundChromHeader && line.rfind("#CHROM", 0) == 0) {
                 // parse sample
                 foundChromHeader = true;
-                std::stringstream ss(line);
-                std::string tok;
-                std::vector<std::string> tokens;
-                while (std::getline(ss, tok, '\t')) {
-                    tokens.push_back(tok);
-                }
+                vcfx::split_tabs(line, fields);
                 // from col=9 onward => sample
-                for (size_t c = 9; c < tokens.size(); c++) {
-                    sampleNames.push_back(tokens[c]);
+                for (size_t c = 9; c < fields.size(); c++) {
+                    sampleNames.push_back(fields[c]);
                 }
                 numSamples = sampleNames.size();
             }
@@ -322,14 +321,7 @@ void VCFXLDCalculator::computeLD(std::istream &in, std::ostream &out, const std:
         }
         // parse
         // CHROM POS ID REF ALT QUAL FILTER INFO ...
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string f;
-            while (std::getline(ss, f, '\t')) {
-                fields.push_back(f);
-            }
-        }
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 10) {
             // not enough columns => pass line => skip
             out << line << "\n";

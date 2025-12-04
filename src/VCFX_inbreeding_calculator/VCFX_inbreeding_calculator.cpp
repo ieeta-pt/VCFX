@@ -32,13 +32,13 @@ static void sanitizeLine(std::string &line) {
 // Split a line on '\t', removing trailing CR if present
 static std::vector<std::string> splitByTab(const std::string &line) {
     std::vector<std::string> fields;
-    std::stringstream ss(line);
-    std::string f;
-    while (std::getline(ss, f, '\t')) {
+    fields.reserve(16);
+    vcfx::split_tabs(line, fields);
+    // Remove trailing CR from each field if present
+    for (auto &f : fields) {
         if (!f.empty() && f.back() == '\r') {
             f.pop_back();
         }
-        fields.push_back(f);
     }
     return fields;
 }

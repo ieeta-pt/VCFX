@@ -107,12 +107,13 @@ void VCFXFileSplitter::splitVCFByChromosome(std::istream &in, const std::string 
                 foundFirstDataLine = true;
             }
             // We parse the chromosome from the data line
-            std::stringstream ss(line);
-            std::string chrom;
-            if (!std::getline(ss, chrom, '\t')) {
+            std::vector<std::string> fields;
+            vcfx::split_tabs(line, fields);
+            if (fields.empty()) {
                 std::cerr << "Warning: cannot parse CHROM from line: " << line << "\n";
                 continue;
             }
+            const std::string &chrom = fields[0];
             // Check or create file
             if (chromFiles.find(chrom) == chromFiles.end()) {
                 // Create a new file

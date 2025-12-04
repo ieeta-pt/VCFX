@@ -116,7 +116,16 @@ void VCFXGLFilter::filterByGL(std::istream &in, std::ostream &out, const std::st
 
     bool headerParsed = false;
     std::vector<std::string> headerFields;
+    headerFields.reserve(16);
     std::string line;
+
+    // Reuse vectors across iterations
+    std::vector<std::string> fieldsVec;
+    fieldsVec.reserve(16);
+    std::vector<std::string> formatTokens;
+    formatTokens.reserve(8);
+    std::vector<std::string> sampleTokens;
+    sampleTokens.reserve(8);
 
     while (true) {
         if (!std::getline(in, line)) {
@@ -143,28 +152,25 @@ void VCFXGLFilter::filterByGL(std::istream &in, std::ostream &out, const std::st
         }
 
         // Parse data line
-        std::stringstream ss(line);
-        std::vector<std::string> fieldsVec;
-        {
-            std::string f;
-            while (std::getline(ss, f, '\t')) {
-                fieldsVec.push_back(f);
-            }
-        }
+        vcfx::split_tabs(line, fieldsVec);
         if (fieldsVec.size() < 9) {
             std::cerr << "Warning: invalid VCF line (<9 fields): " << line << "\n";
             continue;
         }
+
         // parse the FORMAT field
-        std::string formatStr = fieldsVec[8];
-        std::vector<std::string> formatTokens;
+        const std::string &formatStr = fieldsVec[8];
+        formatTokens.clear();
         {
-            std::stringstream fmts(formatStr);
-            std::string t;
-            while (std::getline(fmts, t, ':')) {
-                formatTokens.push_back(t);
+            size_t start = 0;
+            size_t end;
+            while ((end = formatStr.find(':', start)) != std::string::npos) {
+                formatTokens.emplace_back(formatStr, start, end - start);
+                start = end + 1;
             }
+            formatTokens.emplace_back(formatStr, start);
         }
+
         // find field in format
         int fieldIndex = -1;
         for (int i = 0; i < (int)formatTokens.size(); i++) {
@@ -189,14 +195,18 @@ void VCFXGLFilter::filterByGL(std::istream &in, std::ostream &out, const std::st
 
         for (size_t s = 9; s < fieldsVec.size(); s++) {
             // parse sample by ':'
-            std::stringstream sampSS(fieldsVec[s]);
-            std::vector<std::string> sampleTokens;
+            const std::string &sampleStr = fieldsVec[s];
+            sampleTokens.clear();
             {
-                std::string x;
-                while (std::getline(sampSS, x, ':')) {
-                    sampleTokens.push_back(x);
+                size_t start = 0;
+                size_t end;
+                while ((end = sampleStr.find(':', start)) != std::string::npos) {
+                    sampleTokens.emplace_back(sampleStr, start, end - start);
+                    start = end + 1;
                 }
+                sampleTokens.emplace_back(sampleStr, start);
             }
+
             if (fieldIndex >= (int)sampleTokens.size()) {
                 // no data => fail for all mode, or do nothing for any mode
                 if (!anyMode) {
@@ -204,7 +214,7 @@ void VCFXGLFilter::filterByGL(std::istream &in, std::ostream &out, const std::st
                 }
                 break;
             }
-            std::string valStr = sampleTokens[fieldIndex];
+            const std::string &valStr = sampleTokens[fieldIndex];
             if (valStr.empty() || valStr == ".") {
                 // treat as fail for all mode
                 if (!anyMode) {

@@ -5,7 +5,6 @@
 #include <cctype>
 #include <cstdlib>
 #include <iostream>
-#include <sstream>
 #include <vector>
 
 // ------------------------------------------------------------------
@@ -75,12 +74,15 @@ static std::string unifyGenotype(const std::string &gt, bool strict) {
 
     // Split on '/'
     std::vector<std::string> tokens;
+    tokens.reserve(2);
     {
-        std::stringstream ss(g);
-        std::string t;
-        while (std::getline(ss, t, '/')) {
-            tokens.push_back(t);
+        size_t start = 0;
+        size_t end;
+        while ((end = g.find('/', start)) != std::string::npos) {
+            tokens.emplace_back(g, start, end - start);
+            start = end + 1;
         }
+        tokens.emplace_back(g, start);
     }
     // If not diploid or missing, just return g
     if (tokens.size() != 2) {
@@ -89,6 +91,7 @@ static std::string unifyGenotype(const std::string &gt, bool strict) {
 
     // Check numeric; if not numeric or ".", leave as is
     std::vector<int> vals;
+    vals.reserve(2);
     for (auto &tk : tokens) {
         if (tk == "." || tk.empty()) {
             // missing
@@ -105,9 +108,12 @@ static std::string unifyGenotype(const std::string &gt, bool strict) {
     std::sort(vals.begin(), vals.end());
 
     // reassemble
-    std::stringstream out;
-    out << vals[0] << "/" << vals[1];
-    return out.str();
+    std::string out;
+    out.reserve(8);
+    out += std::to_string(vals[0]);
+    out += '/';
+    out += std::to_string(vals[1]);
+    return out;
 }
 
 // ------------------------------------------------------------------

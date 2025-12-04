@@ -1,11 +1,11 @@
-#include "vcfx_core.h" 
+#include "vcfx_core.h"
 #include "vcfx_io.h"
 #include <cstdlib>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 
 // ---------------------------------------------------------------------
 // Structures and Declarations
@@ -95,6 +95,10 @@ static bool countAlleles(std::istream &in, std::ostream &out, const AlleleCounte
     // Print one TSV header (not the original VCF header lines)
     out << "CHROM\tPOS\tID\tREF\tALT\tSample\tRef_Count\tAlt_Count\n";
 
+    // Reusable vector for tab splitting
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(in, line)) {
         if (line.empty()) {
             continue;
@@ -104,7 +108,7 @@ static bool countAlleles(std::istream &in, std::ostream &out, const AlleleCounte
         if (line[0] == '#') {
             // If this is the #CHROM line, parse to find sample columns
             if (line.rfind("#CHROM", 0) == 0) {
-                headerFields = splitString(line, '\t');
+                vcfx::split_tabs(line, headerFields);
                 if (headerFields.size() < 9) {
                     std::cerr << "Error: #CHROM line has fewer than 9 columns.\n";
                     return false;
@@ -145,7 +149,7 @@ static bool countAlleles(std::istream &in, std::ostream &out, const AlleleCounte
         }
 
         // Split VCF data line
-        auto fields = splitString(line, '\t');
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 9) {
             std::cerr << "Warning: Skipping invalid VCF line with fewer than 9 fields:\n" << line << "\n";
             continue;

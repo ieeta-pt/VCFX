@@ -154,6 +154,8 @@ void VCFXOutlierDetector::detectOutliers(std::istream &in, std::ostream &out, co
         bool headerFound = false;
         std::string line;
         bool anyMetricFound = false;
+        std::vector<std::string> fields;
+        fields.reserve(16);
         while (true) {
             if (!std::getline(in, line))
                 break;
@@ -168,13 +170,7 @@ void VCFXOutlierDetector::detectOutliers(std::istream &in, std::ostream &out, co
                 // skip or pass, but we can't parse columns
                 continue;
             }
-            std::vector<std::string> fields;
-            {
-                std::stringstream ss(line);
-                std::string f;
-                while (std::getline(ss, f, '\t'))
-                    fields.push_back(f);
-            }
+            vcfx::split_tabs(line, fields);
             if (fields.size() < 8)
                 continue;
             std::string &chrom = fields[0];
@@ -201,6 +197,10 @@ void VCFXOutlierDetector::detectOutliers(std::istream &in, std::ostream &out, co
         std::unordered_map<std::string, int> counts;
         std::string line;
         bool anyMetricFound = false;
+        std::vector<std::string> f;
+        f.reserve(16);
+        std::vector<std::string> fields;
+        fields.reserve(16);
         while (true) {
             if (!std::getline(in, line))
                 break;
@@ -209,13 +209,7 @@ void VCFXOutlierDetector::detectOutliers(std::istream &in, std::ostream &out, co
             if (line[0] == '#') {
                 if (line.rfind("#CHROM", 0) == 0) {
                     headerFound = true;
-                    std::vector<std::string> f;
-                    {
-                        std::stringstream ss(line);
-                        std::string x;
-                        while (std::getline(ss, x, '\t'))
-                            f.push_back(x);
-                    }
+                    vcfx::split_tabs(line, f);
                     for (size_t i = 9; i < f.size(); i++) {
                         sampleNames.push_back(f[i]);
                         sums[f[i]] = 0.0;
@@ -227,13 +221,7 @@ void VCFXOutlierDetector::detectOutliers(std::istream &in, std::ostream &out, co
             if (!headerFound) {
                 continue;
             }
-            std::vector<std::string> fields;
-            {
-                std::stringstream ss(line);
-                std::string fx;
-                while (std::getline(ss, fx, '\t'))
-                    fields.push_back(fx);
-            }
+            vcfx::split_tabs(line, fields);
             if (fields.size() < 9)
                 continue;
             std::string &format = fields[8];

@@ -73,6 +73,12 @@ bool VCFXNonRefFilter::isDefinitelyHomRef(const std::string &genotypeField) cons
 void VCFXNonRefFilter::filterNonRef(std::istream &in, std::ostream &out) {
     bool headerFound = false;
     std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);
+    std::vector<std::string> fmtParts;
+    fmtParts.reserve(16);
+    std::vector<std::string> subf;
+    subf.reserve(16);
     while (true) {
         if (!std::getline(in, line))
             break;
@@ -91,22 +97,16 @@ void VCFXNonRefFilter::filterNonRef(std::istream &in, std::ostream &out) {
             out << line << "\n";
             continue;
         }
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string f;
-            while (std::getline(ss, f, '\t'))
-                fields.push_back(f);
-        }
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 10) {
             out << line << "\n";
             continue;
         }
         std::string formatStr = fields[8];
-        std::vector<std::string> fmtParts;
         {
             std::stringstream fs(formatStr);
             std::string ff;
+            fmtParts.clear();
             while (std::getline(fs, ff, ':'))
                 fmtParts.push_back(ff);
         }
@@ -125,10 +125,10 @@ void VCFXNonRefFilter::filterNonRef(std::istream &in, std::ostream &out) {
         bool allHomRef = true;
         for (size_t s = 9; s < fields.size(); s++) {
             std::string &sampleCol = fields[s];
-            std::vector<std::string> subf;
             {
                 std::stringstream sampleSS(sampleCol);
                 std::string token;
+                subf.clear();
                 while (std::getline(sampleSS, token, ':'))
                     subf.push_back(token);
             }

@@ -141,6 +141,10 @@ std::string VCFXSvHandler::manipulateSVInfo(const std::string &infoField, const 
 
 void VCFXSvHandler::handleStructuralVariants(std::istream &in, std::ostream &out, bool filterOnly, bool modifySV) {
     std::string line;
+    // Declare fields vector outside loop for reuse
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (true) {
         if (!std::getline(in, line))
             break;
@@ -152,14 +156,7 @@ void VCFXSvHandler::handleStructuralVariants(std::istream &in, std::ostream &out
             continue;
         }
         // parse
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string col;
-            while (std::getline(ss, col, '\t')) {
-                fields.push_back(col);
-            }
-        }
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 8) {
             std::cerr << "Warning: skipping line with <8 columns.\n";
             continue;

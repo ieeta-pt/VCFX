@@ -68,12 +68,13 @@ void printHelp() {
                  "  --help, -h\n";
 }
 
-static bool parseVariantLine(const std::string &line, VCFVariant &var) {
+static bool parseVariantLine(const std::string &line, VCFVariant &var, std::vector<std::string> &fields) {
     if (line.empty() || line[0] == '#')
         return false;
-    auto f = split(line, '\t');
-    if (f.size() < 9)
+    vcfx::split_tabs(line, fields);
+    if (fields.size() < 9)
         return false;
+    auto &f = fields;
     var.chrom = f[0];
     try {
         var.pos = std::stoi(f[1]);
@@ -298,6 +299,11 @@ static std::string recSample(const std::string &sample, const std::vector<std::s
 bool splitMultiAllelicVariants(std::istream &in, std::ostream &out) {
     VCFHeaderInfo hdr;
     bool foundChrom = false;
+
+    // Performance: reuse containers across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (true) {
         auto p = in.tellg();
         if (!in.good())
@@ -344,7 +350,7 @@ bool splitMultiAllelicVariants(std::istream &in, std::ostream &out) {
             continue;
         }
         VCFVariant var;
-        if (!parseVariantLine(line, var)) {
+        if (!parseVariantLine(line, var, fields)) {
             out << line << "\n";
             continue;
         }

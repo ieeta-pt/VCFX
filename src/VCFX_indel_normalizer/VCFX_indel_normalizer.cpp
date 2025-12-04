@@ -135,6 +135,8 @@ bool VCFXIndelNormalizer::normalizeVariant(std::string &chrom, int &posInt, std:
 void VCFXIndelNormalizer::normalizeIndels(std::istream &in, std::ostream &out) {
     std::string line;
     bool foundChromHeader = false;
+    std::vector<std::string> fields;
+    fields.reserve(16);
 
     while (std::getline(in, line)) {
         if (line.empty()) {
@@ -155,14 +157,7 @@ void VCFXIndelNormalizer::normalizeIndels(std::istream &in, std::ostream &out) {
         }
 
         // parse the line
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string f;
-            while (std::getline(ss, f, '\t')) {
-                fields.push_back(f);
-            }
-        }
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 10) {
             // not enough columns
             out << line << "\n";

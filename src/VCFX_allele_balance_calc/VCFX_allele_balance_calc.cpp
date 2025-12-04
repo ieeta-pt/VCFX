@@ -1,13 +1,13 @@
-#include "vcfx_core.h" 
+#include "vcfx_core.h"
 #include "vcfx_io.h"
 // VCFX_allele_balance_calc.cpp
 
 #include <cstdlib>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 
 // ---------------------------------------------------------------
 // Header / Declarations
@@ -127,6 +127,10 @@ bool calculateAlleleBalance(std::istream &in, std::ostream &out, const AlleleBal
     // Print exactly one TSV header
     out << "CHROM\tPOS\tID\tREF\tALT\tSample\tAllele_Balance\n";
 
+    // Reusable vector for tab splitting
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(in, line)) {
         // Skip empty lines
         if (line.empty()) {
@@ -138,7 +142,7 @@ bool calculateAlleleBalance(std::istream &in, std::ostream &out, const AlleleBal
         if (line[0] == '#') {
             // If this is the #CHROM line, parse columns
             if (line.rfind("#CHROM", 0) == 0) {
-                headerFields = splitString(line, '\t');
+                vcfx::split_tabs(line, headerFields);
                 // Build sample -> column index
                 for (size_t i = 9; i < headerFields.size(); ++i) {
                     sampleMap[headerFields[i]] = static_cast<int>(i);
@@ -171,7 +175,7 @@ bool calculateAlleleBalance(std::istream &in, std::ostream &out, const AlleleBal
         }
 
         // Split the data line
-        auto fields = splitString(line, '\t');
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 9) {
             std::cerr << "Warning: Skipping invalid VCF line with fewer than 9 fields.\n";
             continue;

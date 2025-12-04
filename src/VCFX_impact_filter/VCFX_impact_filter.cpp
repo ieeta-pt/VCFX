@@ -118,6 +118,8 @@ void VCFXImpactFilter::filterByImpact(std::istream &in, std::ostream &out, const
     bool wroteInfoMeta = false;
 
     std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);
     while (std::getline(in, line)) {
         if (line.empty()) {
             out << "\n";
@@ -145,14 +147,7 @@ void VCFXImpactFilter::filterByImpact(std::istream &in, std::ostream &out, const
         }
 
         // parse columns
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string f;
-            while (std::getline(ss, f, '\t')) {
-                fields.push_back(f);
-            }
-        }
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 8) {
             // invalid line
             continue;

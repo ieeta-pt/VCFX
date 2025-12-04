@@ -153,6 +153,36 @@ inline size_t split_char(std::string_view str, char delim,
 }
 
 /**
+ * @brief Generic delimiter split returning strings (for cases needing modification)
+ *
+ * Similar to split_char but returns std::string instead of string_view.
+ * Use when you need to modify the resulting strings.
+ *
+ * @param str Input string to split
+ * @param delim Delimiter character
+ * @param out Output vector of strings (cleared but capacity preserved)
+ * @param expected Expected number of fields for initial reserve
+ * @return Number of fields found
+ */
+inline size_t split_string(const std::string& str, char delim,
+                           std::vector<std::string>& out,
+                           size_t expected = 8) {
+    out.clear();
+    if (out.capacity() < expected) {
+        out.reserve(expected);
+    }
+
+    size_t start = 0;
+    size_t end;
+    while ((end = str.find(delim, start)) != std::string::npos) {
+        out.emplace_back(str, start, end - start);
+        start = end + 1;
+    }
+    out.emplace_back(str, start);
+    return out.size();
+}
+
+/**
  * @brief Count tabs in a line (to estimate field count)
  *
  * @param line Input string_view

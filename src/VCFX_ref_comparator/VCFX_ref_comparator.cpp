@@ -116,6 +116,8 @@ void VCFXRefComparator::compareVCF(std::istream &vcfIn, std::ostream &vcfOut) {
     bool foundChromHeader = false;
     infoHeaderInserted = false;
     std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);
     while (true) {
         if (!std::getline(vcfIn, line))
             break;
@@ -144,14 +146,7 @@ void VCFXRefComparator::compareVCF(std::istream &vcfIn, std::ostream &vcfOut) {
             continue;
         }
         // parse fields
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string col;
-            while (std::getline(ss, col, '\t')) {
-                fields.push_back(col);
-            }
-        }
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 8) {
             std::cerr << "Warning: VCF line has <8 columns => skipping.\n";
             continue;

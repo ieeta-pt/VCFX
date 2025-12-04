@@ -129,6 +129,10 @@ bool summarizeInfoFields(std::istream &in, std::ostream &out, const std::vector<
         info_data[field]; // ensures key is created
     }
 
+    // Performance: reuse containers across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(in, line)) {
         if (line.empty())
             continue;
@@ -147,11 +151,8 @@ bool summarizeInfoFields(std::istream &in, std::ostream &out, const std::vector<
         }
 
         // parse columns
-        std::stringstream ss(line);
-        std::string chrom, pos, id, ref, alt, qual, filter, info;
-        if (!std::getline(ss, chrom, '\t') || !std::getline(ss, pos, '\t') || !std::getline(ss, id, '\t') ||
-            !std::getline(ss, ref, '\t') || !std::getline(ss, alt, '\t') || !std::getline(ss, qual, '\t') ||
-            !std::getline(ss, filter, '\t') || !std::getline(ss, info, '\t')) {
+        vcfx::split_tabs(line, fields);
+        if (fields.size() < 8) {
             std::cerr << "Warning: Skipping malformed VCF line: " << line << "\n";
             continue;
         }
@@ -159,7 +160,7 @@ bool summarizeInfoFields(std::istream &in, std::ostream &out, const std::vector<
         // Parse INFO field => store key->value
         std::unordered_map<std::string, std::string> info_map;
         {
-            std::stringstream info_ss(info);
+            std::stringstream info_ss(fields[7]);
             std::string kv;
             while (std::getline(info_ss, kv, ';')) {
                 if (kv.empty())

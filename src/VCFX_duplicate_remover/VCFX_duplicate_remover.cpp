@@ -2,8 +2,8 @@
 #include "vcfx_core.h"
 #include "vcfx_io.h"
 #include <algorithm>
-#include <sstream>
 #include <vector>
+#include <sstream>
 
 // Utility function: Splits a string by a given delimiter (optimized).
 static std::vector<std::string> splitString(const std::string &str, char delimiter) {
