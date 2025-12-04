@@ -1,4 +1,5 @@
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 // VCFX_distance_calculator.cpp
 #include "VCFX_distance_calculator.h"
 #include <algorithm>
@@ -160,6 +161,7 @@ bool calculateDistances(std::istream &in, std::ostream &out) {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_distance_calculator", show_help))
         return 0;
     // Check for help option.

@@ -1,5 +1,6 @@
 #include "VCFX_genotype_query.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
@@ -124,6 +125,14 @@ void genotypeQuery(std::istream &in, std::ostream &out, const std::string &genot
         unifiedQuery = genotype_query;
     }
 
+    // Performance: reuse vectors across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+    std::vector<std::string> fmts;
+    fmts.reserve(8);
+    std::vector<std::string> sampleTokens;
+    sampleTokens.reserve(8);
+
     // Read the file line by line
     std::string line;
     while (true) {
@@ -156,29 +165,25 @@ void genotypeQuery(std::istream &in, std::ostream &out, const std::string &genot
                 printedHeader = true;
             }
 
-            // Parse columns
-            std::stringstream ss(line);
-            std::vector<std::string> fields;
-            {
-                std::string token;
-                while (std::getline(ss, token, '\t')) {
-                    fields.push_back(token);
-                }
-            }
+            // Parse columns using optimized split
+            vcfx::split_tabs(line, fields);
             if (fields.size() < 10) {
                 std::cerr << "Warning: skipping line with <10 fields: " << line << "\n";
                 continue;
             }
 
             // FORMAT column is fields[8]. We look for "GT" inside it
-            std::string formatStr = fields[8];
-            std::vector<std::string> fmts;
+            // Parse FORMAT using find-based split
+            fmts.clear();
             {
-                std::stringstream fmtsSS(formatStr);
-                std::string f;
-                while (std::getline(fmtsSS, f, ':')) {
-                    fmts.push_back(f);
+                const std::string &formatStr = fields[8];
+                size_t start = 0;
+                size_t end;
+                while ((end = formatStr.find(':', start)) != std::string::npos) {
+                    fmts.emplace_back(formatStr, start, end - start);
+                    start = end + 1;
                 }
+                fmts.emplace_back(formatStr, start);
             }
             int gtIndex = -1;
             for (int i = 0; i < (int)fmts.size(); i++) {
@@ -195,13 +200,17 @@ void genotypeQuery(std::istream &in, std::ostream &out, const std::string &genot
             // Check each sample's GT
             bool match = false;
             for (size_t c = 9; c < fields.size(); c++) {
-                std::stringstream sampSS(fields[c]);
-                std::vector<std::string> sampleTokens;
+                // Parse sample tokens using find-based split
+                sampleTokens.clear();
                 {
-                    std::string x;
-                    while (std::getline(sampSS, x, ':')) {
-                        sampleTokens.push_back(x);
+                    const std::string &sampleStr = fields[c];
+                    size_t start = 0;
+                    size_t end;
+                    while ((end = sampleStr.find(':', start)) != std::string::npos) {
+                        sampleTokens.emplace_back(sampleStr, start, end - start);
+                        start = end + 1;
                     }
+                    sampleTokens.emplace_back(sampleStr, start);
                 }
                 if (gtIndex >= (int)sampleTokens.size()) {
                     continue;
@@ -240,6 +249,7 @@ void genotypeQuery(std::istream &in, std::ostream &out, const std::string &genot
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_genotype_query", show_help))
         return 0;
     std::string genotypeQueryStr;

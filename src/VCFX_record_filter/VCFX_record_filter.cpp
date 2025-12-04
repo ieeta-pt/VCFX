@@ -1,11 +1,11 @@
 #include "VCFX_record_filter.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <getopt.h>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -25,11 +25,13 @@ static std::string trim(const std::string &s) {
 
 static void split(const std::string &s, char delim, std::vector<std::string> &out) {
     out.clear();
-    std::stringstream ss(s);
-    std::string t;
-    while (std::getline(ss, t, delim)) {
-        out.push_back(t);
+    size_t start = 0;
+    size_t end;
+    while ((end = s.find(delim, start)) != std::string::npos) {
+        out.emplace_back(s, start, end - start);
+        start = end + 1;
     }
+    out.emplace_back(s, start);
 }
 
 // parse an operator token: "==", "!=", ">=", "<=", ">", "<"
@@ -135,14 +137,9 @@ bool parseCriteria(const std::string &criteriaStr, std::vector<FilterCriterion> 
     return true;
 }
 
-// split by tab
+// split by tab - uses vcfx::split_tabs for performance
 static std::vector<std::string> tabSplit(const std::string &line) {
-    std::vector<std::string> f;
-    std::stringstream ss(line);
-    std::string x;
-    while (std::getline(ss, x, '\t'))
-        f.push_back(x);
-    return f;
+    return vcfx::split_tabs(line);
 }
 
 // parse info => either return key= or a flag
@@ -350,6 +347,7 @@ void printHelp() {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_record_filter", show_help))
         return 0;
     if (argc == 1) {

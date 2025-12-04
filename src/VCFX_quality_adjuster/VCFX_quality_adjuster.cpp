@@ -1,5 +1,6 @@
 #include "VCFX_quality_adjuster.h"
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -180,6 +181,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_quality_adjuster", show_help))
         return 0;
     VCFXQualityAdjuster app;

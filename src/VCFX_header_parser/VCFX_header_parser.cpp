@@ -1,5 +1,6 @@
 #include "VCFX_header_parser.h"
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 #include <iostream>
 #include <sstream>
 
@@ -29,6 +30,7 @@ void processHeader(std::istream &in, std::ostream &out) {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_header_parser", show_help))
         return 0;
     // Simple argument parsing

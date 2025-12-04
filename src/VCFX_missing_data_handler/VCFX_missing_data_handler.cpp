@@ -1,5 +1,6 @@
 #include "VCFX_missing_data_handler.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cstdlib>
 #include <fstream>
@@ -261,6 +262,7 @@ bool handleMissingDataAll(const Arguments &args) {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_missing_data_handler", show_help))
         return 0;
     Arguments args;

@@ -1,0 +1,5 @@
+
+1:300:G:A
+1:400:T:C
+Variants unique to sorted1.vcf:
+Variants unique to sorted2.vcf:

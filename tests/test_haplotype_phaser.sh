@@ -279,5 +279,63 @@ else
     exit 1
 fi
 
+# Test 13: Streaming mode - basic functionality
+echo "Test 13: Streaming mode - basic functionality"
+$PHASER --streaming --ld-threshold 0.8 < basic.vcf > streaming_basic.out 2> streaming_basic.err
+
+# Streaming output should have the same blocks as default mode
+if grep -q "Block 1: 0:(1:100), 1:(1:150), 2:(1:200)" streaming_basic.out && \
+   grep -q "Block 2: 3:(1:250)" streaming_basic.out; then
+    echo "✓ Test 13 passed: Streaming mode produces correct blocks"
+else
+    echo "❌ Test 13 failed: Streaming mode block mismatch"
+    cat streaming_basic.out
+    exit 1
+fi
+
+# Test 14: Streaming vs default mode consistency
+echo "Test 14: Streaming vs default mode output consistency"
+$PHASER --ld-threshold 0.8 < multi_chrom.vcf > default_multi.out 2>/dev/null
+$PHASER --streaming --ld-threshold 0.8 < multi_chrom.vcf > streaming_multi.out 2>/dev/null
+
+# Compare block boundaries (ignoring potential whitespace differences)
+default_blocks=$(grep "Block" default_multi.out | sort)
+streaming_blocks=$(grep "Block" streaming_multi.out | sort)
+
+if [ "$default_blocks" = "$streaming_blocks" ]; then
+    echo "✓ Test 14 passed: Streaming output matches default mode"
+else
+    echo "❌ Test 14 failed: Streaming differs from default"
+    echo "Default blocks:"
+    echo "$default_blocks"
+    echo "Streaming blocks:"
+    echo "$streaming_blocks"
+    exit 1
+fi
+
+# Test 15: Streaming mode with window size
+echo "Test 15: Streaming mode with custom window size"
+$PHASER --streaming --window 50 --ld-threshold 0.8 < low_ld.vcf > streaming_window.out 2> streaming_window.err
+
+if grep -q "Block" streaming_window.out; then
+    echo "✓ Test 15 passed: Streaming with window parameter works"
+else
+    echo "❌ Test 15 failed: Streaming with window did not produce output"
+    cat streaming_window.err
+    exit 1
+fi
+
+# Test 16: Streaming mode help shows new options
+echo "Test 16: Help shows streaming options"
+$PHASER --help > help_streaming.out 2>&1
+
+if grep -q "streaming" help_streaming.out && grep -q "window" help_streaming.out; then
+    echo "✓ Test 16 passed: Help shows streaming options"
+else
+    echo "❌ Test 16 failed: Help does not show streaming options"
+    cat help_streaming.out
+    exit 1
+fi
+
 echo "All tests for VCFX_haplotype_phaser passed!"
 exit 0 

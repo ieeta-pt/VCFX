@@ -171,4 +171,131 @@ fi
 echo "✓ Test 5 passed"
 
 ###############################################################################
+# Test 6: Streaming merge with --assume-sorted (pre-sorted files)
+###############################################################################
+echo "Test 6: Streaming merge with --assume-sorted"
+
+# Create pre-sorted files (must be sorted by chrom, pos)
+cat > "$TEST_DATA_DIR/sorted1_tmp.vcf" <<'EOF'
+##fileformat=VCFv4.2
+#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO
+1\t100\tvarA\tA\tG\t.\tPASS\t.
+1\t300\tvarC\tG\tT\t.\tPASS\t.
+2\t100\tvarE\tC\tA\t.\tPASS\t.
+EOF
+makeTabs "$TEST_DATA_DIR/sorted1_tmp.vcf" "$TEST_DATA_DIR/sorted1.vcf"
+
+cat > "$TEST_DATA_DIR/sorted2_tmp.vcf" <<'EOF'
+##fileformat=VCFv4.2
+#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO
+1\t150\tvarB\tT\tC\t.\tPASS\t.
+1\t250\tvarD\tA\tC\t.\tPASS\t.
+2\t50\tvarF\tG\tT\t.\tPASS\t.
+EOF
+makeTabs "$TEST_DATA_DIR/sorted2_tmp.vcf" "$TEST_DATA_DIR/sorted2.vcf"
+
+STREAM_OUT=$("$MERGER_BIN" --merge "$TEST_DATA_DIR/sorted1.vcf,$TEST_DATA_DIR/sorted2.vcf" --assume-sorted)
+
+# Expected order: 1:100, 1:150, 1:250, 1:300, 2:50, 2:100
+STREAM_EXPECTED=("1:100" "1:150" "1:250" "1:300" "2:50" "2:100")
+i=0
+while IFS=$'\t' read -r line; do
+    [[ "$line" =~ ^## ]] && continue
+    [[ "$line" =~ ^#CHROM ]] && continue
+    IFS=$'\t' read -r -a fields <<< "$line"
+    chrom_pos="${fields[0]}:${fields[1]}"
+    if [[ $i -ge 6 ]]; then
+        echo "✗ Test 6 failed: More than 6 data lines found!"
+        exit 1
+    fi
+    if [[ "$chrom_pos" != "${STREAM_EXPECTED[$i]}" ]]; then
+        echo "✗ Test 6 failed: Expected '${STREAM_EXPECTED[$i]}', got '$chrom_pos'"
+        echo "Streaming merge output was:"
+        echo "$STREAM_OUT"
+        exit 1
+    fi
+    i=$(( i + 1 ))
+done < <(echo "$STREAM_OUT")
+
+if [[ $i -ne 6 ]]; then
+    echo "✗ Test 6 failed: Expected 6 variants, found $i"
+    exit 1
+fi
+echo "✓ Test 6 passed"
+
+###############################################################################
+# Test 7: Help shows new options
+###############################################################################
+echo "Test 7: Help shows assume-sorted and natural-chr options"
+HELP_NEW=$("$MERGER_BIN" --help 2>&1)
+if ! echo "$HELP_NEW" | grep -q "assume-sorted"; then
+    echo "✗ Test 7 failed: help missing --assume-sorted"
+    exit 1
+fi
+if ! echo "$HELP_NEW" | grep -q "natural-chr"; then
+    echo "✗ Test 7 failed: help missing --natural-chr"
+    exit 1
+fi
+echo "✓ Test 7 passed"
+
+###############################################################################
+# Test 8: Streaming merge with many files
+###############################################################################
+echo "Test 8: Streaming merge with 5 files"
+
+for n in 1 2 3 4 5; do
+    pos=$((n * 100))
+    cat > "$TEST_DATA_DIR/multi${n}_tmp.vcf" <<EOF
+##fileformat=VCFv4.2
+#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO
+1\t${pos}\tvar${n}\tA\tG\t.\tPASS\t.
+EOF
+    makeTabs "$TEST_DATA_DIR/multi${n}_tmp.vcf" "$TEST_DATA_DIR/multi${n}.vcf"
+done
+
+MULTI_OUT=$("$MERGER_BIN" --merge "$TEST_DATA_DIR/multi1.vcf,$TEST_DATA_DIR/multi2.vcf,$TEST_DATA_DIR/multi3.vcf,$TEST_DATA_DIR/multi4.vcf,$TEST_DATA_DIR/multi5.vcf" --assume-sorted)
+MULTI_COUNT=$(echo "$MULTI_OUT" | grep -cv "^#" || echo 0)
+
+if [[ "$MULTI_COUNT" -ne 5 ]]; then
+    echo "✗ Test 8 failed: Expected 5 variants from 5 files, got $MULTI_COUNT"
+    echo "$MULTI_OUT"
+    exit 1
+fi
+echo "✓ Test 8 passed"
+
+###############################################################################
+# Test 9: Natural chromosome ordering with streaming
+###############################################################################
+echo "Test 9: Natural chromosome ordering"
+
+cat > "$TEST_DATA_DIR/nat1_tmp.vcf" <<'EOF'
+##fileformat=VCFv4.2
+#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO
+chr1\t100\t.\tA\tG\t.\tPASS\t.
+chr10\t100\t.\tA\tG\t.\tPASS\t.
+EOF
+makeTabs "$TEST_DATA_DIR/nat1_tmp.vcf" "$TEST_DATA_DIR/nat1.vcf"
+
+cat > "$TEST_DATA_DIR/nat2_tmp.vcf" <<'EOF'
+##fileformat=VCFv4.2
+#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO
+chr2\t100\t.\tA\tG\t.\tPASS\t.
+chr11\t100\t.\tA\tG\t.\tPASS\t.
+EOF
+makeTabs "$TEST_DATA_DIR/nat2_tmp.vcf" "$TEST_DATA_DIR/nat2.vcf"
+
+# With natural order: chr1 < chr2 < chr10 < chr11
+NAT_OUT=$("$MERGER_BIN" --merge "$TEST_DATA_DIR/nat1.vcf,$TEST_DATA_DIR/nat2.vcf" --assume-sorted --natural-chr)
+
+# Check order: chr1, chr2, chr10, chr11
+NAT_CHROMS=$(echo "$NAT_OUT" | grep -v "^#" | cut -f1 | tr '\n' ' ' | xargs)
+EXPECTED_NAT="chr1 chr2 chr10 chr11"
+
+if [[ "$NAT_CHROMS" != "$EXPECTED_NAT" ]]; then
+    echo "✗ Test 9 failed: Expected '$EXPECTED_NAT', got '$NAT_CHROMS'"
+    exit 1
+fi
+echo "✓ Test 9 passed"
+
+###############################################################################
 echo "✅ All tests for VCFX_merger passed successfully!"

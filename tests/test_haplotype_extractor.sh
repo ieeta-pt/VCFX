@@ -122,6 +122,45 @@ run_test 7 "Malformed input (expected failure)" \
 # Test 8: Help message
 test_help 8
 
+# Test 9: Streaming mode - basic functionality
+echo "Test 9: Streaming mode - basic functionality"
+$EXEC --streaming < "data/haplotype_extractor/basic.vcf" > "out/haplotype_extractor/test9.tsv" 2> "out/haplotype_extractor/test9.err"
+if diff -q "expected/haplotype_extractor/basic_out.tsv" "out/haplotype_extractor/test9.tsv" > /dev/null; then
+    echo "  Test 9 passed."
+else
+    echo "  Test 9 failed: streaming mode output does not match expected"
+    echo "  Expected:"
+    cat "expected/haplotype_extractor/basic_out.tsv"
+    echo "  Actual:"
+    cat "out/haplotype_extractor/test9.tsv"
+    ((failures++))
+fi
+
+# Test 10: Streaming mode - output matches default mode
+echo "Test 10: Streaming vs default mode output consistency"
+$EXEC < "data/haplotype_extractor/large_distance.vcf" > "out/haplotype_extractor/test10_default.tsv" 2>/dev/null
+$EXEC --streaming < "data/haplotype_extractor/large_distance.vcf" > "out/haplotype_extractor/test10_streaming.tsv" 2>/dev/null
+if diff -q "out/haplotype_extractor/test10_default.tsv" "out/haplotype_extractor/test10_streaming.tsv" > /dev/null; then
+    echo "  Test 10 passed: streaming output matches default output"
+else
+    echo "  Test 10 failed: streaming output differs from default"
+    echo "  Default:"
+    cat "out/haplotype_extractor/test10_default.tsv"
+    echo "  Streaming:"
+    cat "out/haplotype_extractor/test10_streaming.tsv"
+    ((failures++))
+fi
+
+# Test 11: Streaming mode with custom block size
+echo "Test 11: Streaming mode with custom block size"
+$EXEC --streaming --block-size 50000 < "data/haplotype_extractor/large_distance.vcf" > "out/haplotype_extractor/test11.tsv" 2>/dev/null
+if diff -q "expected/haplotype_extractor/small_block_out.tsv" "out/haplotype_extractor/test11.tsv" > /dev/null; then
+    echo "  Test 11 passed: streaming with block-size works correctly"
+else
+    echo "  Test 11 failed: streaming with block-size output mismatch"
+    ((failures++))
+fi
+
 # Report results
 if [ $failures -eq 0 ]; then
     echo "All VCFX_haplotype_extractor tests passed!"

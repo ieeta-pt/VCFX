@@ -1,5 +1,6 @@
 #include "VCFX_info_aggregator.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cmath> // for std::isfinite
 #include <cstdlib>
@@ -226,6 +227,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_info_aggregator", show_help))
         return 0;
     VCFXInfoAggregator app;

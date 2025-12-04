@@ -1,5 +1,6 @@
 #include "VCFX_multiallelic_splitter.h"
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 #include <cctype>
 #include <cstdlib>
 #include <iostream>
@@ -370,6 +371,7 @@ bool splitMultiAllelicVariants(std::istream &in, std::ostream &out) {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_multiallelic_splitter", show_help))
         return 0;
     for (int i = 1; i < argc; i++) {

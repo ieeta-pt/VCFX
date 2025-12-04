@@ -194,4 +194,100 @@ if ! echo "$ERR7" | grep -q "Error: encountered data line before #CHROM."; then
 fi
 echo "✓ Test 7 passed"
 
+###############################################################################
+# Test 8: Streaming mode basic
+###############################################################################
+echo "Test 8: Streaming mode basic"
+
+cat > "$TEST_DATA_DIR/streaming_test_tmp.vcf" <<EOF
+##fileformat=VCFv4.2
+#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS1\tS2
+1\t100\trs1\tA\tG\t.\tPASS\t.\tGT\t0/0\t0/1
+1\t200\trs2\tT\tC\t.\tPASS\t.\tGT\t0/0\t0/1
+1\t300\trs3\tG\tA\t.\tPASS\t.\tGT\t1/1\t1/0
+EOF
+sed 's/\\t/\t/g' "$TEST_DATA_DIR/streaming_test_tmp.vcf" > "$TEST_DATA_DIR/streaming_test.vcf"
+
+OUT8=$(cat "$TEST_DATA_DIR/streaming_test.vcf" | "$CALCULATOR_BIN" --streaming)
+if ! echo "$OUT8" | grep -q "#VAR1_CHROM"; then
+    echo "✗ Test failed: streaming mode => missing header"
+    echo "Output:"
+    echo "$OUT8"
+    exit 1
+fi
+# Should have 3 pairs for 3 variants
+if ! echo "$OUT8" | grep -q "rs1.*rs2"; then
+    echo "✗ Test failed: streaming mode => expected rs1-rs2 pair"
+    exit 1
+fi
+echo "✓ Test 8 passed"
+
+###############################################################################
+# Test 9: Streaming mode with window
+###############################################################################
+echo "Test 9: Streaming mode with window"
+
+cat > "$TEST_DATA_DIR/window_test_tmp.vcf" <<EOF
+##fileformat=VCFv4.2
+#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS1\tS2
+1\t100\trs1\tA\tG\t.\tPASS\t.\tGT\t0/0\t0/1
+1\t200\trs2\tT\tC\t.\tPASS\t.\tGT\t0/0\t0/1
+1\t300\trs3\tG\tA\t.\tPASS\t.\tGT\t1/1\t1/0
+1\t400\trs4\tC\tT\t.\tPASS\t.\tGT\t0/0\t0/1
+EOF
+sed 's/\\t/\t/g' "$TEST_DATA_DIR/window_test_tmp.vcf" > "$TEST_DATA_DIR/window_test.vcf"
+
+# With window=2, rs1-rs4 pair should NOT appear (too far apart)
+OUT9=$(cat "$TEST_DATA_DIR/window_test.vcf" | "$CALCULATOR_BIN" --streaming --window 2)
+if echo "$OUT9" | grep -q "rs1.*rs4"; then
+    echo "✗ Test failed: window mode => should NOT have rs1-rs4 pair"
+    exit 1
+fi
+# But rs1-rs2 should appear
+if ! echo "$OUT9" | grep -q "rs1.*rs2"; then
+    echo "✗ Test failed: window mode => should have rs1-rs2 pair"
+    exit 1
+fi
+echo "✓ Test 9 passed"
+
+###############################################################################
+# Test 10: Streaming mode with threshold
+###############################################################################
+echo "Test 10: Streaming mode with threshold"
+
+# Using same file, test threshold filtering
+OUT10=$(cat "$TEST_DATA_DIR/streaming_test.vcf" | "$CALCULATOR_BIN" --streaming --threshold 0.999)
+# Only pairs with r2 >= 0.999 should appear
+# Count lines (excluding header)
+PAIRS=$(echo "$OUT10" | grep -v "^#" | wc -l | tr -d ' ')
+# All pairs in this test file have r2=1.0, so all should pass
+if [ "$PAIRS" -ne 3 ]; then
+    echo "✗ Test failed: threshold mode => expected 3 pairs with r2>=0.999"
+    echo "Got $PAIRS pairs"
+    echo "Output:"
+    echo "$OUT10"
+    exit 1
+fi
+echo "✓ Test 10 passed"
+
+###############################################################################
+# Test 11: Help shows new options
+###############################################################################
+echo "Test 11: Help shows new streaming options"
+
+OUT11=$("$CALCULATOR_BIN" --help)
+if ! echo "$OUT11" | grep -q "\-\-streaming"; then
+    echo "✗ Test failed: help should mention --streaming"
+    exit 1
+fi
+if ! echo "$OUT11" | grep -q "\-\-window"; then
+    echo "✗ Test failed: help should mention --window"
+    exit 1
+fi
+if ! echo "$OUT11" | grep -q "\-\-threshold"; then
+    echo "✗ Test failed: help should mention --threshold"
+    exit 1
+fi
+echo "✓ Test 11 passed"
+
 echo "✅ All VCFX_ld_calculator tests passed!"

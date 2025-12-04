@@ -1,5 +1,6 @@
 #include "VCFX_missing_detector.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <cstdlib>
 #include <getopt.h>
 #include <iostream>
@@ -267,9 +268,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
-    // Disable stdio synchronization for performance
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(nullptr);
+    vcfx::init_io();  // Performance: disable sync_with_stdio
 
     if (vcfx::handle_common_flags(argc, argv, "VCFX_missing_detector", show_help))
         return 0;

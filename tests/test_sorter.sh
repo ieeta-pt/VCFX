@@ -194,11 +194,87 @@ else
     # Check if the output contains the header and the expected record
     if ! grep -q "#CHROM" out/invalid_pos_out.vcf || ! grep -q "chr1" out/invalid_pos_out.vcf; then
       echo "  Test 5 failed: Output missing expected records"
-      ((failures++)) 
+      ((failures++))
     else
       echo "  Test 5 passed: Program handled invalid input gracefully"
     fi
   fi
+fi
+
+# Test 6: External merge sort with small chunk size
+echo "Test 6: External merge sort (small chunk size forces chunking)"
+# Create a larger test file with 50 records to ensure chunking
+if [ ! -f data/large_unsorted.vcf ]; then
+  cat > data/large_unsorted.vcf << EOF
+##fileformat=VCFv4.2
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+EOF
+  # Add 50 unsorted records
+  for i in $(seq 50 -1 1); do
+    chr=$((i % 3 + 1))
+    pos=$((i * 100))
+    echo "chr${chr}	${pos}	.	A	G	100	PASS	DP=${i}" >> data/large_unsorted.vcf
+  done
+fi
+# Sort with very small chunk size to force external merge
+$SORTER -m 0.001 -t /tmp < data/large_unsorted.vcf > out/large_sorted.vcf 2>/dev/null
+# Verify output has same number of data lines
+input_lines=$(grep -cv "^#" data/large_unsorted.vcf)
+output_lines=$(grep -cv "^#" out/large_sorted.vcf)
+if [ "$input_lines" -ne "$output_lines" ]; then
+  echo "  Test 6 failed: Input has $input_lines records, output has $output_lines"
+  ((failures++))
+else
+  # Verify output is sorted by extracting CHROM and POS and checking order
+  is_sorted=true
+  prev_chrom=""
+  prev_pos=0
+  while IFS=$'\t' read -r chrom pos rest; do
+    if [ "$chrom" = "$prev_chrom" ] && [ "$pos" -lt "$prev_pos" ]; then
+      is_sorted=false
+      break
+    fi
+    if [ "$chrom" != "$prev_chrom" ]; then
+      if [ -n "$prev_chrom" ] && [[ "$chrom" < "$prev_chrom" ]]; then
+        is_sorted=false
+        break
+      fi
+      prev_pos=0
+    fi
+    prev_chrom="$chrom"
+    prev_pos=$pos
+  done < <(grep -v "^#" out/large_sorted.vcf | cut -f1,2)
+  if [ "$is_sorted" = "false" ]; then
+    echo "  Test 6 failed: Output is not properly sorted"
+    ((failures++))
+  else
+    echo "  Test 6 passed: External merge sort works correctly"
+  fi
+fi
+
+# Test 7: Custom temp directory
+echo "Test 7: Custom temp directory option"
+test_temp_dir="/tmp/vcfx_sorter_test_$$"
+mkdir -p "$test_temp_dir"
+$SORTER -m 0.001 -t "$test_temp_dir" < data/unsorted.vcf > out/temp_dir_test.vcf 2>/dev/null
+# Verify output matches expected
+if diff -q expected/lex_sorted.vcf out/temp_dir_test.vcf > /dev/null 2>&1; then
+  echo "  Test 7 passed: Custom temp directory works"
+else
+  echo "  Test 7 failed: Output doesn't match expected"
+  ((failures++))
+fi
+rmdir "$test_temp_dir" 2>/dev/null || true
+
+# Test 8: Help message includes new options
+echo "Test 8: Help message includes external merge options"
+$SORTER --help > out/sorter_help_new.txt 2>&1
+if grep -q "max-memory" out/sorter_help_new.txt && grep -q "temp-dir" out/sorter_help_new.txt; then
+  echo "  Test 8 passed: Help shows new options"
+else
+  echo "  Test 8 failed: Help missing max-memory or temp-dir options"
+  ((failures++))
 fi
 
 # Report results

@@ -1,4 +1,5 @@
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cstdlib>
 #include <getopt.h>
@@ -265,6 +266,7 @@ static bool calculateConcordance(std::istream &in, std::ostream &out, const Conc
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_concordance_checker", show_help))
         return 0;
     ConcordanceArguments args;

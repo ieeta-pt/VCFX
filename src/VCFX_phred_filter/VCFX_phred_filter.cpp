@@ -1,9 +1,9 @@
 #include "VCFX_phred_filter.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <cstdlib>
 #include <getopt.h>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -69,6 +69,8 @@ void VCFXPhredFilter::displayHelp() {
 
 void VCFXPhredFilter::processVCF(std::istream &in, double threshold, bool keepMissingAsPass) {
     std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);  // Performance: pre-allocate for typical VCF
     bool foundChrom = false;
     while (true) {
         if (!std::getline(in, line))
@@ -87,14 +89,7 @@ void VCFXPhredFilter::processVCF(std::istream &in, double threshold, bool keepMi
             std::cerr << "Warning: data line before #CHROM => skipping line.\n";
             continue;
         }
-        std::vector<std::string> fields;
-        {
-            std::stringstream ss(line);
-            std::string f;
-            while (std::getline(ss, f, '\t')) {
-                fields.push_back(f);
-            }
-        }
+        vcfx::split_tabs(line, fields);  // Performance: reuses vector capacity
         // we need at least CHROM,POS,ID,REF,ALT,QUAL => 6 columns
         if (fields.size() < 6) {
             std::cerr << "Warning: line has <6 columns => skipping.\n";
@@ -131,6 +126,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_phred_filter", show_help))
         return 0;
     VCFXPhredFilter pf;

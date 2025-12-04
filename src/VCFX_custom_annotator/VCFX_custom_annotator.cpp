@@ -1,4 +1,5 @@
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cstdlib>
 #include <fstream>
@@ -30,15 +31,18 @@ class VCFXCustomAnnotator {
 };
 
 // ---------------------------------------------------------------------------
-// Utility: split a string by a delimiter
+// Utility: split a string by a delimiter (optimized with find-based approach)
 // ---------------------------------------------------------------------------
 static std::vector<std::string> split(const std::string &str, char delimiter) {
     std::vector<std::string> tokens;
-    std::stringstream ss(str);
-    std::string tmp;
-    while (std::getline(ss, tmp, delimiter)) {
-        tokens.push_back(tmp);
+    tokens.reserve(8);
+    size_t start = 0;
+    size_t end;
+    while ((end = str.find(delimiter, start)) != std::string::npos) {
+        tokens.emplace_back(str, start, end - start);
+        start = end + 1;
     }
+    tokens.emplace_back(str, start);
     return tokens;
 }
 
@@ -280,6 +284,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_custom_annotator", show_help))
         return 0;
     VCFXCustomAnnotator annotator;

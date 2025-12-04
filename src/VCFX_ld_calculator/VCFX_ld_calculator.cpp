@@ -1,8 +1,10 @@
 #include "VCFX_ld_calculator.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <deque>
 #include <getopt.h>
 #include <iomanip>
 #include <iostream>
@@ -17,15 +19,30 @@ void VCFXLDCalculator::displayHelp() {
               << "  VCFX_ld_calculator [options] < input.vcf\n\n"
               << "Options:\n"
               << "  --region <chr:start-end>  Only compute LD for variants in [start, end] on 'chr'.\n"
+              << "  --streaming               Enable streaming mode with sliding window (memory-efficient).\n"
+              << "  --window <N>              Window size in number of variants (default: 1000).\n"
+              << "                            Only used with --streaming mode.\n"
+              << "  --threshold <R2>          Only output pairs with r^2 >= threshold (default: 0.0).\n"
+              << "                            Only used with --streaming mode.\n"
               << "  --help, -h                Show this help message.\n\n"
+              << "Modes:\n"
+              << "  Default mode:    Produces an MxM matrix of all pairwise r^2 values.\n"
+              << "                   Memory usage: O(M * samples) where M is number of variants.\n"
+              << "  Streaming mode:  Outputs LD pairs incrementally using a sliding window.\n"
+              << "                   Memory usage: O(window * samples) - constant for any file size.\n\n"
               << "Description:\n"
               << "  Reads a VCF from stdin (uncompressed) and collects diploid genotypes as code:\n"
               << "     0 => homRef (0/0), 1 => het (0/1), 2 => homAlt(1/1), -1 => missing/other.\n"
               << "  Then for each pair of variants in the region, compute pairwise r^2 ignoring samples with missing "
-                 "genotype.\n"
-              << "  Output an MxM matrix of r^2 along with variant identifiers.\n\n"
+                 "genotype.\n\n"
+              << "Output Format:\n"
+              << "  Default mode:    MxM matrix with variant identifiers.\n"
+              << "  Streaming mode:  Tab-separated: VAR1_ID VAR1_POS VAR2_ID VAR2_POS R2\n\n"
               << "Example:\n"
-              << "  VCFX_ld_calculator --region chr1:10000-20000 < input.vcf > ld_matrix.txt\n";
+              << "  # Default mode (MxM matrix)\n"
+              << "  VCFX_ld_calculator --region chr1:10000-20000 < input.vcf > ld_matrix.txt\n\n"
+              << "  # Streaming mode (large files)\n"
+              << "  VCFX_ld_calculator --streaming --window 500 --threshold 0.2 < input.vcf > ld_pairs.txt\n";
 }
 
 // ----------------------------------------------------------------------
@@ -152,9 +169,113 @@ double VCFXLDCalculator::computeRsq(const std::vector<int> &g1, const std::vecto
 }
 
 // ----------------------------------------------------------------------
+// computeLDStreaming: Sliding window mode with O(window * samples) memory
+// Outputs pairs incrementally as tab-separated values
+// ----------------------------------------------------------------------
+void VCFXLDCalculator::computeLDStreaming(std::istream &in, std::ostream &out, const std::string &regionChrom,
+                                          int regionStart, int regionEnd, size_t windowSize, double threshold) {
+    bool foundChromHeader = false;
+    int numSamples = 0;
+    std::deque<LDVariant> window;
+    std::string line;
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
+    // Output header for streaming mode
+    out << "#VAR1_CHROM\tVAR1_POS\tVAR1_ID\tVAR2_CHROM\tVAR2_POS\tVAR2_ID\tR2\n";
+
+    while (std::getline(in, line)) {
+        if (line.empty()) {
+            continue;
+        }
+        if (line[0] == '#') {
+            if (!foundChromHeader && line.rfind("#CHROM", 0) == 0) {
+                foundChromHeader = true;
+                vcfx::split_tabs(line, fields);
+                // from col=9 onward => sample
+                if (fields.size() > 9) {
+                    numSamples = static_cast<int>(fields.size() - 9);
+                }
+            }
+            continue;
+        }
+
+        // Data line
+        if (!foundChromHeader) {
+            std::cerr << "Error: encountered data line before #CHROM.\n";
+            break;
+        }
+
+        vcfx::split_tabs(line, fields);
+        if (fields.size() < 10) {
+            continue;
+        }
+
+        std::string &chrom = fields[0];
+        int posVal = 0;
+        try {
+            posVal = std::stoi(fields[1]);
+        } catch (...) {
+            continue;
+        }
+
+        // Check region
+        if (!regionChrom.empty()) {
+            if (chrom != regionChrom) {
+                continue;
+            }
+            if (posVal < regionStart || posVal > regionEnd) {
+                continue;
+            }
+        }
+
+        // Parse variant
+        LDVariant v;
+        v.chrom = chrom;
+        v.pos = posVal;
+        v.id = fields[2];  // ID field
+        if (v.id == ".") {
+            v.id = chrom + ":" + fields[1];  // Use chrom:pos if no ID
+        }
+        v.genotype.resize(numSamples, -1);
+
+        // Parse genotype columns
+        int sampleCol = 9;
+        for (int s = 0; s < numSamples; s++) {
+            if (static_cast<size_t>(sampleCol + s) >= fields.size())
+                break;
+            // Extract GT from sample field (may have additional fields like :DP:GQ)
+            const std::string &sampleField = fields[sampleCol + s];
+            size_t colonPos = sampleField.find(':');
+            std::string gt = (colonPos == std::string::npos) ? sampleField : sampleField.substr(0, colonPos);
+            v.genotype[s] = parseGenotype(gt);
+        }
+
+        // Compute LD with all variants in window
+        for (const auto &prev : window) {
+            double r2 = computeRsq(prev.genotype, v.genotype);
+            if (r2 >= threshold) {
+                out << prev.chrom << "\t" << prev.pos << "\t" << prev.id << "\t"
+                    << v.chrom << "\t" << v.pos << "\t" << v.id << "\t"
+                    << std::fixed << std::setprecision(4) << r2 << "\n";
+            }
+        }
+
+        // Add to window
+        window.push_back(std::move(v));
+
+        // Trim window if needed
+        if (window.size() > windowSize) {
+            window.pop_front();
+        }
+    }
+}
+
+// ----------------------------------------------------------------------
 // computeLD: read lines, skip #, parse sample columns
 //   store variants within region
 //   then produce MxM matrix of r^2
+// (Original implementation - backward compatible)
 // ----------------------------------------------------------------------
 void VCFXLDCalculator::computeLD(std::istream &in, std::ostream &out, const std::string &regionChrom, int regionStart,
                                  int regionEnd) {
@@ -242,6 +363,7 @@ void VCFXLDCalculator::computeLD(std::istream &in, std::ostream &out, const std:
         LDVariant v;
         v.chrom = chrom;
         v.pos = posVal;
+        v.id = fields[2];
         v.genotype.resize(numSamples, -1);
         // sample columns => fields[9..]
         int sampleCol = 9;
@@ -307,11 +429,18 @@ void VCFXLDCalculator::computeLD(std::istream &in, std::ostream &out, const std:
 // ----------------------------------------------------------------------
 int VCFXLDCalculator::run(int argc, char *argv[]) {
     static struct option long_opts[] = {
-        {"help", no_argument, 0, 'h'}, {"region", required_argument, 0, 'r'}, {0, 0, 0, 0}};
+        {"help", no_argument, 0, 'h'},
+        {"region", required_argument, 0, 'r'},
+        {"streaming", no_argument, 0, 's'},
+        {"window", required_argument, 0, 'w'},
+        {"threshold", required_argument, 0, 't'},
+        {0, 0, 0, 0}
+    };
     bool showHelp = false;
     std::string regionStr;
+
     while (true) {
-        int c = getopt_long(argc, argv, "hr:", long_opts, NULL);
+        int c = getopt_long(argc, argv, "hr:sw:t:", long_opts, NULL);
         if (c == -1)
             break;
         switch (c) {
@@ -320,6 +449,28 @@ int VCFXLDCalculator::run(int argc, char *argv[]) {
             break;
         case 'r':
             regionStr = optarg;
+            break;
+        case 's':
+            streamingMode = true;
+            break;
+        case 'w':
+            try {
+                windowSize = std::stoul(optarg);
+                if (windowSize == 0) windowSize = 1;
+            } catch (...) {
+                std::cerr << "Error: Invalid window size '" << optarg << "'\n";
+                return 1;
+            }
+            break;
+        case 't':
+            try {
+                ldThreshold = std::stod(optarg);
+                if (ldThreshold < 0.0) ldThreshold = 0.0;
+                if (ldThreshold > 1.0) ldThreshold = 1.0;
+            } catch (...) {
+                std::cerr << "Error: Invalid threshold '" << optarg << "'\n";
+                return 1;
+            }
             break;
         default:
             showHelp = true;
@@ -340,8 +491,12 @@ int VCFXLDCalculator::run(int argc, char *argv[]) {
         }
     }
 
-    // do main
-    computeLD(std::cin, std::cout, regionChrom, regionStart, regionEnd);
+    // Dispatch to appropriate mode
+    if (streamingMode) {
+        computeLDStreaming(std::cin, std::cout, regionChrom, regionStart, regionEnd, windowSize, ldThreshold);
+    } else {
+        computeLD(std::cin, std::cout, regionChrom, regionStart, regionEnd);
+    }
     return 0;
 }
 
@@ -354,6 +509,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_ld_calculator", show_help))
         return 0;
     VCFXLDCalculator calc;

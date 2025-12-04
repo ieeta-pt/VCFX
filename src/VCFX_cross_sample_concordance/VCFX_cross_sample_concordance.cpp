@@ -1,4 +1,5 @@
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <getopt.h>
@@ -255,6 +256,7 @@ static void calculateConcordance(std::istream &in, std::ostream &out, const std:
 static void show_help() { displayHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_cross_sample_concordance", show_help))
         return 0;
     bool showHelp = false;

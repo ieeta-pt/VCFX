@@ -1,5 +1,6 @@
 #include "VCFX_population_filter.h"
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 #include <cstdlib>
 #include <fstream>
 #include <getopt.h>
@@ -200,6 +201,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_population_filter", show_help))
         return 0;
     VCFXPopulationFilter pf;

@@ -1,4 +1,5 @@
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 // VCFX_allele_balance_calc.cpp
 
 #include <cstdlib>
@@ -221,6 +222,7 @@ bool calculateAlleleBalance(std::istream &in, std::ostream &out, const AlleleBal
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_allele_balance_calc", show_help))
         return 0;
     AlleleBalanceArguments args;

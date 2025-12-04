@@ -1,5 +1,6 @@
 #include "VCFX_validator.h"
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <charconv>
@@ -987,6 +988,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     // Disable sync with C stdio for faster I/O
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);

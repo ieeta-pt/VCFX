@@ -1,5 +1,6 @@
 #include "VCFX_variant_classifier.h"
-#include "vcfx_core.h"
+#include "vcfx_core.h" 
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <getopt.h>
@@ -366,6 +367,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     // Disable stdio synchronization for performance
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);

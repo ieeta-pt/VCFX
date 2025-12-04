@@ -1,5 +1,6 @@
 #include "VCFX_sample_extractor.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <getopt.h>
@@ -98,12 +99,16 @@ void VCFXSampleExtractor::extractSamples(std::istream &in, std::ostream &out, co
     std::string line;
     // We'll keep track of the sample name -> index
     // We'll build a vector of indices we want to keep in data lines
-    // Also track how many of user’s samples were found
+    // Also track how many of user's samples were found
     std::vector<int> keepSampleIndices;
     keepSampleIndices.reserve(samples.size());
     // We'll also store them in the final #CHROM order
     std::vector<std::string> finalSampleNames;
     bool headerProcessed = false;
+
+    // Performance: reuse vector across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
 
     while (true) {
         if (!std::getline(in, line))
@@ -116,30 +121,23 @@ void VCFXSampleExtractor::extractSamples(std::istream &in, std::ostream &out, co
             // pass header lines
             if (line.rfind("#CHROM", 0) == 0) {
                 foundChromLine = true;
-                // parse
-                std::stringstream ss(line);
-                std::vector<std::string> headerFields;
-                {
-                    std::string col;
-                    while (std::getline(ss, col, '\t')) {
-                        headerFields.push_back(col);
-                    }
-                }
+                // parse using optimized split
+                vcfx::split_tabs(line, fields);
                 // sample columns => from index=9..end
                 // find which ones are in sampleSet
                 keepSampleIndices.clear();
                 finalSampleNames.clear();
-                if (headerFields.size() < 9) {
+                if (fields.size() < 9) {
                     // means no samples in this VCF => skip
                     out << line << "\n";
                     continue;
                 }
                 // standard columns 0..8 => CHROM,POS,ID,REF,ALT,QUAL,FILTER,INFO,FORMAT
-                for (size_t i = 9; i < headerFields.size(); i++) {
+                for (size_t i = 9; i < fields.size(); i++) {
                     // if it's in sampleSet => keep
-                    if (sampleSet.count(headerFields[i]) > 0) {
+                    if (sampleSet.count(fields[i]) > 0) {
                         keepSampleIndices.push_back((int)i);
-                        finalSampleNames.push_back(headerFields[i]);
+                        finalSampleNames.push_back(fields[i]);
                     }
                 }
                 // for any sample in sampleSet that wasn't found => warn
@@ -148,20 +146,18 @@ void VCFXSampleExtractor::extractSamples(std::istream &in, std::ostream &out, co
                         std::cerr << "Warning: sample '" << s << "' not found in header.\n";
                     }
                 }
-                // now rewrite the #CHROM line
-                // keep the first 9 columns, then only the chosen sample columns
-                std::ostringstream newHeader;
+                // now rewrite the #CHROM line - direct output instead of ostringstream
                 // 0..8
                 for (int i = 0; i < 9; i++) {
                     if (i > 0)
-                        newHeader << "\t";
-                    newHeader << headerFields[i];
+                        out << "\t";
+                    out << fields[i];
                 }
                 // then each sample
                 for (size_t i = 0; i < finalSampleNames.size(); i++) {
-                    newHeader << "\t" << finalSampleNames[i];
+                    out << "\t" << finalSampleNames[i];
                 }
-                out << newHeader.str() << "\n";
+                out << "\n";
                 headerProcessed = true;
             } else {
                 out << line << "\n";
@@ -172,15 +168,8 @@ void VCFXSampleExtractor::extractSamples(std::istream &in, std::ostream &out, co
             std::cerr << "Warning: data line encountered before #CHROM => skipping.\n";
             continue;
         }
-        // parse data line
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string col;
-            while (std::getline(ss, col, '\t')) {
-                fields.push_back(col);
-            }
-        }
+        // parse data line using optimized split (reuses vector capacity)
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 8) {
             std::cerr << "Warning: line has <8 columns => skipping.\n";
             continue;
@@ -196,24 +185,23 @@ void VCFXSampleExtractor::extractSamples(std::istream &in, std::ostream &out, co
             std::cerr << "Warning: data line with no sample columns => skipping.\n";
             continue;
         }
-        // now we keep 0..8 plus only the chosen samples
-        std::ostringstream newLine;
+        // now we keep 0..8 plus only the chosen samples - direct output
         // 0..8
         for (int i = 0; i < 9; i++) {
             if (i > 0)
-                newLine << "\t";
-            newLine << fields[i];
+                out << "\t";
+            out << fields[i];
         }
         // now each chosen sample
         for (auto idx : keepSampleIndices) {
             if ((size_t)idx < fields.size()) {
-                newLine << "\t" << fields[idx];
+                out << "\t" << fields[idx];
             } else {
                 // out of range => sample column not present => put "."
-                newLine << "\t.";
+                out << "\t.";
             }
         }
-        out << newLine.str() << "\n";
+        out << "\n";
     }
 }
 
@@ -226,6 +214,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_sample_extractor", show_help))
         return 0;
     VCFXSampleExtractor app;

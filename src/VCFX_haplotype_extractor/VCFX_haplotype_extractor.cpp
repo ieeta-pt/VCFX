@@ -1,13 +1,11 @@
 #include "VCFX_haplotype_extractor.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-
-// Constructor not needed here, we do no special initialization
-// HaplotypeExtractor::HaplotypeExtractor() {}
 
 // ---------------------------------------------------------------------
 // printHelp
@@ -19,13 +17,20 @@ void printHelp() {
               << "  --help, -h                 Display this help message and exit.\n"
               << "  --block-size <int>         Maximum distance for grouping consecutive variants (default 100000).\n"
               << "  --check-phase-consistency  If set, try a minimal check across variants.\n"
-              << "  --debug                   Output verbose debug information.\n\n"
+              << "  --streaming                Enable streaming mode: output blocks immediately when complete.\n"
+              << "                             Uses O(block_size) memory instead of O(total_variants).\n"
+              << "  --debug                    Output verbose debug information.\n\n"
               << "Description:\n"
               << "  Extracts phased haplotype blocks from genotype data in a VCF file. "
               << "It reconstructs haplotypes for each sample by analyzing phased genotype fields.\n\n"
+              << "Performance:\n"
+              << "  Default mode:   Accumulates all blocks in memory, outputs at end.\n"
+              << "  Streaming mode: Outputs blocks immediately when complete. Enables\n"
+              << "                  processing of arbitrarily large files with bounded memory.\n\n"
               << "Examples:\n"
               << "  ./VCFX_haplotype_extractor --block-size 50000 < phased.vcf > haplotypes.tsv\n"
-              << "  ./VCFX_haplotype_extractor --check-phase-consistency < phased.vcf > haplotypes.tsv\n";
+              << "  ./VCFX_haplotype_extractor --streaming < large_phased.vcf > haplotypes.tsv\n"
+              << "  ./VCFX_haplotype_extractor --streaming --block-size 10000 < phased.vcf > haplotypes.tsv\n";
 }
 
 // ---------------------------------------------------------------------
@@ -60,7 +65,7 @@ std::vector<std::string> HaplotypeExtractor::splitString(const std::string &str,
 // areAllSamplesPhased: checks each genotype for '|'
 // ---------------------------------------------------------------------
 bool HaplotypeExtractor::areAllSamplesPhased(const std::vector<std::string> &genotypes) {
-    for (auto &g : genotypes) {
+    for (const auto &g : genotypes) {
         if (g.find('|') == std::string::npos) {
             return false;
         }
@@ -70,45 +75,27 @@ bool HaplotypeExtractor::areAllSamplesPhased(const std::vector<std::string> &gen
 
 // ---------------------------------------------------------------------
 // phaseIsConsistent: minimal check across variants
-//   e.g. if new variant has "0|1" but existing block's last variant for that sample was "1|0"
-//   we might call that inconsistent if we want a simplistic approach.
-//   This logic is trivially commented out or replaced with a more advanced approach.
 // ---------------------------------------------------------------------
 bool HaplotypeExtractor::phaseIsConsistent(const HaplotypeBlock &block, const std::vector<std::string> &newGenotypes) {
-    // We'll do a naive check: if the new genotype is e.g. "0|1"
-    // but the last appended genotype portion for the sample is "1|0", we call it inconsistent.
-    // Actually, we store haplotypes with each variant appended by "|" + newGT?
-    // We'll parse the last variant's GT for each sample from the block's haplotypes.
-    // This is simplistic.
-
     if (block.haplotypes.size() != newGenotypes.size()) {
-        // mismatch in #samples => inconsistent
         return false;
     }
 
-    // Optional debugging output
     if (debugMode) {
         std::cerr << "Checking phase consistency\n";
     }
 
     for (size_t s = 0; s < block.haplotypes.size(); s++) {
-        // block's haplotypes[s] is a big string with variants separated by '|', e.g. "0|1|0|1"
-        // let's get the last chunk after the last '|'
         const std::string &allVar = block.haplotypes[s];
 
-        // The haplotype string is stored like: "0|1|1|0|0|1" where each pair is one genotype
-        // We need to extract the last genotype, which is the last 3 characters
         std::string lastGT;
         if (allVar.size() < 3) {
             lastGT = allVar;
         } else {
-            // Get the last genotype (3 characters: allele|allele)
             size_t lastPipePos = allVar.rfind('|', allVar.size() - 2);
             if (lastPipePos == std::string::npos) {
-                // No pipe found in position except the last one, so this is the first genotype
                 lastGT = allVar;
             } else {
-                // Extract the last genotype (e.g., "0|1" from "0|1|1|0")
                 lastGT = allVar.substr(lastPipePos - 1);
             }
         }
@@ -117,16 +104,10 @@ bool HaplotypeExtractor::phaseIsConsistent(const HaplotypeBlock &block, const st
             std::cerr << "Sample " << s << " last GT: " << lastGT << " new GT: " << newGenotypes[s] << "\n";
         }
 
-        // compare lastGT with newGenotypes[s]
-        // if they differ in a 2-allele reversed manner, we might call it inconsistent
-        // e.g. lastGT="0|1", new="1|0"
-        // We'll interpret them as numeric pairs, ignoring '.' or weirdness
-        // If can't parse => skip checking
         if (lastGT.size() < 3 || newGenotypes[s].size() < 3) {
             continue;
         }
 
-        // Get the first and second alleles for comparison
         char lastAllele1 = (lastGT.size() >= 1) ? lastGT[lastGT.size() - 3] : '.';
         char lastAllele2 = (lastGT.size() >= 1) ? lastGT[lastGT.size() - 1] : '.';
         char newAllele1 = newGenotypes[s][0];
@@ -137,8 +118,6 @@ bool HaplotypeExtractor::phaseIsConsistent(const HaplotypeBlock &block, const st
                       << newAllele2 << "\n";
         }
 
-        // If e.g. lastGT=="0|1", newGenotypes=="1|0" => inconsistent
-        // Check for phase flips - when both alleles flip positions
         if (lastAllele1 != newAllele1 && lastAllele2 != newAllele2 && lastAllele1 == newAllele2 &&
             lastAllele2 == newAllele1) {
             if (debugMode) {
@@ -156,26 +135,20 @@ bool HaplotypeExtractor::phaseIsConsistent(const HaplotypeBlock &block, const st
 
 // ---------------------------------------------------------------------
 // updateBlocks: merges new variant into last block or starts new block
-//   we rely on the blockDistanceThreshold and (optionally) checkPhaseConsistency
 // ---------------------------------------------------------------------
 void HaplotypeExtractor::updateBlocks(std::vector<HaplotypeBlock> &haplotypeBlocks, const std::string &chrom, int pos,
                                       const std::vector<std::string> &genotypes) {
     if (haplotypeBlocks.empty()) {
-        // start first block
         HaplotypeBlock b;
         b.chrom = chrom;
         b.start = pos;
         b.end = pos;
-        // haplotypes => each sample's genotype
         b.haplotypes = genotypes;
         haplotypeBlocks.push_back(std::move(b));
         return;
     }
 
-    // examine last block
     HaplotypeBlock &lastB = haplotypeBlocks.back();
-    // if same chrom, and pos-lastB.end <= blockDistanceThreshold
-    // and if checkPhaseConsistency => phaseIsConsistent
     bool canExtend = (chrom == lastB.chrom) && (pos - lastB.end <= blockDistanceThreshold);
 
     if (canExtend && checkPhaseConsistency) {
@@ -183,15 +156,11 @@ void HaplotypeExtractor::updateBlocks(std::vector<HaplotypeBlock> &haplotypeBloc
     }
 
     if (canExtend) {
-        // extend
         lastB.end = pos;
-        // for each sample, append "|" + new genotype
-        // if they are guaranteed phased, we can do that
         for (size_t s = 0; s < lastB.haplotypes.size(); s++) {
             lastB.haplotypes[s] += "|" + genotypes[s];
         }
     } else {
-        // start new block
         HaplotypeBlock nb;
         nb.chrom = chrom;
         nb.start = pos;
@@ -199,6 +168,28 @@ void HaplotypeExtractor::updateBlocks(std::vector<HaplotypeBlock> &haplotypeBloc
         nb.haplotypes = genotypes;
         haplotypeBlocks.push_back(std::move(nb));
     }
+}
+
+// ---------------------------------------------------------------------
+// outputHeader: write header line
+// ---------------------------------------------------------------------
+void HaplotypeExtractor::outputHeader(std::ostream &out) {
+    out << "CHROM\tSTART\tEND";
+    for (const auto &s : sampleNames) {
+        out << "\t" << s;
+    }
+    out << "\n";
+}
+
+// ---------------------------------------------------------------------
+// outputBlock: write a single block to output
+// ---------------------------------------------------------------------
+void HaplotypeExtractor::outputBlock(std::ostream &out, const HaplotypeBlock &block) {
+    out << block.chrom << "\t" << block.start << "\t" << block.end;
+    for (const auto &hap : block.haplotypes) {
+        out << "\t" << hap;
+    }
+    out << "\n";
 }
 
 // ---------------------------------------------------------------------
@@ -218,7 +209,7 @@ bool HaplotypeExtractor::processVariant(const std::vector<std::string> &fields,
         std::cerr << "Warning: invalid POS => skip variant\n";
         return false;
     }
-    // find GT index
+
     const std::string &formatStr = fields[8];
     auto formatToks = splitString(formatStr, ':');
     int gtIndex = -1;
@@ -229,16 +220,13 @@ bool HaplotypeExtractor::processVariant(const std::vector<std::string> &fields,
         }
     }
     if (gtIndex < 0) {
-        // no GT => skip
         return false;
     }
-    // gather genotypes
-    // from col=9 onward => sample columns
+
     std::vector<std::string> genotypeFields(numSamples);
     bool allPhased = true;
     for (size_t s = 0; s < numSamples; s++) {
         if (9 + s >= fields.size()) {
-            // missing sample => set .|.
             genotypeFields[s] = ".|.";
             allPhased = false;
             continue;
@@ -249,7 +237,6 @@ bool HaplotypeExtractor::processVariant(const std::vector<std::string> &fields,
             allPhased = false;
             continue;
         }
-        // e.g. "0|1"
         std::string gt = sampleToks[gtIndex];
         if (gt.find('|') == std::string::npos) {
             allPhased = false;
@@ -258,19 +245,114 @@ bool HaplotypeExtractor::processVariant(const std::vector<std::string> &fields,
     }
 
     if (!allPhased) {
-        // for demonstration, we skip if not fully phased
-        // or we can allow partial. We'll skip
         std::cerr << "Warning: Not all samples phased at " << chrom << ":" << pos << ".\n";
         return false;
     }
 
-    // if we get here => we have a fully phased variant => update blocks
     updateBlocks(haplotypeBlocks, chrom, pos, genotypeFields);
     return true;
 }
 
 // ---------------------------------------------------------------------
-// extractHaplotypes: main function to read from 'in', produce blocks => 'out'
+// processVariantStreaming: streaming version that outputs completed blocks
+// ---------------------------------------------------------------------
+bool HaplotypeExtractor::processVariantStreaming(const std::vector<std::string> &fields,
+                                                  HaplotypeBlock &currentBlock,
+                                                  bool &hasCurrentBlock,
+                                                  std::ostream &out,
+                                                  bool headerWritten) {
+    if (fields.size() < 9) {
+        std::cerr << "Warning: skipping invalid VCF line (<9 fields)\n";
+        return false;
+    }
+
+    const std::string &chrom = fields[0];
+    int pos = 0;
+    try {
+        pos = std::stoi(fields[1]);
+    } catch (...) {
+        std::cerr << "Warning: invalid POS => skip variant\n";
+        return false;
+    }
+
+    const std::string &formatStr = fields[8];
+    auto formatToks = splitString(formatStr, ':');
+    int gtIndex = -1;
+    for (int i = 0; i < (int)formatToks.size(); i++) {
+        if (formatToks[i] == "GT") {
+            gtIndex = i;
+            break;
+        }
+    }
+    if (gtIndex < 0) {
+        return false;
+    }
+
+    std::vector<std::string> genotypeFields(numSamples);
+    bool allPhased = true;
+    for (size_t s = 0; s < numSamples; s++) {
+        if (9 + s >= fields.size()) {
+            genotypeFields[s] = ".|.";
+            allPhased = false;
+            continue;
+        }
+        auto sampleToks = splitString(fields[9 + s], ':');
+        if (gtIndex >= (int)sampleToks.size()) {
+            genotypeFields[s] = ".|.";
+            allPhased = false;
+            continue;
+        }
+        std::string gt = sampleToks[gtIndex];
+        if (gt.find('|') == std::string::npos) {
+            allPhased = false;
+        }
+        genotypeFields[s] = gt;
+    }
+
+    if (!allPhased) {
+        std::cerr << "Warning: Not all samples phased at " << chrom << ":" << pos << ".\n";
+        return false;
+    }
+
+    // Streaming logic: check if we need to output current block and start new one
+    if (!hasCurrentBlock) {
+        // Start first block
+        currentBlock.chrom = chrom;
+        currentBlock.start = pos;
+        currentBlock.end = pos;
+        currentBlock.haplotypes = genotypeFields;
+        hasCurrentBlock = true;
+    } else {
+        // Check if we can extend current block
+        bool canExtend = (chrom == currentBlock.chrom) && (pos - currentBlock.end <= blockDistanceThreshold);
+
+        if (canExtend && checkPhaseConsistency) {
+            canExtend = phaseIsConsistent(currentBlock, genotypeFields);
+        }
+
+        if (canExtend) {
+            // Extend current block
+            currentBlock.end = pos;
+            for (size_t s = 0; s < currentBlock.haplotypes.size(); s++) {
+                currentBlock.haplotypes[s] += "|" + genotypeFields[s];
+            }
+        } else {
+            // Output completed block and start new one
+            outputBlock(out, currentBlock);
+
+            // Start new block
+            currentBlock.chrom = chrom;
+            currentBlock.start = pos;
+            currentBlock.end = pos;
+            currentBlock.haplotypes = genotypeFields;
+        }
+    }
+
+    return true;
+}
+
+// ---------------------------------------------------------------------
+// extractHaplotypes: original mode - accumulates all blocks
 // ---------------------------------------------------------------------
 bool HaplotypeExtractor::extractHaplotypes(std::istream &in, std::ostream &out) {
     bool foundHeader = false;
@@ -281,39 +363,68 @@ bool HaplotypeExtractor::extractHaplotypes(std::istream &in, std::ostream &out) 
         if (line.empty())
             continue;
         if (line[0] == '#') {
-            // if #CHROM => parse
             if (!foundHeader && line.rfind("#CHROM", 0) == 0) {
                 foundHeader = true;
                 if (!parseHeader(line)) {
                     return false;
                 }
             }
-            // skip output
             continue;
         }
         if (!foundHeader) {
             std::cerr << "Error: no #CHROM header found before data.\n";
             return false;
         }
-        // parse columns
         auto fields = splitString(line, '\t');
         processVariant(fields, haplotypeBlocks);
     }
 
-    // output
-    //  CHROM   START   END   Sample1   Sample2 ...
-    out << "CHROM\tSTART\tEND";
-    for (auto &s : sampleNames) {
-        out << "\t" << s;
+    // Output header and all blocks at end
+    outputHeader(out);
+    for (const auto &block : haplotypeBlocks) {
+        outputBlock(out, block);
     }
-    out << "\n";
 
-    for (auto &block : haplotypeBlocks) {
-        out << block.chrom << "\t" << block.start << "\t" << block.end;
-        for (auto &hap : block.haplotypes) {
-            out << "\t" << hap;
+    return true;
+}
+
+// ---------------------------------------------------------------------
+// extractHaplotypesStreaming: streaming mode - outputs blocks immediately
+// ---------------------------------------------------------------------
+bool HaplotypeExtractor::extractHaplotypesStreaming(std::istream &in, std::ostream &out) {
+    bool foundHeader = false;
+    bool headerWritten = false;
+    HaplotypeBlock currentBlock;
+    bool hasCurrentBlock = false;
+
+    std::string line;
+    while (std::getline(in, line)) {
+        if (line.empty())
+            continue;
+        if (line[0] == '#') {
+            if (!foundHeader && line.rfind("#CHROM", 0) == 0) {
+                foundHeader = true;
+                if (!parseHeader(line)) {
+                    return false;
+                }
+                // Output header immediately in streaming mode
+                outputHeader(out);
+                headerWritten = true;
+            }
+            continue;
         }
-        out << "\n";
+        if (!foundHeader) {
+            std::cerr << "Error: no #CHROM header found before data.\n";
+            return false;
+        }
+
+        auto fields = splitString(line, '\t');
+        processVariantStreaming(fields, currentBlock, hasCurrentBlock, out, headerWritten);
+    }
+
+    // Output final block if any
+    if (hasCurrentBlock) {
+        outputBlock(out, currentBlock);
     }
 
     return true;
@@ -325,13 +436,16 @@ bool HaplotypeExtractor::extractHaplotypes(std::istream &in, std::ostream &out) 
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_haplotype_extractor", show_help))
         return 0;
+
     int blockSize = 100000;
     bool doCheck = false;
     bool debug = false;
+    bool streaming = false;
 
-    // simple arg parse
+    // Simple arg parse
     for (int i = 1; i < argc; i++) {
         std::string a = argv[i];
         if (a == "--help" || a == "-h") {
@@ -343,6 +457,8 @@ int main(int argc, char *argv[]) {
             doCheck = true;
         } else if (a == "--debug") {
             debug = true;
+        } else if (a == "--streaming") {
+            streaming = true;
         }
     }
 
@@ -350,7 +466,14 @@ int main(int argc, char *argv[]) {
     extractor.setBlockDistanceThreshold(blockSize);
     extractor.setCheckPhaseConsistency(doCheck);
     extractor.setDebug(debug);
+    extractor.setStreamingMode(streaming);
 
-    bool ok = extractor.extractHaplotypes(std::cin, std::cout);
+    bool ok;
+    if (streaming) {
+        ok = extractor.extractHaplotypesStreaming(std::cin, std::cout);
+    } else {
+        ok = extractor.extractHaplotypes(std::cin, std::cout);
+    }
+
     return (ok ? 0 : 1);
 }

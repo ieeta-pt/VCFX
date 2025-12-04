@@ -1,5 +1,6 @@
 #include "VCFX_impact_filter.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <getopt.h>
@@ -205,6 +206,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_impact_filter", show_help))
         return 0;
     VCFXImpactFilter filt;

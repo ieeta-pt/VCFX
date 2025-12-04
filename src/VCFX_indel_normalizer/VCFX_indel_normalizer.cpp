@@ -1,5 +1,6 @@
 #include "VCFX_indel_normalizer.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cstdlib>
 #include <getopt.h>
@@ -254,6 +255,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_indel_normalizer", show_help))
         return 0;
     VCFXIndelNormalizer norm;

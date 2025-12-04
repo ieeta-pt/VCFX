@@ -1,5 +1,6 @@
 #include "VCFX_field_extractor.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <sstream>
@@ -200,6 +201,10 @@ void extractFields(std::istream &in, std::ostream &out, const std::vector<std::s
     std::unordered_map<std::string, int> sampleNameToIndex;
     bool foundChromHeader = false;
 
+    // Performance: reuse vector across iterations
+    std::vector<std::string> vcfCols;
+    vcfCols.reserve(16);
+
     while (std::getline(in, line)) {
         if (line.empty()) {
             continue;
@@ -208,33 +213,20 @@ void extractFields(std::istream &in, std::ostream &out, const std::vector<std::s
             // If it's the #CHROM line, parse out sample columns
             if (!foundChromHeader && line.rfind("#CHROM", 0) == 0) {
                 foundChromHeader = true;
-                // parse columns
-                std::stringstream ss(line);
-                std::string col;
-                int colIndex = 0;
-                std::vector<std::string> hdrCols;
-                while (std::getline(ss, col, '\t')) {
-                    hdrCols.push_back(col);
-                }
+                // parse columns using optimized split
+                vcfx::split_tabs(line, vcfCols);
                 // sample columns start at index=9
-                for (int i = 9; i < (int)hdrCols.size(); i++) {
-                    // sample name is hdrCols[i]
-                    sampleNameToIndex[hdrCols[i]] = i;
+                for (int i = 9; i < (int)vcfCols.size(); i++) {
+                    // sample name is vcfCols[i]
+                    sampleNameToIndex[vcfCols[i]] = i;
                 }
             }
             // skip printing header lines in the output
             continue;
         }
 
-        // parse columns
-        std::stringstream ss(line);
-        std::vector<std::string> vcfCols;
-        {
-            std::string token;
-            while (std::getline(ss, token, '\t')) {
-                vcfCols.push_back(token);
-            }
-        }
+        // parse columns using optimized split (reuses vector capacity)
+        vcfx::split_tabs(line, vcfCols);
         // parse the requested fields
         std::vector<std::string> extracted = parseLineExtract(vcfCols, fields, sampleNameToIndex);
 
@@ -254,6 +246,7 @@ void extractFields(std::istream &in, std::ostream &out, const std::vector<std::s
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_field_extractor", show_help))
         return 0;
     std::vector<std::string> fields;

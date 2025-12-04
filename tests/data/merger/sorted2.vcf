@@ -1,0 +1,5 @@
+##fileformat=VCFv4.2
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	150	varB	T	C	.	PASS	.
+1	250	varD	A	C	.	PASS	.
+2	50	varF	G	T	.	PASS	.

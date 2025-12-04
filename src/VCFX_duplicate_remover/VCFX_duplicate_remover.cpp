@@ -1,17 +1,21 @@
 #include "VCFX_duplicate_remover.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <sstream>
 #include <vector>
 
-// Utility function: Splits a string by a given delimiter.
+// Utility function: Splits a string by a given delimiter (optimized).
 static std::vector<std::string> splitString(const std::string &str, char delimiter) {
     std::vector<std::string> tokens;
-    std::stringstream ss(str);
-    std::string token;
-    while (std::getline(ss, token, delimiter)) {
-        tokens.push_back(token);
+    tokens.reserve(8);
+    size_t start = 0;
+    size_t end;
+    while ((end = str.find(delimiter, start)) != std::string::npos) {
+        tokens.emplace_back(str, start, end - start);
+        start = end + 1;
     }
+    tokens.emplace_back(str, start);
     return tokens;
 }
 
@@ -85,6 +89,10 @@ bool removeDuplicates(std::istream &in, std::ostream &out) {
     // Use an unordered_set with our custom hash function to track seen variants.
     std::unordered_set<VariantKey, VariantKeyHash> seen_variants;
 
+    // Performance: reuse vector across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(in, line)) {
         if (line.empty()) {
             continue;
@@ -95,16 +103,16 @@ bool removeDuplicates(std::istream &in, std::ostream &out) {
             continue;
         }
 
-        std::stringstream ss(line);
-        std::string chrom, pos, id, ref, alt, qual, filter, info;
-        // Expect at least 8 columns: CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO.
-        if (!(ss >> chrom >> pos >> id >> ref >> alt >> qual >> filter >> info)) {
+        // Performance: use find-based tab splitting instead of stringstream
+        vcfx::split_tabs(line, fields);
+        // Expect at least 5 columns: CHROM, POS, ID, REF, ALT
+        if (fields.size() < 5) {
             std::cerr << "Warning: Skipping invalid VCF line.\n";
             continue;
         }
 
         // Generate a variant key that normalizes ALT ordering.
-        VariantKey key = generateVariantKey(chrom, pos, ref, alt);
+        VariantKey key = generateVariantKey(fields[0], fields[1], fields[3], fields[4]);
         if (seen_variants.find(key) == seen_variants.end()) {
             // Variant is unique; record and output the line.
             seen_variants.insert(key);
@@ -122,6 +130,7 @@ bool removeDuplicates(std::istream &in, std::ostream &out) {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_duplicate_remover", show_help))
         return 0;
     // Simple argument parsing: if --help or -h is provided, print help.

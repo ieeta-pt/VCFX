@@ -1,5 +1,6 @@
 #include "VCFX_indexer.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm> // for std::find_if_not, if you want a neat trim
 #include <cstdint>
 #include <cstring>
@@ -195,6 +196,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_indexer", show_help))
         return 0;
     VCFXIndexer idx;

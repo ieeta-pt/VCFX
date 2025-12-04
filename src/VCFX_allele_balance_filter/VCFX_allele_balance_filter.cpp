@@ -1,4 +1,5 @@
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cstdlib>
 #include <getopt.h>
@@ -88,6 +89,10 @@ void VCFXAlleleBalanceFilter::displayHelp() {
 void VCFXAlleleBalanceFilter::filterByAlleleBalance(std::istream &in, std::ostream &out, double threshold) {
     std::string line;
 
+    // Performance: reuse vector across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+
     while (std::getline(in, line)) {
         if (line.empty()) {
             continue;
@@ -99,26 +104,17 @@ void VCFXAlleleBalanceFilter::filterByAlleleBalance(std::istream &in, std::ostre
             continue;
         }
 
-        // Parse the fixed VCF fields up to FORMAT
-        // VCF line: CHROM POS ID REF ALT QUAL FILTER INFO FORMAT [samples...]
-        std::stringstream ss(line);
-        std::string chrom, pos, id, ref, alt, qual, filter, info, format;
-        if (!(ss >> chrom >> pos >> id >> ref >> alt >> qual >> filter >> info >> format)) {
+        // Performance: use find-based tab splitting instead of stringstream
+        vcfx::split_tabs(line, fields);
+        if (fields.size() < 10) {
             std::cerr << "Warning: Skipping invalid VCF line: " << line << "\n";
             continue;
         }
 
-        // The rest are genotype columns
-        std::vector<std::string> genotypes;
-        std::string genotype;
-        while (ss >> genotype) {
-            genotypes.push_back(genotype);
-        }
-
         // "all or nothing" filter: if ANY genotype fails threshold => skip
         bool pass = true;
-        for (const auto &gtField : genotypes) {
-            double ab = calculateAlleleBalance(gtField);
+        for (size_t i = 9; i < fields.size(); ++i) {
+            double ab = calculateAlleleBalance(fields[i]);
             if (ab < threshold) {
                 pass = false;
                 break;
@@ -203,6 +199,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_allele_balance_filter", show_help))
         return 0;
     VCFXAlleleBalanceFilter alleleBalanceFilter;

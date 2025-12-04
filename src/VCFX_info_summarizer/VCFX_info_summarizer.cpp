@@ -1,5 +1,6 @@
 #include "VCFX_info_summarizer.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -222,6 +223,7 @@ bool summarizeInfoFields(std::istream &in, std::ostream &out, const std::vector<
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_info_summarizer", show_help))
         return 0;
     std::vector<std::string> info_fields;

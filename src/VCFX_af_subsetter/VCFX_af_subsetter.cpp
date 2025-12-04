@@ -1,5 +1,6 @@
 #include "VCFX_af_subsetter.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cstdlib>
 #include <getopt.h>
@@ -98,6 +99,13 @@ bool VCFXAfSubsetter::parseAF(const std::string &infoField, std::vector<double> 
 
 void VCFXAfSubsetter::subsetByAlleleFrequency(std::istream &in, std::ostream &out, double minAF, double maxAF) {
     std::string line;
+
+    // Performance: reuse vector across iterations
+    std::vector<std::string> fields;
+    fields.reserve(16);
+    std::vector<double> afValues;
+    afValues.reserve(8);
+
     while (std::getline(in, line)) {
         if (line.empty()) {
             continue;
@@ -109,15 +117,8 @@ void VCFXAfSubsetter::subsetByAlleleFrequency(std::istream &in, std::ostream &ou
             continue;
         }
 
-        // Split the VCF line into fields
-        std::vector<std::string> fields;
-        {
-            std::stringstream ss(line);
-            std::string field;
-            while (std::getline(ss, field, '\t')) {
-                fields.push_back(field);
-            }
-        }
+        // Performance: use find-based tab splitting instead of stringstream
+        vcfx::split_tabs(line, fields);
 
         if (fields.size() < 8) {
             std::cerr << "Warning: Skipping invalid VCF line (less than 8 fields): " << line << "\n";
@@ -125,9 +126,8 @@ void VCFXAfSubsetter::subsetByAlleleFrequency(std::istream &in, std::ostream &ou
         }
 
         // Parse AF values from the INFO field
-        std::string info = fields[7];
-        std::vector<double> afValues;
-        if (!parseAF(info, afValues)) {
+        afValues.clear();
+        if (!parseAF(fields[7], afValues)) {
             std::cerr << "Warning: AF not found or invalid in INFO field. Skipping variant: " << line << "\n";
             continue;
         }
@@ -159,6 +159,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_af_subsetter", show_help))
         return 0;
     VCFXAfSubsetter afSubsetter;

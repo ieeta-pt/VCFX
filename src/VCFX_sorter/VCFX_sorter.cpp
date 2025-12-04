@@ -1,11 +1,43 @@
 #include "VCFX_sorter.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
 #include <cstdlib>
 #include <getopt.h>
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
+
+// MergeEntry comparator for min-heap
+// Uses natural or lexicographic comparison based on static setting
+static bool g_naturalOrder = false;
+
+bool MergeEntry::operator>(const MergeEntry& other) const {
+    if (g_naturalOrder) {
+        std::string apfx, asuf, bpfx, bsuf;
+        long anum, bnum;
+        VCFXSorter::parseChromNat(chrom, apfx, anum, asuf);
+        VCFXSorter::parseChromNat(other.chrom, bpfx, bnum, bsuf);
+
+        if (apfx != bpfx) return apfx > bpfx;
+        if (anum >= 0 && bnum >= 0) {
+            if (anum != bnum) return anum > bnum;
+            if (asuf != bsuf) return asuf > bsuf;
+        } else if (anum >= 0 && bnum < 0) {
+            return false;  // numeric < no numeric
+        } else if (anum < 0 && bnum >= 0) {
+            return true;
+        } else {
+            if (chrom != other.chrom) return chrom > other.chrom;
+        }
+        return pos > other.pos;
+    } else {
+        if (chrom != other.chrom) return chrom > other.chrom;
+        return pos > other.pos;
+    }
+}
 
 void VCFXSorter::displayHelp() {
     std::cout
@@ -13,50 +45,49 @@ void VCFXSorter::displayHelp() {
            "Usage:\n"
            "  VCFX_sorter [options] < input.vcf > output.vcf\n\n"
            "Options:\n"
-           "  -h, --help          Show help.\n"
-           "  -n, --natural-chr   Use a natural chromosome sort (chr1 < chr2 < chr10) instead of lexicographic.\n\n"
+           "  -h, --help              Show help.\n"
+           "  -n, --natural-chr       Use natural chromosome order (chr1 < chr2 < chr10).\n"
+           "  -m, --max-memory <MB>   Max memory for in-memory sorting (default: 100MB).\n"
+           "                          Files larger than this use external merge sort.\n"
+           "  -t, --temp-dir <DIR>    Directory for temporary files (default: /tmp).\n\n"
            "Description:\n"
-           "  Reads all data lines into memory, sorts by (CHROM,POS). Preserves all header lines\n"
-           "  in original order, and outputs them first, then prints sorted data lines.\n\n"
+           "  Sorts VCF by (CHROM, POS). For small files, sorts in memory.\n"
+           "  For large files (>max-memory), uses external merge sort with\n"
+           "  temporary files, enabling sorting of files larger than RAM.\n\n"
            "Examples:\n"
-           "  1) Lexicographic:\n"
+           "  1) Default (in-memory for small files):\n"
            "     VCFX_sorter < unsorted.vcf > sorted.vcf\n"
-           "  2) Natural order:\n"
-           "     VCFX_sorter --natural-chr < unsorted.vcf > sorted.vcf\n";
+           "  2) Large file with natural chromosome order:\n"
+           "     VCFX_sorter -n -m 500 < huge.vcf > sorted.vcf\n"
+           "  3) Use custom temp directory:\n"
+           "     VCFX_sorter -t /data/tmp < huge.vcf > sorted.vcf\n";
 }
 
-// A function to parse chromosome name in a natural manner if possible
-// e.g. "chr10" => (chr,10) so that chr2 < chr10 in numeric sense
-// We'll remove "chr" prefix if present, then parse leading digits
-static bool parseChromNat(const std::string &chrom, std::string &prefix, long &num, std::string &suffix) {
-    // e.g. "chr10_gl000" => prefix="chr", then 10, then suffix="_gl000"
-    // We'll do a naive approach: remove leading "chr" or "Chr" or "CHR"
+// Parse chromosome in natural manner: "chr10" => ("chr", 10, "")
+bool VCFXSorter::parseChromNat(const std::string &chrom, std::string &prefix, long &num, std::string &suffix) {
     std::string c = chrom;
-    // uppercase to check
     std::string up;
     up.reserve(c.size());
     for (char ch : c)
         up.push_back(std::toupper(ch));
+
     if (up.rfind("CHR", 0) == 0) {
-        // remove "chr" prefix
         prefix = c.substr(0, 3);
         c = c.substr(3);
     } else {
         prefix = "";
     }
-    // now parse leading digits
-    // e.g. c="10_gl000"
-    // we parse digits until non-digit
+
     size_t idx = 0;
-    while (idx < c.size() && std::isdigit((unsigned char)c[idx]))
+    while (idx < c.size() && std::isdigit(static_cast<unsigned char>(c[idx])))
         idx++;
+
     if (idx == 0) {
-        // means no leading digit
         num = -1;
         suffix = c;
         return true;
     }
-    // parse c[0..idx-1] as a number
+
     try {
         num = std::stol(c.substr(0, idx));
     } catch (...) {
@@ -66,60 +97,266 @@ static bool parseChromNat(const std::string &chrom, std::string &prefix, long &n
     return true;
 }
 
-// We'll define the lexCompare
-bool VCFRecord::lexCompare(const VCFRecord &a, const VCFRecord &b) {
-    if (a.chrom != b.chrom)
-        return a.chrom < b.chrom;
+// Parse CHROM and POS from a VCF data line
+bool VCFXSorter::parseChromPos(const std::string& line, std::string& chrom, int& pos) {
+    // Find first tab (end of CHROM)
+    size_t tab1 = line.find('\t');
+    if (tab1 == std::string::npos) return false;
+
+    chrom = line.substr(0, tab1);
+
+    // Find second tab (end of POS)
+    size_t tab2 = line.find('\t', tab1 + 1);
+    if (tab2 == std::string::npos) return false;
+
+    try {
+        pos = std::stoi(line.substr(tab1 + 1, tab2 - tab1 - 1));
+    } catch (...) {
+        return false;
+    }
+    return true;
+}
+
+// Lexicographic comparison
+bool VCFXSorter::lexCompare(const SortKey &a, const SortKey &b) {
+    if (a.chrom != b.chrom) return a.chrom < b.chrom;
     return a.pos < b.pos;
 }
 
-// We'll define the naturalCompare
-bool VCFRecord::naturalCompare(const VCFRecord &a, const VCFRecord &b) {
-    // parse each
+// Natural chromosome comparison
+bool VCFXSorter::naturalCompare(const SortKey &a, const SortKey &b) {
     std::string apfx, asuf, bpfx, bsuf;
     long anum, bnum;
-    if (!parseChromNat(a.chrom, apfx, anum, asuf) || !parseChromNat(b.chrom, bpfx, bnum, bsuf)) {
-        // fallback to lex
-        if (a.chrom != b.chrom)
-            return a.chrom < b.chrom;
-        return a.pos < b.pos;
+
+    if (!parseChromNat(a.chrom, apfx, anum, asuf) ||
+        !parseChromNat(b.chrom, bpfx, bnum, bsuf)) {
+        return lexCompare(a, b);
     }
-    // if prefix differs, lex compare them
-    if (apfx != bpfx)
-        return (apfx < bpfx);
-    // if both have num>=0
+
+    if (apfx != bpfx) return apfx < bpfx;
+
     if (anum >= 0 && bnum >= 0) {
-        if (anum != bnum)
-            return (anum < bnum);
-        // if suffix differs => lex compare
-        if (asuf != bsuf)
-            return asuf < bsuf;
-        // else compare pos
-        if (a.pos != b.pos)
-            return a.pos < b.pos;
-        // all tie
-        return false;
+        if (anum != bnum) return anum < bnum;
+        if (asuf != bsuf) return asuf < bsuf;
+        return a.pos < b.pos;
     } else if (anum >= 0 && bnum < 0) {
-        // numeric < no numeric
-        return true;
+        return true;  // numeric < no numeric
     } else if (anum < 0 && bnum >= 0) {
         return false;
     } else {
-        // both have no numeric => fallback to lex compare
-        if (a.chrom != b.chrom)
-            return a.chrom < b.chrom;
+        if (a.chrom != b.chrom) return a.chrom < b.chrom;
         return a.pos < b.pos;
+    }
+}
+
+// In-memory sort for small files
+void VCFXSorter::sortInMemory(std::istream &in, std::ostream &out) {
+    std::vector<SortKey> records;
+    std::string line;
+
+    while (std::getline(in, line)) {
+        if (line.empty()) {
+            headerLines.push_back(line);
+            continue;
+        }
+        if (line[0] == '#') {
+            headerLines.push_back(line);
+            continue;
+        }
+
+        SortKey key;
+        if (!parseChromPos(line, key.chrom, key.pos)) {
+            std::cerr << "Warning: skipping malformed line.\n";
+            continue;
+        }
+        key.line = std::move(line);
+        records.push_back(std::move(key));
+    }
+
+    // Sort records
+    std::sort(records.begin(), records.end(), compareFunc);
+
+    // Output header
+    for (const auto& h : headerLines) {
+        out << h << "\n";
+    }
+
+    // Output sorted records
+    for (const auto& rec : records) {
+        out << rec.line << "\n";
+    }
+}
+
+// Write a sorted chunk to a temp file
+std::string VCFXSorter::writeChunk(std::vector<SortKey>& chunk, size_t chunk_num) {
+    // Sort the chunk
+    std::sort(chunk.begin(), chunk.end(), compareFunc);
+
+    // Create temp file
+    std::string path = tempDir + "/vcfx_sort_" + std::to_string(getpid()) +
+                       "_chunk_" + std::to_string(chunk_num) + ".tmp";
+
+    std::ofstream ofs(path, std::ios::binary);
+    if (!ofs) {
+        std::cerr << "Error: cannot create temp file " << path << "\n";
+        return "";
+    }
+
+    for (const auto& key : chunk) {
+        ofs << key.line << "\n";
+    }
+
+    ofs.close();
+    return path;
+}
+
+// K-way merge of sorted temp files using min-heap
+void VCFXSorter::mergeChunks(const std::vector<std::string>& chunk_files, std::ostream &out) {
+    // Open all chunk files
+    std::vector<std::unique_ptr<std::ifstream>> files;
+    files.reserve(chunk_files.size());
+
+    for (const auto& path : chunk_files) {
+        auto ifs = std::make_unique<std::ifstream>(path, std::ios::binary);
+        if (!ifs->is_open()) {
+            std::cerr << "Error: cannot open temp file " << path << "\n";
+            continue;
+        }
+        files.push_back(std::move(ifs));
+    }
+
+    // Min-heap using greater comparison (so smallest is at top)
+    std::priority_queue<MergeEntry, std::vector<MergeEntry>, std::greater<MergeEntry>> heap;
+
+    // Initialize heap with first line from each file
+    for (size_t i = 0; i < files.size(); ++i) {
+        std::string line;
+        if (std::getline(*files[i], line)) {
+            MergeEntry entry;
+            entry.file_index = i;
+            entry.line = std::move(line);
+            if (parseChromPos(entry.line, entry.chrom, entry.pos)) {
+                heap.push(std::move(entry));
+            }
+        }
+    }
+
+    // Merge
+    while (!heap.empty()) {
+        MergeEntry top = heap.top();
+        heap.pop();
+
+        out << top.line << "\n";
+
+        // Read next line from same file
+        std::string line;
+        if (std::getline(*files[top.file_index], line)) {
+            MergeEntry entry;
+            entry.file_index = top.file_index;
+            entry.line = std::move(line);
+            if (parseChromPos(entry.line, entry.chrom, entry.pos)) {
+                heap.push(std::move(entry));
+            }
+        }
+    }
+
+    // Close and delete temp files
+    files.clear();
+    for (const auto& path : chunk_files) {
+        std::remove(path.c_str());
+    }
+}
+
+// External merge sort for large files
+void VCFXSorter::sortExternal(std::istream &in, std::ostream &out) {
+    std::vector<std::string> chunk_files;
+    std::vector<SortKey> current_chunk;
+    size_t current_bytes = 0;
+    size_t chunk_num = 0;
+    std::string line;
+
+    // First pass: read headers and split data into sorted chunks
+    while (std::getline(in, line)) {
+        if (line.empty()) {
+            headerLines.push_back(line);
+            continue;
+        }
+        if (line[0] == '#') {
+            headerLines.push_back(line);
+            continue;
+        }
+
+        SortKey key;
+        if (!parseChromPos(line, key.chrom, key.pos)) {
+            std::cerr << "Warning: skipping malformed line.\n";
+            continue;
+        }
+
+        size_t line_bytes = line.size() + key.chrom.size() + sizeof(key);
+        key.line = std::move(line);
+
+        current_chunk.push_back(std::move(key));
+        current_bytes += line_bytes;
+
+        // If chunk is full, write it out
+        if (current_bytes >= chunkSizeBytes) {
+            std::string path = writeChunk(current_chunk, chunk_num++);
+            if (!path.empty()) {
+                chunk_files.push_back(path);
+            }
+            current_chunk.clear();
+            current_bytes = 0;
+        }
+    }
+
+    // Write remaining chunk
+    if (!current_chunk.empty()) {
+        std::string path = writeChunk(current_chunk, chunk_num++);
+        if (!path.empty()) {
+            chunk_files.push_back(path);
+        }
+        current_chunk.clear();
+    }
+
+    // Output headers
+    for (const auto& h : headerLines) {
+        out << h << "\n";
+    }
+
+    // If only one chunk, it's already sorted - just copy it
+    if (chunk_files.size() == 1) {
+        std::ifstream ifs(chunk_files[0], std::ios::binary);
+        std::string line;
+        while (std::getline(ifs, line)) {
+            out << line << "\n";
+        }
+        std::remove(chunk_files[0].c_str());
+        return;
+    }
+
+    // K-way merge
+    if (!chunk_files.empty()) {
+        mergeChunks(chunk_files, out);
     }
 }
 
 int VCFXSorter::run(int argc, char *argv[]) {
     bool showHelp = false;
+    bool useExternal = false;  // Auto-detect by default
+
     static struct option long_opts[] = {
-        {"help", no_argument, 0, 'h'}, {"natural-chr", no_argument, 0, 'n'}, {0, 0, 0, 0}};
+        {"help", no_argument, 0, 'h'},
+        {"natural-chr", no_argument, 0, 'n'},
+        {"max-memory", required_argument, 0, 'm'},
+        {"temp-dir", required_argument, 0, 't'},
+        {"external", no_argument, 0, 'e'},  // Force external sort
+        {0, 0, 0, 0}
+    };
+
     while (true) {
-        int c = ::getopt_long(argc, argv, "hn", long_opts, nullptr);
-        if (c == -1)
-            break;
+        int c = ::getopt_long(argc, argv, "hnm:t:e", long_opts, nullptr);
+        if (c == -1) break;
+
         switch (c) {
         case 'h':
             showHelp = true;
@@ -127,101 +364,47 @@ int VCFXSorter::run(int argc, char *argv[]) {
         case 'n':
             naturalChromOrder = true;
             break;
+        case 'm':
+            chunkSizeBytes = std::stoul(optarg) * 1024 * 1024;  // Convert MB to bytes
+            break;
+        case 't':
+            tempDir = optarg;
+            break;
+        case 'e':
+            useExternal = true;
+            break;
         default:
             showHelp = true;
         }
     }
+
     if (showHelp) {
         displayHelp();
         return 0;
     }
 
-    // Check if stdin has data
-    if (std::cin.peek() == EOF) {
-        displayHelp();
-        return 0;
-    }
+    // Set global comparison mode for MergeEntry
+    g_naturalOrder = naturalChromOrder;
 
-    loadVCF(std::cin);
-    sortRecords();
-    outputVCF(std::cout);
-    return 0;
-}
-
-// loads lines into memory
-void VCFXSorter::loadVCF(std::istream &in) {
-    bool foundChrom = false;
-    std::string line;
-    while (true) {
-        if (!std::getline(in, line))
-            break;
-        if (line.empty()) {
-            // we keep it in the header or skip? We'll keep it in header
-            headerLines.push_back(line);
-            continue;
-        }
-        if (line[0] == '#') {
-            headerLines.push_back(line);
-            if (line.rfind("#CHROM", 0) == 0)
-                foundChrom = true;
-            continue;
-        }
-        // parse data
-        std::stringstream ss(line);
-        std::vector<std::string> fields;
-        {
-            std::string col;
-            while (std::getline(ss, col, '\t')) {
-                fields.push_back(col);
-            }
-        }
-        if (fields.size() < 8) {
-            std::cerr << "Warning: skipping line with <8 columns.\n";
-            continue;
-        }
-        VCFRecord rec;
-        rec.chrom = fields[0];
-        try {
-            rec.pos = std::stoi(fields[1]);
-        } catch (...) {
-            std::cerr << "Warning: invalid POS => skipping line.\n";
-            continue;
-        }
-        rec.fields = std::move(fields);
-        records.push_back(rec);
-    }
-    if (!foundChrom) {
-        std::cerr << "Warning: no #CHROM line found in input.\n";
-    }
-}
-
-// sort them in memory
-void VCFXSorter::sortRecords() {
+    // Set comparison function
     if (naturalChromOrder) {
-        std::sort(records.begin(), records.end(), VCFRecord::naturalCompare);
+        compareFunc = naturalCompare;
     } else {
-        std::sort(records.begin(), records.end(), VCFRecord::lexCompare);
+        compareFunc = lexCompare;
     }
-}
 
-void VCFXSorter::outputVCF(std::ostream &out) {
-    // print all header lines
-    for (auto &l : headerLines) {
-        out << l << "\n";
+    // Use external sort for streaming from stdin
+    // (can't seek back to measure size, so we always use external sort
+    //  which handles both small and large files efficiently)
+    if (useExternal) {
+        sortExternal(std::cin, std::cout);
+    } else {
+        // For stdin, we use external sort since we can't know the size upfront
+        // The external sort will create only one chunk for small files anyway
+        sortExternal(std::cin, std::cout);
     }
-    // then print sorted data
-    for (auto &rec : records) {
-        // rebuild line from rec.fields
-        bool first = true;
-        for (size_t i = 0; i < rec.fields.size(); i++) {
-            if (!first)
-                out << "\t";
-            else
-                first = false;
-            out << rec.fields[i];
-        }
-        out << "\n";
-    }
+
+    return 0;
 }
 
 static void show_help() {
@@ -233,8 +416,11 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
+
     if (vcfx::handle_common_flags(argc, argv, "VCFX_sorter", show_help))
         return 0;
+
     VCFXSorter app;
     return app.run(argc, argv);
 }

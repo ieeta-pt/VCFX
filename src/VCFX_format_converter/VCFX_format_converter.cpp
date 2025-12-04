@@ -1,5 +1,6 @@
 #include "VCFX_format_converter.h"
 #include "vcfx_core.h"
+#include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <sstream>
@@ -188,6 +189,7 @@ void convertVCFtoCSV(std::istream &in, std::ostream &out) {
 static void show_help() { printHelp(); }
 
 int main(int argc, char *argv[]) {
+    vcfx::init_io();  // Performance: disable sync_with_stdio
     if (vcfx::handle_common_flags(argc, argv, "VCFX_format_converter", show_help))
         return 0;
     OutputFormat format;
