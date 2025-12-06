@@ -5,8 +5,11 @@
 
 **New in v1.1**: The tool now supports **external merge sort** for handling files larger than available RAM, enabling sorting of 50GB+ VCF files with minimal memory usage.
 
+**New in v1.2**: Added **memory-mapped I/O** for file arguments, providing ~40x faster processing for large files compared to stdin.
+
 ## Usage
 ```bash
+VCFX_sorter [OPTIONS] [files...] > output.vcf
 VCFX_sorter [OPTIONS] < input.vcf > output.vcf
 ```
 
@@ -39,6 +42,20 @@ This tool is particularly useful for:
 - **Sorting very large VCF files (50GB+) that exceed available RAM**
 
 ## Performance Improvements
+
+### Memory-Mapped I/O (v1.2)
+When file arguments are provided instead of stdin, the tool uses memory-mapped I/O (`mmap`) with several optimizations:
+
+1. **Zero-copy Parsing**: Parses chromosome and position directly from mmap'd memory without string allocation
+2. **Pre-computed Chromosome IDs**: Converts chromosome strings to numeric IDs once during parsing, eliminating O(n log n) string comparisons during sort
+3. **CompactSortKey Structure**: Uses a 20-byte sort key storing only offsets instead of full VCF lines (vs ~9KB per variant with full lines)
+4. **1MB Output Buffer**: Batched output reduces syscall overhead
+
+#### Benchmark Results
+On a test file with 427K variants and 2,504 samples (1.4GB):
+- **stdin processing**: >30 minutes (timeout)
+- **mmap file argument**: ~46 seconds
+- **Improvement**: ~40x faster with file arguments
 
 ### External Merge Sort for Large Files
 The tool now implements **external merge sort** for handling files larger than available RAM:
@@ -84,8 +101,14 @@ This results in more intuitive ordering where chr1 < chr2 < chr10, instead of ch
 
 ## Examples
 
-### Basic Lexicographic Sorting
+### Basic Lexicographic Sorting (File Argument - Fastest)
 Sort a VCF file using standard lexicographic chromosome ordering:
+```bash
+VCFX_sorter unsorted.vcf > sorted.vcf
+```
+
+### Basic Lexicographic Sorting (Stdin)
+Sort a VCF file from standard input:
 ```bash
 VCFX_sorter < unsorted.vcf > sorted.vcf
 ```
@@ -93,7 +116,7 @@ VCFX_sorter < unsorted.vcf > sorted.vcf
 ### Natural Chromosome Sorting
 Sort a VCF file using natural chromosome ordering:
 ```bash
-VCFX_sorter --natural-chr < unsorted.vcf > sorted.vcf
+VCFX_sorter --natural-chr unsorted.vcf > sorted.vcf
 ```
 
 ### Large File Sorting (External Merge Sort)
