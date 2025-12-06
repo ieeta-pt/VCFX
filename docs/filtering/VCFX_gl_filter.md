@@ -125,10 +125,30 @@ If a field value cannot be converted to a number:
 - For data lines before the header (#CHROM) line, the tool produces a warning and skips the line
 
 ## Performance Considerations
-- The tool processes VCF files line by line, requiring minimal memory
-- Regex pattern matching is used for efficient parsing of filter conditions
+
+### Optimized Implementation
+The tool uses several performance optimizations for fast processing of large VCF files with many samples:
+
+1. **Zero-allocation parsing**: Sample genotype fields are parsed using raw pointer arithmetic instead of creating intermediate string objects, eliminating millions of heap allocations on large files.
+
+2. **Streaming sample processing**: Samples are processed one-by-one without storing positions, allowing the tool to handle files with thousands of samples efficiently.
+
+3. **Fast numeric parsing**: A custom inline parser replaces `std::stod` to avoid exception handling overhead and unnecessary string conversions.
+
+4. **Output buffering**: A 1MB output buffer reduces system call overhead for writing filtered records.
+
+5. **Pre-computed operator type**: The comparison operator is converted to an enum at startup, enabling fast switch-based comparison in the hot loop.
+
+### Complexity
+- Linear time complexity with respect to file size: O(variants × samples)
+- Constant memory usage regardless of sample count
 - No preprocessing or indexing of the VCF file is required
-- Linear time complexity with respect to file size
+
+### Scalability
+The streaming architecture allows processing of VCF files with:
+- Unlimited number of samples (tested with 5000+ samples)
+- Large file sizes (multi-GB files)
+- Minimal memory footprint
 
 ## Limitations
 - Only works with numeric fields in the FORMAT column

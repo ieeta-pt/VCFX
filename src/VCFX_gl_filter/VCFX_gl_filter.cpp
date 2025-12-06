@@ -99,6 +99,95 @@ void VCFXGLFilter::displayHelp() {
               << "  if at least one sample satisfying is enough to keep the record.\n";
 }
 
+// Zero-allocation helper: find the N-th colon-delimited field and return pointer + length
+// Returns false if fieldIndex is out of bounds or field is missing/empty
+static inline bool getNthField(const char* str, size_t len, int fieldIndex,
+                               const char*& fieldStart, size_t& fieldLen) {
+    int currentField = 0;
+    size_t pos = 0;
+    size_t start = 0;
+
+    while (pos <= len) {
+        if (pos == len || str[pos] == ':') {
+            if (currentField == fieldIndex) {
+                fieldStart = str + start;
+                fieldLen = pos - start;
+                return fieldLen > 0 && !(fieldLen == 1 && *fieldStart == '.');
+            }
+            currentField++;
+            start = pos + 1;
+        }
+        pos++;
+    }
+    return false;
+}
+
+// Zero-allocation helper: find field index by name in FORMAT string
+static inline int findFieldIndex(const char* format, size_t formatLen,
+                                  const char* fieldName, size_t fieldNameLen) {
+    int index = 0;
+    size_t pos = 0;
+    size_t start = 0;
+
+    while (pos <= formatLen) {
+        if (pos == formatLen || format[pos] == ':') {
+            size_t tokenLen = pos - start;
+            if (tokenLen == fieldNameLen &&
+                std::memcmp(format + start, fieldName, fieldNameLen) == 0) {
+                return index;
+            }
+            index++;
+            start = pos + 1;
+        }
+        pos++;
+    }
+    return -1;
+}
+
+// Fast inline integer parser for common case (GQ, DP are usually integers)
+static inline bool fastParseDouble(const char* str, size_t len, double& result) {
+    if (len == 0) return false;
+
+    const char* p = str;
+    const char* end = str + len;
+
+    // Handle negative
+    bool negative = false;
+    if (*p == '-') {
+        negative = true;
+        p++;
+        if (p >= end) return false;
+    }
+
+    // Parse integer part
+    if (*p < '0' || *p > '9') return false;
+
+    double intPart = 0;
+    while (p < end && *p >= '0' && *p <= '9') {
+        intPart = intPart * 10 + (*p - '0');
+        p++;
+    }
+
+    // Parse decimal part if present
+    double fracPart = 0;
+    if (p < end && *p == '.') {
+        p++;
+        double divisor = 10;
+        while (p < end && *p >= '0' && *p <= '9') {
+            fracPart += (*p - '0') / divisor;
+            divisor *= 10;
+            p++;
+        }
+    }
+
+    // For multi-value fields like PL, stop at comma
+    // We accept the value even if there's more data after
+
+    result = intPart + fracPart;
+    if (negative) result = -result;
+    return true;
+}
+
 void VCFXGLFilter::filterByGL(std::istream &in, std::ostream &out, const std::string &filterCondition, bool anyMode) {
     // Regex that allows field + operator + float or int
     // e.g. "GQ>20" or "DP>=3.5" etc.
@@ -106,166 +195,179 @@ void VCFXGLFilter::filterByGL(std::istream &in, std::ostream &out, const std::st
     std::smatch matches;
     if (!std::regex_match(filterCondition, matches, conditionRegex)) {
         std::cerr << "Error: Invalid filter condition format. Expected e.g. \"GQ>20\" or \"DP<=3.5\".\n";
-        // Don't continue processing, just return
-        return; // The error has been reported, the caller will handle the return code
+        return;
     }
 
     std::string field = matches[1];
     std::string op = matches[2];
     double threshold = std::stod(matches[3]);
 
+    // Pre-compute operator type for fast comparison in hot loop
+    enum class OpType { GT, LT, GE, LE, EQ, NE };
+    OpType opType;
+    if (op == ">") opType = OpType::GT;
+    else if (op == "<") opType = OpType::LT;
+    else if (op == ">=") opType = OpType::GE;
+    else if (op == "<=") opType = OpType::LE;
+    else if (op == "==") opType = OpType::EQ;
+    else opType = OpType::NE;
+
+    const char* fieldName = field.c_str();
+    size_t fieldNameLen = field.size();
+
     bool headerParsed = false;
-    std::vector<std::string> headerFields;
-    headerFields.reserve(16);
     std::string line;
 
-    // Reuse vectors across iterations
-    std::vector<std::string> fieldsVec;
-    fieldsVec.reserve(16);
-    std::vector<std::string> formatTokens;
-    formatTokens.reserve(8);
-    std::vector<std::string> sampleTokens;
-    sampleTokens.reserve(8);
+    // Output buffer for better I/O performance
+    std::string outputBuffer;
+    outputBuffer.reserve(1024 * 1024);  // 1MB buffer
 
-    while (true) {
-        if (!std::getline(in, line)) {
-            break; // EOF
-        }
+    while (std::getline(in, line)) {
         if (line.empty()) {
-            out << "\n";
+            outputBuffer += '\n';
             continue;
         }
 
         if (line[0] == '#') {
-            // Output header lines as is
-            out << line << "\n";
+            outputBuffer += line;
+            outputBuffer += '\n';
             if (line.rfind("#CHROM", 0) == 0) {
                 headerParsed = true;
             }
+            // Flush buffer periodically
+            if (outputBuffer.size() > 900000) {
+                out << outputBuffer;
+                outputBuffer.clear();
+            }
             continue;
         }
 
-        // Must have #CHROM
         if (!headerParsed) {
             std::cerr << "Error: No #CHROM header found before data.\n";
-            return; // Just return, the caller will handle the error status
+            return;
         }
 
-        // Parse data line
-        vcfx::split_tabs(line, fieldsVec);
-        if (fieldsVec.size() < 9) {
-            std::cerr << "Warning: invalid VCF line (<9 fields): " << line << "\n";
+        const char* linePtr = line.c_str();
+        size_t lineLen = line.size();
+
+        // Find FORMAT field (column 8) and first sample start (column 9)
+        // We need to find tabs 0-9 to locate FORMAT and first sample
+        int tabCount = 0;
+        const char* formatStart = nullptr;
+        size_t formatLen = 0;
+        const char* firstSampleStart = nullptr;
+
+        size_t fieldStart = 0;
+        for (size_t i = 0; i <= lineLen; i++) {
+            if (i == lineLen || linePtr[i] == '\t') {
+                if (tabCount == 8) {
+                    // FORMAT field
+                    formatStart = linePtr + fieldStart;
+                    formatLen = i - fieldStart;
+                } else if (tabCount == 9) {
+                    // First sample starts here
+                    firstSampleStart = linePtr + fieldStart;
+                    break;
+                }
+                tabCount++;
+                fieldStart = i + 1;
+            }
+        }
+
+        if (tabCount < 9 || !formatStart || !firstSampleStart) {
+            std::cerr << "Warning: invalid VCF line (<9 fields)\n";
             continue;
         }
 
-        // parse the FORMAT field
-        const std::string &formatStr = fieldsVec[8];
-        formatTokens.clear();
-        {
-            size_t start = 0;
-            size_t end;
-            while ((end = formatStr.find(':', start)) != std::string::npos) {
-                formatTokens.emplace_back(formatStr, start, end - start);
-                start = end + 1;
-            }
-            formatTokens.emplace_back(formatStr, start);
-        }
-
-        // find field in format
-        int fieldIndex = -1;
-        for (int i = 0; i < (int)formatTokens.size(); i++) {
-            if (formatTokens[i] == field) {
-                fieldIndex = i;
-                break;
-            }
-        }
+        // Find field index in FORMAT (zero allocation)
+        int fieldIndex = findFieldIndex(formatStart, formatLen, fieldName, fieldNameLen);
         if (fieldIndex < 0) {
-            // If not found, do we keep or skip? We skip or keep. Let's skip
-            // or we might keep, but let's skip by default
-            // or we can pass if user wants
-            // We'll just skip
-            // But let's do a note:
-            // out << line << "\n"; // or skip
-            continue;
+            continue;  // Field not in FORMAT, skip line
         }
 
-        // We'll check sample columns from index=9 onward
-        bool recordPasses = anyMode ? false : true; // in 'any' mode we set false => flip if one sample passes
-                                                    // in 'all' mode we set true => flip to false if one sample fails
+        // Process samples (starting at firstSampleStart)
+        bool recordPasses = anyMode ? false : true;
 
-        for (size_t s = 9; s < fieldsVec.size(); s++) {
-            // parse sample by ':'
-            const std::string &sampleStr = fieldsVec[s];
-            sampleTokens.clear();
-            {
-                size_t start = 0;
-                size_t end;
-                while ((end = sampleStr.find(':', start)) != std::string::npos) {
-                    sampleTokens.emplace_back(sampleStr, start, end - start);
-                    start = end + 1;
+        // Process each sample by scanning for tabs
+        const char* sampleStart = firstSampleStart;
+        const char* lineEnd = linePtr + lineLen;
+
+        while (sampleStart < lineEnd) {
+            // Find end of this sample (next tab or end of line)
+            const char* sampleEnd = sampleStart;
+            while (sampleEnd < lineEnd && *sampleEnd != '\t') {
+                sampleEnd++;
+            }
+            size_t sampleLen = sampleEnd - sampleStart;
+
+            // Get the N-th field from sample (zero allocation)
+            const char* valueStart;
+            size_t valueLen;
+            if (!getNthField(sampleStart, sampleLen, fieldIndex, valueStart, valueLen)) {
+                // Missing or empty value
+                if (!anyMode) {
+                    recordPasses = false;
+                    break;
                 }
-                sampleTokens.emplace_back(sampleStr, start);
+                // Move to next sample
+                sampleStart = (sampleEnd < lineEnd) ? sampleEnd + 1 : lineEnd;
+                continue;
             }
 
-            if (fieldIndex >= (int)sampleTokens.size()) {
-                // no data => fail for all mode, or do nothing for any mode
+            // Parse value (zero allocation)
+            double val;
+            if (!fastParseDouble(valueStart, valueLen, val)) {
                 if (!anyMode) {
                     recordPasses = false;
+                    break;
                 }
-                break;
+                // Move to next sample
+                sampleStart = (sampleEnd < lineEnd) ? sampleEnd + 1 : lineEnd;
+                continue;
             }
-            const std::string &valStr = sampleTokens[fieldIndex];
-            if (valStr.empty() || valStr == ".") {
-                // treat as fail for all mode
-                if (!anyMode) {
-                    recordPasses = false;
-                }
-                break;
-            }
-            double val = 0.0;
-            try {
-                val = std::stod(valStr);
-            } catch (...) {
-                // not numeric => fail for all mode
-                if (!anyMode) {
-                    recordPasses = false;
-                }
-                break;
-            }
-            // compare
+
+            // Compare
             bool samplePass = false;
-            if (op == ">") {
-                samplePass = (val > threshold);
-            } else if (op == "<") {
-                samplePass = (val < threshold);
-            } else if (op == ">=") {
-                samplePass = (val >= threshold);
-            } else if (op == "<=") {
-                samplePass = (val <= threshold);
-            } else if (op == "==") {
-                samplePass = (val == threshold);
-            } else if (op == "!=") {
-                samplePass = (val != threshold);
+            switch (opType) {
+                case OpType::GT: samplePass = (val > threshold); break;
+                case OpType::LT: samplePass = (val < threshold); break;
+                case OpType::GE: samplePass = (val >= threshold); break;
+                case OpType::LE: samplePass = (val <= threshold); break;
+                case OpType::EQ: samplePass = (val == threshold); break;
+                case OpType::NE: samplePass = (val != threshold); break;
             }
 
             if (anyMode) {
-                // if one sample passes => keep record => break
                 if (samplePass) {
                     recordPasses = true;
                     break;
                 }
             } else {
-                // all mode => if one fails => skip record => break
                 if (!samplePass) {
                     recordPasses = false;
                     break;
                 }
             }
+
+            // Move to next sample
+            sampleStart = (sampleEnd < lineEnd) ? sampleEnd + 1 : lineEnd;
         }
 
         if (recordPasses) {
-            out << line << "\n";
+            outputBuffer += line;
+            outputBuffer += '\n';
+
+            // Flush buffer when it gets large
+            if (outputBuffer.size() > 900000) {
+                out << outputBuffer;
+                outputBuffer.clear();
+            }
         }
+    }
+
+    // Final flush
+    if (!outputBuffer.empty()) {
+        out << outputBuffer;
     }
 }
 
