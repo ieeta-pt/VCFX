@@ -1,5 +1,5 @@
 #include "VCFX_variant_counter.h"
-#include "vcfx_core.h" 
+#include "vcfx_core.h"
 #include "vcfx_io.h"
 #include <cstring>
 #include <fcntl.h>
@@ -12,6 +12,85 @@
 #include <unistd.h>
 #include <vector>
 #include <zlib.h>
+
+// SIMD includes for x86_64 platforms
+#if defined(__x86_64__) && defined(__AVX2__)
+#include <immintrin.h>
+#define USE_AVX2 1
+#elif defined(__x86_64__) && defined(__SSE2__)
+#include <emmintrin.h>
+#define USE_SSE2 1
+#endif
+
+// ============================================================================
+// OPTIMIZED HELPER FUNCTIONS
+// ============================================================================
+
+// Fast check for 8+ columns using memchr (SIMD-optimized in libc)
+// Returns true if line has at least 8 tab-separated columns
+static inline bool hasEightColumnsFast(const char* line, size_t len) {
+    if (len == 0) return false;
+
+    const char* p = line;
+    const char* end = line + len;
+
+    // Find 7 tabs = 8 columns
+    for (int i = 0; i < 7; i++) {
+        p = static_cast<const char*>(memchr(p, '\t', static_cast<size_t>(end - p)));
+        if (!p) return false;
+        p++;  // Skip past tab
+    }
+    return true;
+}
+
+#if defined(USE_AVX2)
+// Find next newline using AVX2 (32 bytes at a time)
+static inline const char* findNewlineSIMD(const char* p, const char* end) {
+    const __m256i nl = _mm256_set1_epi8('\n');
+
+    while (p + 32 <= end) {
+        __m256i chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p));
+        __m256i cmp = _mm256_cmpeq_epi8(chunk, nl);
+        int mask = _mm256_movemask_epi8(cmp);
+        if (mask) {
+            return p + __builtin_ctz(static_cast<unsigned int>(mask));
+        }
+        p += 32;
+    }
+
+    // Fallback for remainder
+    return static_cast<const char*>(memchr(p, '\n', static_cast<size_t>(end - p)));
+}
+
+#elif defined(USE_SSE2)
+// Find next newline using SSE2 (16 bytes at a time)
+static inline const char* findNewlineSIMD(const char* p, const char* end) {
+    const __m128i nl = _mm_set1_epi8('\n');
+
+    while (p + 16 <= end) {
+        __m128i chunk = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
+        __m128i cmp = _mm_cmpeq_epi8(chunk, nl);
+        int mask = _mm_movemask_epi8(cmp);
+        if (mask) {
+            return p + __builtin_ctz(static_cast<unsigned int>(mask));
+        }
+        p += 16;
+    }
+
+    // Fallback for remainder
+    return static_cast<const char*>(memchr(p, '\n', static_cast<size_t>(end - p)));
+}
+
+#else
+// Portable fallback using memchr (still SIMD-optimized in libc)
+static inline const char* findNewlineSIMD(const char* p, const char* end) {
+    return static_cast<const char*>(memchr(p, '\n', static_cast<size_t>(end - p)));
+}
+#endif
+
+// ============================================================================
+// VCFX_VARIANT_COUNTER IMPLEMENTATION
+// ============================================================================
 
 void VCFXVariantCounter::displayHelp() {
     std::cout << "VCFX_variant_counter: Counts the total number of valid variants in a VCF.\n\n"
@@ -106,17 +185,10 @@ bool VCFXVariantCounter::processLine(const std::string &line, int lineNumber, in
     if (line[0] == '#')
         return true;
 
-    // Fast tab counting - no allocations needed
-    int tabCount = 0;
-    for (char c : line) {
-        if (c == '\t') {
-            tabCount++;
-            if (tabCount >= 7) {
-                // 8 columns = 7 tabs minimum
-                count++;
-                return true;
-            }
-        }
+    // Use optimized memchr-based column validation
+    if (hasEightColumnsFast(line.data(), line.size())) {
+        count++;
+        return true;
     }
 
     // Less than 8 columns
@@ -224,16 +296,10 @@ bool VCFXVariantCounter::processLineMmap(std::string_view line, int lineNumber, 
     if (line[0] == '#')
         return true;
 
-    // Fast tab counting - no allocations needed
-    int tabCount = 0;
-    for (char c : line) {
-        if (c == '\t') {
-            tabCount++;
-            if (tabCount >= 7) {
-                count++;
-                return true;
-            }
-        }
+    // Use optimized memchr-based column validation
+    if (hasEightColumnsFast(line.data(), line.size())) {
+        count++;
+        return true;
     }
 
     // Less than 8 columns
@@ -247,6 +313,7 @@ bool VCFXVariantCounter::processLineMmap(std::string_view line, int lineNumber, 
 }
 
 // Memory-mapped file counting - much faster than stdin for large files
+// Uses SIMD-optimized newline finding and memchr-based column validation
 int VCFXVariantCounter::countVariantsMmap(const char *filename) {
     int fd = open(filename, O_RDONLY);
     if (fd < 0) {
@@ -282,29 +349,38 @@ int VCFXVariantCounter::countVariantsMmap(const char *filename) {
     int count = 0;
     int lineNumber = 0;
 
-    const char *lineStart = data;
-    while (lineStart < end) {
-        // Find end of line
-        const char *lineEnd = lineStart;
-        while (lineEnd < end && *lineEnd != '\n') {
-            lineEnd++;
+    const char *p = data;
+    while (p < end) {
+        // Find end of line using SIMD-optimized search
+        const char *lineEnd = findNewlineSIMD(p, end);
+        if (!lineEnd) {
+            lineEnd = end;  // Last line without trailing newline
         }
 
         lineNumber++;
-        std::string_view line(lineStart, lineEnd - lineStart);
+        size_t lineLen = static_cast<size_t>(lineEnd - p);
 
-        // Remove trailing \r if present (Windows line endings)
-        if (!line.empty() && line.back() == '\r') {
-            line = line.substr(0, line.size() - 1);
+        // Skip empty lines and header lines (starting with #)
+        if (lineLen > 0 && *p != '#') {
+            // Handle Windows line endings
+            if (lineLen > 0 && p[lineLen - 1] == '\r') {
+                lineLen--;
+            }
+
+            // Use optimized column validation
+            if (hasEightColumnsFast(p, lineLen)) {
+                count++;
+            } else if (strictMode) {
+                std::cerr << "Error: line " << lineNumber << " has <8 columns.\n";
+                munmap(mapped, fileSize);
+                close(fd);
+                return -1;
+            } else {
+                std::cerr << "Warning: skipping line " << lineNumber << " with <8 columns.\n";
+            }
         }
 
-        if (!processLineMmap(line, lineNumber, count)) {
-            munmap(mapped, fileSize);
-            close(fd);
-            return -1;
-        }
-
-        lineStart = lineEnd + 1;
+        p = lineEnd + 1;
     }
 
     munmap(mapped, fileSize);
