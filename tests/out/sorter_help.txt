@@ -1,24 +1,23 @@
 VCFX_sorter: Sort a VCF by chromosome and position.
 
 Usage:
-  VCFX_sorter [options] < input.vcf > output.vcf
+  VCFX_sorter [options] [input.vcf] > output.vcf
 
 Options:
   -h, --help              Show help.
   -n, --natural-chr       Use natural chromosome order (chr1 < chr2 < chr10).
-  -m, --max-memory <MB>   Max memory for in-memory sorting (default: 100MB).
-                          Files larger than this use external merge sort.
-  -t, --temp-dir <DIR>    Directory for temporary files (default: /tmp).
+  -t, --threads <NUM>     Number of threads (default: auto-detect).
+  -m, --max-memory <MB>   Max memory for in-memory sorting (default: 1000MB).
+  --temp-dir <DIR>        Directory for temporary files (default: /tmp).
 
 Description:
-  Sorts VCF by (CHROM, POS). For small files, sorts in memory.
-  For large files (>max-memory), uses external merge sort with
-  temporary files, enabling sorting of files larger than RAM.
+  Sorts VCF by (CHROM, POS). Uses memory-mapped I/O and parallel
+  sorting for maximum performance on large files.
 
 Examples:
-  1) Default (in-memory for small files):
-     VCFX_sorter < unsorted.vcf > sorted.vcf
-  2) Large file with natural chromosome order:
-     VCFX_sorter -n -m 500 < huge.vcf > sorted.vcf
-  3) Use custom temp directory:
-     VCFX_sorter -t /data/tmp < huge.vcf > sorted.vcf
+  1) Default (fast in-memory sort):
+     VCFX_sorter input.vcf > sorted.vcf
+  2) Natural chromosome order:
+     VCFX_sorter -n input.vcf > sorted.vcf
+  3) Multi-threaded with 8 threads:
+     VCFX_sorter -t 8 input.vcf > sorted.vcf
