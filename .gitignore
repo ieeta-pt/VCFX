@@ -42,6 +42,7 @@ Thumbs.db
 tools.md
 prompt.md
 names.md
+VCFX_Optimization_Guide.md
 
 # Temporary outputs from genotype_query tests
 tests/tmp/genotype_query/
