@@ -1,234 +1,519 @@
+# Comprehensive VCFX Benchmark Tasks
+# Covers all 60 tools with performance tests on chr21 data (4GB, 427K variants, 2504 samples)
+
 tasks:
   # =============================================================================
-  # VARIANT COUNTING BENCHMARKS
+  # CATEGORY 1: BASIC I/O & VALIDATION (measure pure I/O performance)
   # =============================================================================
-  - name: vcfx_count_chr20
-    tool: VCFX_VARIANT_COUNTER
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Count variants in chr20 using VCFX"
-    
-  - name: bcftools_count_chr20
-    tool: BCFTOOLS
-    command: "query -f '%CHROM\\t%POS\\n'"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Count variants in chr20 using bcftools"
-    comparison_to: vcfx_count_chr20
-    
-  - name: vcftools_count_chr20
-    tool: VCFTOOLS
-    command: "--freq"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Count variants in chr20 using vcftools"
-    comparison_to: vcfx_count_chr20
-
-  # =============================================================================
-  # ALLELE FREQUENCY CALCULATION BENCHMARKS
-  # =============================================================================
-  - name: vcfx_allele_freq_chr20
-    tool: VCFX_ALLELE_FREQ_CALC
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Calculate allele frequencies for chr20 using VCFX"
-    
-  - name: vcftools_allele_freq_chr20
-    tool: VCFTOOLS
-    command: "--vcf --freq"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Calculate allele frequencies for chr20 using vcftools"
-    comparison_to: vcfx_allele_freq_chr20
-    
-  - name: bcftools_allele_freq_chr20
-    tool: BCFTOOLS
-    command: "query -f '%CHROM\\t%POS\\t%REF\\t%ALT\\t%AC\\t%AN\\n'"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Extract allele frequencies for chr20 using bcftools"
-    comparison_to: vcfx_allele_freq_chr20
-
-  # =============================================================================
-  # VARIANT CLASSIFICATION BENCHMARKS - DISABLED DUE TO FORMAT INCOMPATIBILITY
-  # =============================================================================
-  # NOTE: VCFX_variant_classifier expects 'chr20' format but data uses '20'
-
-  # =============================================================================
-  # MISSING DATA DETECTION BENCHMARKS
-  # =============================================================================
-  - name: vcfx_missing_chr20
-    tool: VCFX_MISSING_DETECTOR
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Detect missing data in chr20 using VCFX"
-    
-  - name: vcftools_missing_chr20
-    tool: VCFTOOLS
-    command: "--vcf --missing-indv"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Detect missing data in chr20 using vcftools"
-    comparison_to: vcfx_missing_chr20
-    
-  - name: bcftools_missing_chr20
-    tool: BCFTOOLS
-    command: "query -f '%CHROM\\t%POS[\\t%GT]\\n'"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Extract genotype data to detect missing calls using bcftools"
-    comparison_to: vcfx_missing_chr20
-
-  # =============================================================================
-  # FILTERING BENCHMARKS
-  # =============================================================================
-  - name: bcftools_filter_chr20
-    tool: BCFTOOLS
-    command: "view -i 'QUAL>20'"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Filter variants in chr20 using bcftools"
-    
-  - name: vcftools_filter_chr20
-    tool: VCFTOOLS
-    command: "--vcf --minQ 20"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Filter variants in chr20 using vcftools"
-
-  # =============================================================================
-  # PERFORMANCE STRESS TESTS - REPEATED RUNS
-  # =============================================================================
-  - name: vcfx_stress_chr20_run1
-    tool: VCFX_VARIANT_COUNTER
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 1: Count variants in chr20"
-    
-  - name: vcfx_stress_chr20_run2
-    tool: VCFX_VARIANT_COUNTER
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 2: Count variants in chr20"
-    
-  - name: vcfx_stress_chr20_run3
-    tool: VCFX_VARIANT_COUNTER
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 3: Count variants in chr20"
-    
-  - name: bcftools_stress_chr20_run1
-    tool: BCFTOOLS
-    command: "query -f '%CHROM\\t%POS\\n'"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 1: Count variants in chr20 using bcftools"
-    
-  - name: bcftools_stress_chr20_run2
-    tool: BCFTOOLS
-    command: "query -f '%CHROM\\t%POS\\n'"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 2: Count variants in chr20 using bcftools"
-    
-  - name: bcftools_stress_chr20_run3
-    tool: BCFTOOLS
-    command: "query -f '%CHROM\\t%POS\\n'"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 3: Count variants in chr20 using bcftools"
-    
-  - name: vcftools_stress_chr20_run1
-    tool: VCFTOOLS
-    command: "--freq"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 1: Count variants in chr20 using vcftools"
-    
-  - name: vcftools_stress_chr20_run2
-    tool: VCFTOOLS
-    command: "--freq"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 2: Count variants in chr20 using vcftools"
-    
-  - name: vcftools_stress_chr20_run3
-    tool: VCFTOOLS
-    command: "--freq"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Stress test run 3: Count variants in chr20 using vcftools"
-
-  # =============================================================================
-  # MULTI-CHROMOSOME BENCHMARKS
-  # =============================================================================
-  - name: vcfx_count_chr21
+  - name: vcfx_variant_counter_chr21
     tool: VCFX_VARIANT_COUNTER
     input: chr21.1kg.phase3.v5a.vcf
-    description: "Count variants in chr21 using VCFX"
-    
+    category: basic_io
+    description: "Count variants (pure I/O test)"
+
+  - name: vcfx_validator_stdin_chr21
+    tool: VCFX_VALIDATOR
+    input: chr21.1kg.phase3.v5a.vcf
+    category: basic_io
+    description: "Validate VCF format (stdin mode)"
+
+  - name: vcfx_validator_mmap_chr21
+    tool: VCFX_VALIDATOR_MMAP
+    input: chr21.1kg.phase3.v5a.vcf
+    category: basic_io
+    description: "Validate VCF format (memory-mapped mode)"
+
+  - name: vcfx_header_parser_chr21
+    tool: VCFX_HEADER_PARSER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: basic_io
+    description: "Parse VCF header"
+
+  - name: vcfx_reformatter_chr21
+    tool: VCFX_REFORMATTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: basic_io
+    description: "Reformat VCF output"
+
+  # =============================================================================
+  # CATEGORY 2: FILTERING TOOLS
+  # =============================================================================
+  - name: vcfx_phred_filter_chr21
+    tool: VCFX_PHRED_FILTER
+    args: "-p 30"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter by PHRED quality >= 30"
+
+  - name: vcfx_record_filter_chr21
+    tool: VCFX_RECORD_FILTER
+    args: "--filter PASS"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter for PASS variants only"
+
+  - name: vcfx_nonref_filter_chr21
+    tool: VCFX_NONREF_FILTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter for non-reference alleles"
+
+  - name: vcfx_gl_filter_chr21
+    tool: VCFX_GL_FILTER
+    args: "--min-gl -10"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter by genotype likelihood"
+
+  - name: vcfx_allele_balance_filter_chr21
+    tool: VCFX_ALLELE_BALANCE_FILTER
+    args: "--min-ab 0.2 --max-ab 0.8"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter by allele balance"
+
+  - name: vcfx_probability_filter_chr21
+    tool: VCFX_PROBABILITY_FILTER
+    args: "--min-gp 0.9"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter by genotype probability"
+
+  - name: vcfx_phase_quality_filter_chr21
+    tool: VCFX_PHASE_QUALITY_FILTER
+    args: "--min-pq 30"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter by phase quality"
+
+  - name: vcfx_impact_filter_chr21
+    tool: VCFX_IMPACT_FILTER
+    args: "--impact HIGH,MODERATE"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter by predicted impact"
+
+  - name: vcfx_population_filter_chr21
+    tool: VCFX_POPULATION_FILTER
+    args: "--pop-file /dev/null"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: filtering
+    description: "Filter by population criteria"
+
+  # =============================================================================
+  # CATEGORY 3: ANALYSIS & CALCULATION TOOLS
+  # =============================================================================
+  - name: vcfx_allele_freq_calc_chr21
+    tool: VCFX_ALLELE_FREQ_CALC
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Calculate allele frequencies"
+
+  - name: vcfx_variant_classifier_chr21
+    tool: VCFX_VARIANT_CLASSIFIER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Classify variant types (SNP/INDEL/etc)"
+
+  - name: vcfx_hwe_tester_chr21
+    tool: VCFX_HWE_TESTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Hardy-Weinberg equilibrium test"
+
+  - name: vcfx_allele_counter_chr21
+    tool: VCFX_ALLELE_COUNTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Count alleles per variant"
+
+  - name: vcfx_allele_balance_calc_chr21
+    tool: VCFX_ALLELE_BALANCE_CALC
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Calculate allele balance"
+
+  - name: vcfx_inbreeding_calculator_chr21
+    tool: VCFX_INBREEDING_CALCULATOR
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Calculate inbreeding coefficients"
+
+  - name: vcfx_dosage_calculator_chr21
+    tool: VCFX_DOSAGE_CALCULATOR
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Calculate genotype dosages"
+
+  - name: vcfx_distance_calculator_chr21
+    tool: VCFX_DISTANCE_CALCULATOR
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Calculate genetic distances"
+
+  - name: vcfx_ld_calculator_chr21
+    tool: VCFX_LD_CALCULATOR
+    args: "--window 1000"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: analysis
+    description: "Calculate linkage disequilibrium"
+
+  # =============================================================================
+  # CATEGORY 4: QUALITY CONTROL TOOLS
+  # =============================================================================
+  - name: vcfx_missing_detector_chr21
+    tool: VCFX_MISSING_DETECTOR
+    input: chr21.1kg.phase3.v5a.vcf
+    category: qc
+    description: "Detect missing genotypes"
+
+  - name: vcfx_phase_checker_chr21
+    tool: VCFX_PHASE_CHECKER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: qc
+    description: "Check phasing status"
+
+  - name: vcfx_outlier_detector_chr21
+    tool: VCFX_OUTLIER_DETECTOR
+    input: chr21.1kg.phase3.v5a.vcf
+    category: qc
+    description: "Detect statistical outliers"
+
+  - name: vcfx_concordance_checker_chr21
+    tool: VCFX_CONCORDANCE_CHECKER
+    args: "--file2 /dev/null"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: qc
+    description: "Check genotype concordance"
+
+  - name: vcfx_cross_sample_concordance_chr21
+    tool: VCFX_CROSS_SAMPLE_CONCORDANCE
+    input: chr21.1kg.phase3.v5a.vcf
+    category: qc
+    description: "Cross-sample concordance check"
+
+  - name: vcfx_alignment_checker_chr21
+    tool: VCFX_ALIGNMENT_CHECKER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: qc
+    description: "Check reference alignment"
+
+  # =============================================================================
+  # CATEGORY 5: TRANSFORMATION TOOLS
+  # =============================================================================
+  - name: vcfx_multiallelic_splitter_chr21
+    tool: VCFX_MULTIALLELIC_SPLITTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: transformation
+    description: "Split multi-allelic variants"
+
+  - name: vcfx_indel_normalizer_chr21
+    tool: VCFX_INDEL_NORMALIZER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: transformation
+    description: "Normalize indel representation"
+
+  - name: vcfx_duplicate_remover_chr21
+    tool: VCFX_DUPLICATE_REMOVER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: transformation
+    description: "Remove duplicate variants"
+
+  - name: vcfx_sorter_chr21
+    tool: VCFX_SORTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: transformation
+    description: "Sort variants by position"
+
+  - name: vcfx_quality_adjuster_chr21
+    tool: VCFX_QUALITY_ADJUSTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: transformation
+    description: "Adjust quality scores"
+
+  - name: vcfx_missing_data_handler_chr21
+    tool: VCFX_MISSING_DATA_HANDLER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: transformation
+    description: "Handle missing data"
+
+  - name: vcfx_format_converter_chr21
+    tool: VCFX_FORMAT_CONVERTER
+    args: "--format bed"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: transformation
+    description: "Convert to BED format"
+
+  - name: vcfx_sv_handler_chr21
+    tool: VCFX_SV_HANDLER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: transformation
+    description: "Handle structural variants"
+
+  # =============================================================================
+  # CATEGORY 6: EXTRACTION & SUBSETTING TOOLS
+  # =============================================================================
+  - name: vcfx_sample_extractor_chr21
+    tool: VCFX_SAMPLE_EXTRACTOR
+    args: "--samples HG00096,HG00097,HG00099"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: extraction
+    description: "Extract specific samples"
+
+  - name: vcfx_field_extractor_chr21
+    tool: VCFX_FIELD_EXTRACTOR
+    args: "--fields CHROM,POS,REF,ALT"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: extraction
+    description: "Extract specific fields"
+
+  - name: vcfx_genotype_query_chr21
+    tool: VCFX_GENOTYPE_QUERY
+    args: "--genotype 0/1"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: extraction
+    description: "Query specific genotypes"
+
+  - name: vcfx_position_subsetter_chr21
+    tool: VCFX_POSITION_SUBSETTER
+    args: "--region 21:1-10000000"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: extraction
+    description: "Subset by genomic region"
+
+  - name: vcfx_region_subsampler_chr21
+    tool: VCFX_REGION_SUBSAMPLER
+    args: "--regions 21:1-5000000,21:10000000-15000000"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: extraction
+    description: "Subsample specific regions"
+
+  - name: vcfx_af_subsetter_chr21
+    tool: VCFX_AF_SUBSETTER
+    args: "--min-af 0.01 --max-af 0.99"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: extraction
+    description: "Subset by allele frequency"
+
+  - name: vcfx_subsampler_chr21
+    tool: VCFX_SUBSAMPLER
+    args: "--fraction 0.1"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: extraction
+    description: "Random subsample variants"
+
+  # =============================================================================
+  # CATEGORY 7: ANNOTATION & INFO TOOLS
+  # =============================================================================
+  - name: vcfx_info_parser_chr21
+    tool: VCFX_INFO_PARSER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: annotation
+    description: "Parse INFO field"
+
+  - name: vcfx_info_summarizer_chr21
+    tool: VCFX_INFO_SUMMARIZER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: annotation
+    description: "Summarize INFO statistics"
+
+  - name: vcfx_info_aggregator_chr21
+    tool: VCFX_INFO_AGGREGATOR
+    input: chr21.1kg.phase3.v5a.vcf
+    category: annotation
+    description: "Aggregate INFO values"
+
+  - name: vcfx_metadata_summarizer_chr21
+    tool: VCFX_METADATA_SUMMARIZER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: annotation
+    description: "Summarize file metadata"
+
+  - name: vcfx_annotation_extractor_chr21
+    tool: VCFX_ANNOTATION_EXTRACTOR
+    args: "--field AF"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: annotation
+    description: "Extract annotation fields"
+
+  - name: vcfx_custom_annotator_chr21
+    tool: VCFX_CUSTOM_ANNOTATOR
+    args: "--annotation /dev/null"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: annotation
+    description: "Add custom annotations"
+
+  # =============================================================================
+  # CATEGORY 8: HAPLOTYPE TOOLS
+  # =============================================================================
+  - name: vcfx_haplotype_phaser_chr21
+    tool: VCFX_HAPLOTYPE_PHASER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: haplotype
+    description: "Phase haplotypes"
+
+  - name: vcfx_haplotype_extractor_chr21
+    tool: VCFX_HAPLOTYPE_EXTRACTOR
+    args: "--sample HG00096"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: haplotype
+    description: "Extract haplotypes"
+
+  # =============================================================================
+  # CATEGORY 9: ANCESTRY TOOLS
+  # =============================================================================
+  - name: vcfx_ancestry_inferrer_chr21
+    tool: VCFX_ANCESTRY_INFERRER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: ancestry
+    description: "Infer ancestry"
+
+  - name: vcfx_ancestry_assigner_chr21
+    tool: VCFX_ANCESTRY_ASSIGNER
+    args: "--panel /dev/null"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: ancestry
+    description: "Assign ancestry"
+
+  # =============================================================================
+  # CATEGORY 10: FILE MANAGEMENT TOOLS
+  # =============================================================================
+  - name: vcfx_indexer_chr21
+    tool: VCFX_INDEXER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: file_management
+    description: "Create VCF index"
+
+  - name: vcfx_compressor_chr21
+    tool: VCFX_COMPRESSOR
+    input: chr21.1kg.phase3.v5a.vcf
+    category: file_management
+    description: "Compress VCF file"
+
+  - name: vcfx_file_splitter_chr21
+    tool: VCFX_FILE_SPLITTER
+    args: "--chunks 4"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: file_management
+    description: "Split file into chunks"
+
+  - name: vcfx_merger_chr21
+    tool: VCFX_MERGER
+    args: "--file2 /dev/null"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: file_management
+    description: "Merge VCF files"
+
+  - name: vcfx_diff_tool_chr21
+    tool: VCFX_DIFF_TOOL
+    args: "--file2 /dev/null"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: file_management
+    description: "Compare VCF files"
+
+  # =============================================================================
+  # CATEGORY 11: REFERENCE COMPARISON TOOLS
+  # =============================================================================
+  - name: vcfx_ref_comparator_chr21
+    tool: VCFX_REF_COMPARATOR
+    args: "--ref /dev/null"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: reference
+    description: "Compare with reference"
+
+  - name: vcfx_fasta_converter_chr21
+    tool: VCFX_FASTA_CONVERTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: reference
+    description: "Convert to FASTA format"
+
+  # =============================================================================
+  # BASELINE COMPARISONS (bcftools/vcftools)
+  # =============================================================================
   - name: bcftools_count_chr21
     tool: BCFTOOLS
-    command: "query -f '%CHROM\\t%POS\\n'"
+    command: "view -H"
     input: chr21.1kg.phase3.v5a.vcf
-    description: "Count variants in chr21 using bcftools"
-    comparison_to: vcfx_count_chr21
-    
-  - name: vcftools_count_chr21
+    category: baseline
+    description: "bcftools variant count (baseline)"
+    comparison_to: vcfx_variant_counter_chr21
+
+  - name: bcftools_query_chr21
+    tool: BCFTOOLS
+    command: "query -f '%CHROM\\t%POS\\t%REF\\t%ALT\\n'"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: baseline
+    description: "bcftools field extraction"
+    comparison_to: vcfx_field_extractor_chr21
+
+  - name: bcftools_filter_chr21
+    tool: BCFTOOLS
+    command: "view -i 'QUAL>=30'"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: baseline
+    description: "bcftools quality filter"
+    comparison_to: vcfx_phred_filter_chr21
+
+  - name: vcftools_freq_chr21
     tool: VCFTOOLS
     command: "--freq"
     input: chr21.1kg.phase3.v5a.vcf
-    description: "Count variants in chr21 using vcftools"
-    comparison_to: vcfx_count_chr21
+    category: baseline
+    description: "vcftools allele frequency"
+    comparison_to: vcfx_allele_freq_calc_chr21
+
+  - name: vcftools_missing_chr21
+    tool: VCFTOOLS
+    command: "--missing-indv"
+    input: chr21.1kg.phase3.v5a.vcf
+    category: baseline
+    description: "vcftools missing data"
+    comparison_to: vcfx_missing_detector_chr21
 
   # =============================================================================
-  # COMPREHENSIVE ALLELE FREQUENCY TESTS
+  # STRESS TESTS (3 runs for consistency measurement)
   # =============================================================================
-  - name: vcfx_allele_freq_chr21
+  - name: stress_variant_counter_run1
+    tool: VCFX_VARIANT_COUNTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: stress_test
+    description: "Stress test run 1"
+
+  - name: stress_variant_counter_run2
+    tool: VCFX_VARIANT_COUNTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: stress_test
+    description: "Stress test run 2"
+
+  - name: stress_variant_counter_run3
+    tool: VCFX_VARIANT_COUNTER
+    input: chr21.1kg.phase3.v5a.vcf
+    category: stress_test
+    description: "Stress test run 3"
+
+  - name: stress_allele_freq_run1
     tool: VCFX_ALLELE_FREQ_CALC
     input: chr21.1kg.phase3.v5a.vcf
-    description: "Calculate allele frequencies for chr21 using VCFX"
+    category: stress_test
+    description: "Allele freq stress run 1"
 
-  - name: vcftools_allele_freq_chr21
-    tool: VCFTOOLS
-    command: "--vcf --freq"
+  - name: stress_allele_freq_run2
+    tool: VCFX_ALLELE_FREQ_CALC
     input: chr21.1kg.phase3.v5a.vcf
-    description: "Calculate allele frequencies for chr21 using vcftools"
-    comparison_to: vcfx_allele_freq_chr21
+    category: stress_test
+    description: "Allele freq stress run 2"
 
-  - name: bcftools_allele_freq_chr21
-    tool: BCFTOOLS
-    command: "query -f '%CHROM\\t%POS\\t%REF\\t%ALT\\t%AC\\t%AN\\n'"
+  - name: stress_allele_freq_run3
+    tool: VCFX_ALLELE_FREQ_CALC
     input: chr21.1kg.phase3.v5a.vcf
-    description: "Extract allele frequencies for chr21 using bcftools"
-    comparison_to: vcfx_allele_freq_chr21
+    category: stress_test
+    description: "Allele freq stress run 3"
 
   # =============================================================================
-  # VCF VALIDATION BENCHMARKS
+  # WARM-UP RUNS
   # =============================================================================
-  - name: vcfx_validate_chr21_stdin
-    tool: VCFX_VALIDATOR
-    input: chr21.1kg.phase3.v5a.vcf
-    description: "Validate chr21 VCF using VCFX (stdin mode)"
-
-  - name: vcfx_validate_chr21_mmap
-    tool: VCFX_VALIDATOR_MMAP
-    input: chr21.1kg.phase3.v5a.vcf
-    description: "Validate chr21 VCF using VCFX (memory-mapped mode)"
-
-  - name: bcftools_validate_chr21
-    tool: BCFTOOLS
-    command: "view -H"
-    input: chr21.1kg.phase3.v5a.vcf
-    description: "Parse chr21 VCF header using bcftools (validation baseline)"
-    comparison_to: vcfx_validate_chr21_stdin
-
-  - name: vcfx_validate_chr20_stdin
-    tool: VCFX_VALIDATOR
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Validate chr20 VCF using VCFX (stdin mode)"
-
-  - name: vcfx_validate_chr20_mmap
-    tool: VCFX_VALIDATOR_MMAP
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Validate chr20 VCF using VCFX (memory-mapped mode)"
-
-  - name: bcftools_validate_chr20
-    tool: BCFTOOLS
-    command: "view -H"
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Parse chr20 VCF header using bcftools (validation baseline)"
-    comparison_to: vcfx_validate_chr20_stdin
-
-  # =============================================================================
-  # WARM-UP RUNS (prime file cache before main benchmarks)
-  # =============================================================================
-  - name: warmup_chr20
-    tool: VCFX_VARIANT_COUNTER
-    input: chr20.1kg.phase3.v5a.vcf
-    description: "Warm-up run to prime file cache for chr20"
-
   - name: warmup_chr21
     tool: VCFX_VARIANT_COUNTER
     input: chr21.1kg.phase3.v5a.vcf
-    description: "Warm-up run to prime file cache for chr21"
+    category: warmup
+    description: "Warm-up run to prime file cache"
