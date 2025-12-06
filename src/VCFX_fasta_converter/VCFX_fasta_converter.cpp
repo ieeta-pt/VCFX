@@ -3,64 +3,59 @@
 #include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <fstream>
 #include <getopt.h>
 #include <iomanip>
 #include <map>
 #include <sstream>
+#include <unistd.h>
 #include <unordered_map>
 
-// A small map from two distinct bases to an IUPAC ambiguity code
-// e.g. A + G => R, C + T => Y, etc.
-static const std::map<std::string, char> IUPAC_ambiguities = {{"AG", 'R'}, {"GA", 'R'}, {"CT", 'Y'}, {"TC", 'Y'},
-                                                              {"AC", 'M'}, {"CA", 'M'}, {"GT", 'K'}, {"TG", 'K'},
-                                                              {"AT", 'W'}, {"TA", 'W'}, {"CG", 'S'}, {"GC", 'S'}};
+// IUPAC ambiguity lookup table - O(1) array lookup instead of map
+// Index by (base1_index * 4 + base2_index) where A=0, C=1, G=2, T=3
+static const char IUPAC_table[16] = {
+    'A', 'M', 'R', 'W',  // A+A, A+C, A+G, A+T
+    'M', 'C', 'S', 'Y',  // C+A, C+C, C+G, C+T
+    'R', 'S', 'G', 'K',  // G+A, G+C, G+G, G+T
+    'W', 'Y', 'K', 'T'   // T+A, T+C, T+G, T+T
+};
 
-// Utility to convert a single numeric allele index into the corresponding base
-// returns '\0' on failure
-static char alleleIndexToBase(int alleleIndex, const std::string &ref, const std::vector<std::string> &altAlleles) {
-    // 0 => ref, 1 => altAlleles[0], 2 => altAlleles[1], etc.
-    if (alleleIndex == 0) {
-        if (ref.size() == 1) {
-            return std::toupper(ref[0]);
-        } else {
-            // multi-base or invalid for a single-locus representation
-            return '\0';
-        }
-    } else {
-        int altPos = alleleIndex - 1;
-        if (altPos < 0 || (size_t)altPos >= altAlleles.size()) {
-            return '\0'; // out of range
-        }
-        // altAlleles[altPos] must be a single base to be representable
-        const std::string &a = altAlleles[altPos];
-        if (a.size() == 1) {
-            return std::toupper(a[0]);
-        } else {
-            // multi-base alt => can't represent as single base
-            return '\0';
-        }
+// Map base to index (A=0, C=1, G=2, T=3, else -1)
+static inline int baseToIndex(char c) {
+    switch (c) {
+        case 'A': case 'a': return 0;
+        case 'C': case 'c': return 1;
+        case 'G': case 'g': return 2;
+        case 'T': case 't': return 3;
+        default: return -1;
     }
 }
 
-// If we have exactly two bases, see if there's a standard IUPAC code
-// Otherwise returns 'N'
-static char combineBasesIUPAC(char b1, char b2) {
-    if (b1 == b2) {
-        return b1; // e.g. A + A => A
+// Fast IUPAC combination - O(1)
+static inline char combineBasesIUPAC(char b1, char b2) {
+    int i1 = baseToIndex(b1);
+    int i2 = baseToIndex(b2);
+    if (i1 < 0 || i2 < 0) return 'N';
+    return IUPAC_table[i1 * 4 + i2];
+}
+
+// Utility to convert allele index to base - returns 'N' on failure
+static inline char alleleIndexToBase(int alleleIndex, const std::string &ref,
+                                      const std::vector<std::string> &altAlleles) {
+    if (alleleIndex == 0) {
+        return (ref.size() == 1) ? static_cast<char>(std::toupper(ref[0])) : 'N';
     }
-    // build 2-char string in alphabetical order
-    std::string pair;
-    pair.push_back(std::min(b1, b2));
-    pair.push_back(std::max(b1, b2));
-    auto it = IUPAC_ambiguities.find(pair);
-    if (it != IUPAC_ambiguities.end()) {
-        return it->second;
+    int altPos = alleleIndex - 1;
+    if (altPos < 0 || static_cast<size_t>(altPos) >= altAlleles.size()) {
+        return 'N';
     }
-    return 'N'; // unknown combination
+    const std::string &a = altAlleles[altPos];
+    return (a.size() == 1) ? static_cast<char>(std::toupper(a[0])) : 'N';
 }
 
 int VCFXFastaConverter::run(int argc, char *argv[]) {
-    // Parse command-line arguments
     int opt;
     bool showHelp = false;
 
@@ -79,7 +74,6 @@ int VCFXFastaConverter::run(int argc, char *argv[]) {
         return 0;
     }
 
-    // Convert VCF input from stdin to FASTA output
     convertVCFtoFasta(std::cin, std::cout);
     return 0;
 }
@@ -98,33 +92,135 @@ void VCFXFastaConverter::displayHelp() {
               << "  VCFX_fasta_converter < input.vcf > output.fasta\n\n";
 }
 
+// Split string by delimiter - optimized direct parsing
+static inline void splitByDelim(const std::string &s, char d, std::vector<std::string> &out) {
+    out.clear();
+    size_t start = 0, end;
+    while ((end = s.find(d, start)) != std::string::npos) {
+        out.emplace_back(s, start, end - start);
+        start = end + 1;
+    }
+    out.emplace_back(s, start);
+}
+
+// Parse genotype from sample field and return IUPAC base
+static inline char parseGenotypeToBase(const char* sampleData, size_t len, int gtIndex,
+                                        const std::string &ref,
+                                        const std::vector<std::string> &altAlleles) {
+    // Fast path: GT is first field (most common case)
+    size_t gtStart = 0, gtEnd = len;
+
+    if (gtIndex == 0) {
+        // Find first colon
+        for (size_t i = 0; i < len; ++i) {
+            if (sampleData[i] == ':') {
+                gtEnd = i;
+                break;
+            }
+        }
+    } else {
+        // Skip to gtIndex-th field
+        int idx = 0;
+        size_t pos = 0;
+        while (idx < gtIndex && pos < len) {
+            if (sampleData[pos] == ':') {
+                idx++;
+                if (idx == gtIndex) {
+                    gtStart = pos + 1;
+                }
+            }
+            pos++;
+        }
+        if (idx != gtIndex) return 'N';
+        // Find end of GT field
+        for (size_t i = gtStart; i < len; ++i) {
+            if (sampleData[i] == ':') {
+                gtEnd = i;
+                break;
+            }
+        }
+    }
+
+    if (gtStart >= gtEnd || sampleData[gtStart] == '.') {
+        return 'N';
+    }
+
+    // Parse diploid genotype inline
+    int a1 = 0, a2 = 0;
+    size_t pos = gtStart;
+
+    // Parse first allele
+    while (pos < gtEnd && sampleData[pos] != '/' && sampleData[pos] != '|') {
+        char c = sampleData[pos];
+        if (c == '.') return 'N';
+        if (c < '0' || c > '9') return 'N';
+        a1 = a1 * 10 + (c - '0');
+        pos++;
+    }
+
+    if (pos >= gtEnd) return 'N'; // No separator found
+    pos++; // Skip separator
+
+    // Parse second allele
+    while (pos < gtEnd) {
+        char c = sampleData[pos];
+        if (c == '.') return 'N';
+        if (c < '0' || c > '9') break;
+        a2 = a2 * 10 + (c - '0');
+        pos++;
+    }
+
+    char b1 = alleleIndexToBase(a1, ref, altAlleles);
+    char b2 = alleleIndexToBase(a2, ref, altAlleles);
+
+    if (b1 == 'N' || b2 == 'N') return 'N';
+    return (b1 == b2) ? b1 : combineBasesIUPAC(b1, b2);
+}
+
+// OPTIMIZED: Memory-efficient temp file approach
+// Instead of O(V×S) memory (~1GB for 427K×2504), uses O(S) memory (~3KB)
+// Writes column-major (all samples per variant) to temp file
+// Reads row-major (all variants per sample) for output
 void VCFXFastaConverter::convertVCFtoFasta(std::istream &in, std::ostream &out) {
     std::string line;
     std::vector<std::string> sampleNames;
-    // Each sampleName -> sequence string
-    std::unordered_map<std::string, std::string> sampleSequences;
 
     bool headerParsed = false;
+    size_t numSamples = 0;
+    size_t variantCount = 0;
 
-    // Reusable buffer for parsing
+    // Reusable buffers for parsing
     std::vector<std::string> fields;
     fields.reserve(16);
+    std::vector<std::string> altAlleles;
+    altAlleles.reserve(4);
+    std::vector<std::string> formatFields;
+    formatFields.reserve(8);
 
+    // Create temp file for column-major storage
+    char tempPath[] = "/tmp/vcfx_fasta_XXXXXX";
+    int tempFd = mkstemp(tempPath);
+    if (tempFd < 0) {
+        std::cerr << "Error: Cannot create temp file\n";
+        return;
+    }
+
+    // Buffer for variant bases (one char per sample)
+    std::vector<char> variantBases;
+
+    // PHASE 1: Single pass through VCF, write bases to temp file column-major
     while (std::getline(in, line)) {
-        if (line.empty()) {
-            continue;
-        }
+        if (line.empty()) continue;
 
         if (line[0] == '#') {
-            // Parse the #CHROM header to get sample columns
             if (line.rfind("#CHROM", 0) == 0) {
                 std::vector<std::string> headers;
                 vcfx::split_tabs(line, headers);
-                // Sample names start at column 9
                 for (size_t i = 9; i < headers.size(); ++i) {
                     sampleNames.push_back(headers[i]);
-                    sampleSequences[headers[i]] = "";
                 }
+                numSamples = sampleNames.size();
+                variantBases.resize(numSamples);
                 headerParsed = true;
             }
             continue;
@@ -132,47 +228,26 @@ void VCFXFastaConverter::convertVCFtoFasta(std::istream &in, std::ostream &out) 
 
         if (!headerParsed) {
             std::cerr << "Error: #CHROM header not found before data lines.\n";
+            close(tempFd);
+            unlink(tempPath);
             return;
         }
 
-        // Parse data line
-        fields.clear();
         vcfx::split_tabs(line, fields);
-        // minimal check
-        if (fields.size() < (9 + sampleNames.size())) {
-            // not enough columns
+        if (fields.size() < 9 + numSamples) {
             std::cerr << "Warning: Skipping malformed VCF line with insufficient columns.\n";
             continue;
         }
 
-        // VCF standard columns
-        //  0:CHROM, 1:POS, 2:ID, 3:REF, 4:ALT, 5:QUAL, 6:FILTER, 7:INFO, 8:FORMAT, 9+:samples
-        const std::string &chrom = fields[0];
-        // const std::string &pos = fields[1]; // not strictly needed for the FASTA
-        // const std::string &id  = fields[2];
         const std::string &ref = fields[3];
         const std::string &altField = fields[4];
         const std::string &format = fields[8];
 
-        // Split alt on commas
-        std::vector<std::string> altAlleles;
-        {
-            std::stringstream altSS(altField);
-            std::string a;
-            while (std::getline(altSS, a, ',')) {
-                altAlleles.push_back(a);
-            }
-        }
+        // Parse alt alleles
+        splitByDelim(altField, ',', altAlleles);
 
         // Find GT index in format
-        std::vector<std::string> formatFields;
-        {
-            std::stringstream fmts(format);
-            std::string token;
-            while (std::getline(fmts, token, ':')) {
-                formatFields.push_back(token);
-            }
-        }
+        splitByDelim(format, ':', formatFields);
         int gtIndex = -1;
         for (size_t i = 0; i < formatFields.size(); ++i) {
             if (formatFields[i] == "GT") {
@@ -180,136 +255,68 @@ void VCFXFastaConverter::convertVCFtoFasta(std::istream &in, std::ostream &out) 
                 break;
             }
         }
-        bool hasGT = (gtIndex >= 0);
 
-        // For each sample, figure out their genotype => one base or IUPAC or N
-        for (size_t s = 0; s < sampleNames.size(); ++s) {
-            const std::string &sampleName = sampleNames[s];
-            // sample column is at fields[9 + s]
-            if (9 + s >= fields.size()) {
-                // missing sample column?
-                sampleSequences[sampleName] += "N";
-                continue;
-            }
-            const std::string &sampleData = fields[9 + s];
-            if (!hasGT) {
-                // no genotype => default to reference? or N?
-                // We'll choose 'N' to avoid assumptions
-                sampleSequences[sampleName] += "N";
-                continue;
-            }
-            // parse sampleData by ':'
-            std::vector<std::string> sampleParts;
-            {
-                std::stringstream sp(sampleData);
-                std::string p;
-                while (std::getline(sp, p, ':')) {
-                    sampleParts.push_back(p);
-                }
-            }
-            if (gtIndex >= (int)sampleParts.size()) {
-                sampleSequences[sampleName] += "N";
-                continue;
-            }
-            // genotype string
-            std::string genotype = sampleParts[gtIndex];
-            // unify separators
-            for (char &c : genotype) {
-                if (c == '|')
-                    c = '/';
-            }
-            if (genotype.empty() || genotype == ".") {
-                sampleSequences[sampleName] += "N";
-                continue;
-            }
-            // split genotype by '/'
-            std::vector<std::string> alleles;
-            {
-                std::stringstream gtSS(genotype);
-                std::string al;
-                while (std::getline(gtSS, al, '/')) {
-                    alleles.push_back(al);
-                }
-            }
-            if (alleles.size() != 2) {
-                // not diploid => 'N'
-                sampleSequences[sampleName] += "N";
-                continue;
-            }
-
-            // Convert each allele to a single base (char), or '\0' on fail
-            char b1 = '\0';
-            char b2 = '\0';
-            {
-                // if either is '.', skip
-                if (alleles[0] == "." || alleles[1] == ".") {
-                    sampleSequences[sampleName] += "N";
-                    continue;
-                }
-                // parse numeric
-                bool okA1 = true, okA2 = true;
-                int a1 = 0, a2 = 0;
-                // parse first allele
-                {
-                    for (char c : alleles[0]) {
-                        if (!std::isdigit(c)) {
-                            okA1 = false;
-                            break;
-                        }
-                    }
-                    if (okA1)
-                        a1 = std::stoi(alleles[0]);
-                }
-                // parse second allele
-                {
-                    for (char c : alleles[1]) {
-                        if (!std::isdigit(c)) {
-                            okA2 = false;
-                            break;
-                        }
-                    }
-                    if (okA2)
-                        a2 = std::stoi(alleles[1]);
-                }
-                if (!okA1 || !okA2) {
-                    sampleSequences[sampleName] += "N";
-                    continue;
-                }
-                b1 = alleleIndexToBase(a1, ref, altAlleles);
-                b2 = alleleIndexToBase(a2, ref, altAlleles);
-            }
-
-            if (b1 == '\0' || b2 == '\0') {
-                // means we couldn't interpret at least one allele
-                sampleSequences[sampleName] += "N";
-                continue;
-            }
-
-            // If same base => that base
-            // If different => try IUPAC
-            char finalBase = '\0';
-            if (b1 == b2) {
-                finalBase = b1; // e.g. both 'A'
+        // Process each sample
+        for (size_t s = 0; s < numSamples; ++s) {
+            if (gtIndex < 0) {
+                variantBases[s] = 'N';
             } else {
-                finalBase = combineBasesIUPAC(b1, b2); // might yield R, Y, etc., or 'N'
+                const std::string &sampleData = fields[9 + s];
+                variantBases[s] = parseGenotypeToBase(sampleData.c_str(), sampleData.size(),
+                                                       gtIndex, ref, altAlleles);
             }
-            if (finalBase == '\0')
-                finalBase = 'N';
-            sampleSequences[sampleName] += finalBase;
+        }
+
+        // Write all sample bases for this variant (column-major)
+        ssize_t written = write(tempFd, variantBases.data(), numSamples);
+        if (written != static_cast<ssize_t>(numSamples)) {
+            std::cerr << "Error: Failed to write to temp file\n";
+            close(tempFd);
+            unlink(tempPath);
+            return;
+        }
+        variantCount++;
+    }
+
+    // PHASE 2: Read row-major (transpose) and output FASTA
+    // For each sample, read all their bases and output as FASTA
+
+    // Buffer for reading
+    const size_t BUFFER_SIZE = 65536;  // 64KB read buffer
+    std::vector<char> readBuffer(BUFFER_SIZE);
+    std::vector<char> sampleSeq(variantCount);
+
+    for (size_t s = 0; s < numSamples; ++s) {
+        // Output FASTA header
+        out << ">" << sampleNames[s] << "\n";
+
+        // Read this sample's bases from temp file (scattered reads)
+        // Each variant has numSamples bytes, sample s is at offset s within each
+        for (size_t v = 0; v < variantCount; ++v) {
+            off_t offset = static_cast<off_t>(v * numSamples + s);
+            if (lseek(tempFd, offset, SEEK_SET) < 0) {
+                sampleSeq[v] = 'N';
+                continue;
+            }
+            char c;
+            if (read(tempFd, &c, 1) == 1) {
+                sampleSeq[v] = c;
+            } else {
+                sampleSeq[v] = 'N';
+            }
+        }
+
+        // Output in 60-char lines
+        for (size_t i = 0; i < variantCount; i += 60) {
+            size_t len = std::min(size_t(60), variantCount - i);
+            out.write(sampleSeq.data() + i, static_cast<std::streamsize>(len));
+            out << "\n";
         }
     }
 
-    // Finally, output the sequences in FASTA format
-    // e.g. >SampleName\n[sequence in 60-char lines]
-    for (auto &kv : sampleSequences) {
-        const std::string &sampleName = kv.first;
-        const std::string &seq = kv.second;
-        out << ">" << sampleName << "\n";
-        // print in 60-char chunks
-        for (size_t i = 0; i < seq.size(); i += 60) {
-            out << seq.substr(i, 60) << "\n";
-        }
-    }
+    // Cleanup
+    close(tempFd);
+    unlink(tempPath);
 }
 
 static void show_help() {
@@ -321,7 +328,7 @@ static void show_help() {
 }
 
 int main(int argc, char *argv[]) {
-    vcfx::init_io();  // Performance: disable sync_with_stdio
+    vcfx::init_io();
     if (vcfx::handle_common_flags(argc, argv, "VCFX_fasta_converter", show_help))
         return 0;
     VCFXFastaConverter app;
