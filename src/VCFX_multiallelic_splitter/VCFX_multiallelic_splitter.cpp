@@ -9,12 +9,16 @@
 #include <unordered_map>
 #include <vector>
 
+// OPTIMIZED: Use direct string parsing instead of stringstream
 static std::vector<std::string> split(const std::string &s, char d) {
     std::vector<std::string> v;
-    std::stringstream ss(s);
-    std::string t;
-    while (std::getline(ss, t, d))
-        v.push_back(t);
+    v.reserve(8);
+    size_t start = 0, end;
+    while ((end = s.find(d, start)) != std::string::npos) {
+        v.emplace_back(s, start, end - start);
+        start = end + 1;
+    }
+    v.emplace_back(s, start);
     return v;
 }
 
