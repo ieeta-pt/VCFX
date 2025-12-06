@@ -29,28 +29,27 @@ void printHelp() {
 // ------------------------------------------------------------------------
 // A utility function to parse "INFO" key-value pairs into a map.
 // "INFO" might look like "DP=100;AF=0.5;ANN=some|stuff"
+// OPTIMIZED: Direct string parsing instead of stringstream
 // ------------------------------------------------------------------------
 static std::unordered_map<std::string, std::string> parseInfo(const std::string &infoField) {
     std::unordered_map<std::string, std::string> infoMap;
-    if (infoField == "." || infoField.empty()) {
+    if (infoField.empty() || infoField[0] == '.') {
         return infoMap;
     }
-    std::stringstream ss(infoField);
-    std::string token;
-    while (std::getline(ss, token, ';')) {
-        if (token.empty()) {
-            continue;
+    size_t start = 0, end;
+    while (start < infoField.size()) {
+        end = infoField.find(';', start);
+        if (end == std::string::npos) end = infoField.size();
+        if (end > start) {
+            size_t eqPos = infoField.find('=', start);
+            if (eqPos == std::string::npos || eqPos >= end) {
+                // It's a flag
+                infoMap[infoField.substr(start, end - start)] = "1";
+            } else {
+                infoMap[infoField.substr(start, eqPos - start)] = infoField.substr(eqPos + 1, end - eqPos - 1);
+            }
         }
-        // We might have "KEY=VAL" or just "KEY" if it's a flag
-        size_t eqPos = token.find('=');
-        if (eqPos == std::string::npos) {
-            // It's a flag
-            infoMap[token] = "1";
-        } else {
-            std::string key = token.substr(0, eqPos);
-            std::string val = token.substr(eqPos + 1);
-            infoMap[key] = val;
-        }
+        start = end + 1;
     }
     return infoMap;
 }
@@ -78,13 +77,16 @@ static std::vector<std::string> parseLineExtract(const std::vector<std::string> 
 
     // parse the FORMAT column for sample subfields
     // e.g. if format= GT:DP:GQ, then subfield "DP" is index 1
+    // OPTIMIZED: Direct string parsing instead of stringstream
     std::vector<std::string> formatTokens;
     if (vcfCols.size() > 8) {
-        std::stringstream fmts(vcfCols[8]);
-        std::string fmt;
-        while (std::getline(fmts, fmt, ':')) {
-            formatTokens.push_back(fmt);
+        const std::string &fmt = vcfCols[8];
+        size_t start = 0, end;
+        while ((end = fmt.find(':', start)) != std::string::npos) {
+            formatTokens.emplace_back(fmt, start, end - start);
+            start = end + 1;
         }
+        formatTokens.emplace_back(fmt, start);
     }
 
     // For each requested field
@@ -145,16 +147,7 @@ static std::vector<std::string> parseLineExtract(const std::vector<std::string> 
                     }
                     // sampleColIndex is the VCF column with that sample
                     if (sampleColIndex >= 9 && (size_t)sampleColIndex < vcfCols.size()) {
-                        // parse that sample field => split by ':'
-                        std::vector<std::string> sampleTokens;
-                        {
-                            std::stringstream sss(vcfCols[sampleColIndex]);
-                            std::string tkn;
-                            while (std::getline(sss, tkn, ':')) {
-                                sampleTokens.push_back(tkn);
-                            }
-                        }
-                        // find subfield in the FORMAT
+                        // find subfield index in FORMAT
                         int subIx = -1;
                         for (int i = 0; i < (int)formatTokens.size(); i++) {
                             if (formatTokens[i] == subfield) {
@@ -162,10 +155,23 @@ static std::vector<std::string> parseLineExtract(const std::vector<std::string> 
                                 break;
                             }
                         }
-                        if (subIx >= 0 && subIx < (int)sampleTokens.size()) {
-                            value = sampleTokens[subIx];
+                        if (subIx >= 0) {
+                            // OPTIMIZED: Direct parsing - extract only the needed token
+                            const std::string &sampleCol = vcfCols[sampleColIndex];
+                            int tokenIdx = 0;
+                            size_t start = 0, end;
+                            while (tokenIdx < subIx && (end = sampleCol.find(':', start)) != std::string::npos) {
+                                start = end + 1;
+                                tokenIdx++;
+                            }
+                            if (tokenIdx == subIx) {
+                                end = sampleCol.find(':', start);
+                                if (end == std::string::npos) end = sampleCol.size();
+                                value = sampleCol.substr(start, end - start);
+                            } else {
+                                value = ".";
+                            }
                         } else {
-                            // subfield not found
                             value = ".";
                         }
                     } else {
