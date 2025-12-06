@@ -10,6 +10,11 @@ class VCFXIndexer {
 
   private:
     void displayHelp();
+
+    // Memory-mapped file indexing (fast path for file arguments)
+    int createVCFIndexMmap(const char *filename, std::ostream &out);
+
+    // Stdin-based indexing (fallback for pipes)
     void createVCFIndex(std::istream &in, std::ostream &out);
 };
 
