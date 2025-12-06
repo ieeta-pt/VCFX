@@ -43,9 +43,10 @@ class VCFXLDCalculator {
                       int numSamples, LDVariant &variant);
 
     // Configuration
-    bool streamingMode = false;
-    size_t windowSize = 1000;  // Default window size
-    double ldThreshold = 0.0;  // Default: output all pairs
+    bool streamingMode = true;   // Default: streaming mode for performance
+    bool matrixMode = false;     // Explicit matrix mode (backward compat)
+    size_t windowSize = 1000;    // Default window size
+    double ldThreshold = 0.0;    // Default: output all pairs
 };
 
 #endif // VCFX_LD_CALCULATOR_H

@@ -39,7 +39,7 @@ fi
 echo "✓ Test 1 passed"
 
 ###############################################################################
-# Test 2: Single variant => no pairwise LD
+# Test 2: Single variant => no pairwise LD (using --matrix for backward compat)
 ###############################################################################
 echo "Test 2: Single variant"
 
@@ -49,8 +49,8 @@ cat > "$TEST_DATA_DIR/single.vcf" <<EOF
 1       100     .       A       G       .       PASS    .       GT      0/0
 EOF
 
-# No --region => use entire file
-OUT2=$(cat "$TEST_DATA_DIR/single.vcf" | "$CALCULATOR_BIN")
+# Use --matrix for tests expecting matrix output format
+OUT2=$(cat "$TEST_DATA_DIR/single.vcf" | "$CALCULATOR_BIN" --matrix)
 # We expect #LD_MATRIX_START plus message "No or only one variant..."
 if ! echo "$OUT2" | grep -q "No or only one variant in the region => no pairwise LD."; then
     echo "✗ Test failed: single variant => expected 'no pairwise LD' message not found."
@@ -61,7 +61,7 @@ fi
 echo "✓ Test 2 passed"
 
 ###############################################################################
-# Test 3: Two variants => produce 2x2 matrix
+# Test 3: Two variants => produce 2x2 matrix (using --matrix)
 ###############################################################################
 echo "Test 3: Two variants"
 
@@ -75,7 +75,7 @@ EOF
 # 2) Convert \t to real tabs
 sed 's/\\t/\t/g' "$TEST_DATA_DIR/two_variants_tmp.vcf" > "$TEST_DATA_DIR/two_variants.vcf"
 
-OUT3=$(cat "$TEST_DATA_DIR/two_variants.vcf" | "$CALCULATOR_BIN")
+OUT3=$(cat "$TEST_DATA_DIR/two_variants.vcf" | "$CALCULATOR_BIN" --matrix)
 
 # We expect two data lines => #LD_MATRIX_START => a 2x2 matrix
 if ! echo "$OUT3" | grep -q "#LD_MATRIX_START"; then
@@ -93,7 +93,7 @@ fi
 echo "✓ Test 3 passed"
 
 ###############################################################################
-# Test 4: Region excludes everything => no pairwise LD
+# Test 4: Region excludes everything => no pairwise LD (using --matrix)
 ###############################################################################
 echo "Test 4: Region excludes everything"
 
@@ -106,7 +106,7 @@ EOF
 sed 's/\\t/\t/g' "$TEST_DATA_DIR/out_of_range_tmp.vcf" > "$TEST_DATA_DIR/out_of_range.vcf"
 
 # region is chr1:300-400 => excludes POS=100 & 200 => no variants in region
-OUT4=$(cat "$TEST_DATA_DIR/out_of_range.vcf" | "$CALCULATOR_BIN" --region 1:300-400)
+OUT4=$(cat "$TEST_DATA_DIR/out_of_range.vcf" | "$CALCULATOR_BIN" --matrix --region 1:300-400)
 
 if ! echo "$OUT4" | grep -q "No or only one variant in the region => no pairwise LD."; then
     echo "✗ Test failed: region excludes everything => expected 'no pairwise LD' message not found."
@@ -117,7 +117,7 @@ fi
 echo "✓ Test 4 passed"
 
 ###############################################################################
-# Test 5: Region includes a subset
+# Test 5: Region includes a subset (using --matrix)
 ###############################################################################
 echo "Test 5: Region includes a subset"
 
@@ -131,7 +131,7 @@ EOF
 sed 's/\\t/\t/g' "$TEST_DATA_DIR/partial_region_tmp.vcf" > "$TEST_DATA_DIR/partial_region.vcf"
 
 # We'll only keep variants at [200..300], so that includes POS=250 => 1 variant
-OUT5=$(cat "$TEST_DATA_DIR/partial_region.vcf" | "$CALCULATOR_BIN" --region 1:200-300)
+OUT5=$(cat "$TEST_DATA_DIR/partial_region.vcf" | "$CALCULATOR_BIN" --matrix --region 1:200-300)
 
 if ! echo "$OUT5" | grep -q "No or only one variant in the region => no pairwise LD."; then
     echo "✗ Test failed: region subset => expected 'no pairwise LD' message"
@@ -142,7 +142,7 @@ fi
 echo "✓ Test 5 passed"
 
 ###############################################################################
-# Test 6: Missing / multi-allelic genotypes
+# Test 6: Missing / multi-allelic genotypes (using --matrix)
 ###############################################################################
 echo "Test 6: Missing or multi-allelic"
 
@@ -155,7 +155,7 @@ cat > "$TEST_DATA_DIR/missing_multi_tmp.vcf" <<EOF
 EOF
 sed 's/\\t/\t/g' "$TEST_DATA_DIR/missing_multi_tmp.vcf" > "$TEST_DATA_DIR/missing_multi.vcf"
 
-OUT6=$(cat "$TEST_DATA_DIR/missing_multi.vcf" | "$CALCULATOR_BIN")
+OUT6=$(cat "$TEST_DATA_DIR/missing_multi.vcf" | "$CALCULATOR_BIN" --matrix)
 
 # We expect #LD_MATRIX_START and a 3x3 matrix
 if ! echo "$OUT6" | grep -q "#LD_MATRIX_START"; then
@@ -183,6 +183,7 @@ cat > "$TEST_DATA_DIR/no_header_tmp.vcf" <<EOF
 EOF
 sed 's/\\t/\t/g' "$TEST_DATA_DIR/no_header_tmp.vcf" > "$TEST_DATA_DIR/no_header.vcf"
 
+# Both streaming and matrix modes detect this error
 ERR7=$(cat "$TEST_DATA_DIR/no_header.vcf" | "$CALCULATOR_BIN" 2>&1 || true)
 
 # The code prints "Error: encountered data line before #CHROM."
@@ -195,9 +196,9 @@ fi
 echo "✓ Test 7 passed"
 
 ###############################################################################
-# Test 8: Streaming mode basic
+# Test 8: Streaming mode basic (now default)
 ###############################################################################
-echo "Test 8: Streaming mode basic"
+echo "Test 8: Streaming mode basic (default)"
 
 cat > "$TEST_DATA_DIR/streaming_test_tmp.vcf" <<EOF
 ##fileformat=VCFv4.2
@@ -208,7 +209,8 @@ cat > "$TEST_DATA_DIR/streaming_test_tmp.vcf" <<EOF
 EOF
 sed 's/\\t/\t/g' "$TEST_DATA_DIR/streaming_test_tmp.vcf" > "$TEST_DATA_DIR/streaming_test.vcf"
 
-OUT8=$(cat "$TEST_DATA_DIR/streaming_test.vcf" | "$CALCULATOR_BIN" --streaming)
+# Streaming mode is now default, no need for --streaming flag
+OUT8=$(cat "$TEST_DATA_DIR/streaming_test.vcf" | "$CALCULATOR_BIN")
 if ! echo "$OUT8" | grep -q "#VAR1_CHROM"; then
     echo "✗ Test failed: streaming mode => missing header"
     echo "Output:"
@@ -223,7 +225,7 @@ fi
 echo "✓ Test 8 passed"
 
 ###############################################################################
-# Test 9: Streaming mode with window
+# Test 9: Streaming mode with window (streaming is default)
 ###############################################################################
 echo "Test 9: Streaming mode with window"
 
@@ -238,7 +240,8 @@ EOF
 sed 's/\\t/\t/g' "$TEST_DATA_DIR/window_test_tmp.vcf" > "$TEST_DATA_DIR/window_test.vcf"
 
 # With window=2, rs1-rs4 pair should NOT appear (too far apart)
-OUT9=$(cat "$TEST_DATA_DIR/window_test.vcf" | "$CALCULATOR_BIN" --streaming --window 2)
+# No --streaming flag needed since it's now default
+OUT9=$(cat "$TEST_DATA_DIR/window_test.vcf" | "$CALCULATOR_BIN" --window 2)
 if echo "$OUT9" | grep -q "rs1.*rs4"; then
     echo "✗ Test failed: window mode => should NOT have rs1-rs4 pair"
     exit 1
@@ -251,12 +254,13 @@ fi
 echo "✓ Test 9 passed"
 
 ###############################################################################
-# Test 10: Streaming mode with threshold
+# Test 10: Streaming mode with threshold (streaming is default)
 ###############################################################################
 echo "Test 10: Streaming mode with threshold"
 
 # Using same file, test threshold filtering
-OUT10=$(cat "$TEST_DATA_DIR/streaming_test.vcf" | "$CALCULATOR_BIN" --streaming --threshold 0.999)
+# No --streaming flag needed since it's now default
+OUT10=$(cat "$TEST_DATA_DIR/streaming_test.vcf" | "$CALCULATOR_BIN" --threshold 0.999)
 # Only pairs with r2 >= 0.999 should appear
 # Count lines (excluding header)
 PAIRS=$(echo "$OUT10" | grep -v "^#" | wc -l | tr -d ' ')
@@ -271,13 +275,13 @@ fi
 echo "✓ Test 10 passed"
 
 ###############################################################################
-# Test 11: Help shows new options
+# Test 11: Help shows new options (including --matrix for backward compat)
 ###############################################################################
-echo "Test 11: Help shows new streaming options"
+echo "Test 11: Help shows streaming/matrix options"
 
 OUT11=$("$CALCULATOR_BIN" --help)
-if ! echo "$OUT11" | grep -q "\-\-streaming"; then
-    echo "✗ Test failed: help should mention --streaming"
+if ! echo "$OUT11" | grep -q "\-\-matrix"; then
+    echo "✗ Test failed: help should mention --matrix"
     exit 1
 fi
 if ! echo "$OUT11" | grep -q "\-\-window"; then
@@ -290,4 +294,4 @@ if ! echo "$OUT11" | grep -q "\-\-threshold"; then
 fi
 echo "✓ Test 11 passed"
 
-echo "✅ All VCFX_ld_calculator tests passed!"
+echo "All VCFX_ld_calculator tests passed!"
