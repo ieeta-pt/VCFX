@@ -123,18 +123,27 @@ FrequencyMode VCFXInbreedingCalculator::parseFreqMode(const std::string &modeStr
 }
 
 // --------------------------------------------------------------------------
+// OPTIMIZED: Single-pass algorithm - O(S) memory instead of O(V×S)
+// Process each variant immediately without storing genotypes in memory
 void VCFXInbreedingCalculator::calculateInbreeding(std::istream &in, std::ostream &out) {
     bool foundChrom = false;
     std::vector<std::string> sampleNames;
     int numSamples = 0;
-    std::vector<InbreedingVariant> variants;
 
-    // 1) parse lines
-    while (true) {
-        std::string line;
-        if (!std::getline(in, line)) {
-            break; // EOF
-        }
+    // Per-sample accumulators (O(S) memory only)
+    std::vector<double> sumExp;
+    std::vector<double> obsHet;
+    std::vector<int> usedCount;
+
+    // Reusable buffers for each line (avoid allocations)
+    std::vector<std::string> fields;
+    fields.reserve(16);
+    std::vector<int> genotypeCodes;
+    int variantCount = 0;
+
+    // Single-pass: parse and process each variant immediately
+    std::string line;
+    while (std::getline(in, line)) {
         sanitizeLine(line);
         if (line.empty())
             continue;
@@ -149,90 +158,58 @@ void VCFXInbreedingCalculator::calculateInbreeding(std::istream &in, std::ostrea
                         sampleNames.push_back(tokens[i]);
                     }
                     numSamples = (int)sampleNames.size();
+                    // Initialize accumulators now that we know sample count
+                    sumExp.resize(numSamples, 0.0);
+                    obsHet.resize(numSamples, 0.0);
+                    usedCount.resize(numSamples, 0);
+                    genotypeCodes.resize(numSamples);
                 }
             }
             continue;
         }
         // data line
         if (!foundChrom) {
-            // ignore data lines if #CHROM not found
             continue;
         }
-        auto fields = splitByTab(line);
+
+        // Parse variant line
+        fields.clear();
+        vcfx::split_tabs(line, fields);
         if (fields.size() < 10) {
             continue;
         }
         if (!isBiallelic(fields[4])) {
             continue; // skip multi-allelic
         }
-        InbreedingVariant var;
-        var.chrom = fields[0];
-        try {
-            var.pos = std::stoi(fields[1]);
-        } catch (...) {
-            continue;
-        }
-        var.genotypeCodes.resize(numSamples, -1);
-        for (int s = 0; s < numSamples; s++) {
-            int colIndex = 9 + s;
-            if ((size_t)colIndex >= fields.size())
-                break;
-            var.genotypeCodes[s] = parseGenotype(fields[colIndex]);
-        }
-        variants.push_back(var);
-    }
 
-    // If no #CHROM found or no variants, handle gracefully
-    if (!foundChrom) {
-        std::cerr << "Error: No #CHROM line found.\n";
-        out << "Sample\tInbreedingCoefficient\n";
-        return;
-    }
-    if (numSamples == 0) {
-        std::cerr << "Error: No sample columns found.\n";
-        out << "Sample\tInbreedingCoefficient\n";
-        return;
-    }
-    if (variants.empty()) {
-        // No valid (biallelic) variants
-        std::cerr << "No biallelic variants found.\n";
-        out << "Sample\tInbreedingCoefficient\n";
-        for (int s = 0; s < numSamples; s++) {
-            out << sampleNames[s] << "\tNA\n";
-        }
-        return;
-    }
-
-    // Prepare result arrays
-    std::vector<double> sumExp(numSamples, 0.0);
-    std::vector<double> obsHet(numSamples, 0.0);
-    std::vector<int> usedCount(numSamples, 0);
-
-    // 2) For each variant
-    for (size_t v = 0; v < variants.size(); v++) {
-        const auto &var = variants[v];
-        const auto &codes = var.genotypeCodes;
-
-        // Count altSum & nGood (i.e. how many samples have code>=0)
+        // Parse genotypes for this variant into reusable buffer
         int altSum = 0;
         int nGood = 0;
         for (int s = 0; s < numSamples; s++) {
-            if (codes[s] >= 0) {
-                altSum += codes[s];
+            int colIndex = 9 + s;
+            if ((size_t)colIndex >= fields.size()) {
+                genotypeCodes[s] = -1;
+            } else {
+                genotypeCodes[s] = parseGenotype(fields[colIndex]);
+            }
+            if (genotypeCodes[s] >= 0) {
+                altSum += genotypeCodes[s];
                 nGood++;
             }
         }
-        // If fewer than 2 genotyped samples, skip
+
+        // Skip if fewer than 2 genotyped samples
         if (nGood < 2) {
             continue;
         }
+        variantCount++;
 
-        // For freq-mode=GLOBAL, we compute p once
+        // For freq-mode=GLOBAL, compute p once
         double globalP = (double)altSum / (2.0 * nGood);
 
-        // 3) Each sample that has a valid genotype
+        // Process each sample for this variant
         for (int s = 0; s < numSamples; s++) {
-            int code = codes[s];
+            int code = genotypeCodes[s];
             if (code < 0) {
                 continue; // missing or invalid
             }
@@ -245,7 +222,6 @@ void VCFXInbreedingCalculator::calculateInbreeding(std::istream &in, std::ostrea
                 int altEx = altSum - code;
                 int validEx = nGood - 1;
                 if (validEx < 1) {
-                    // can't define p => skip
                     continue;
                 }
                 p = (double)altEx / (2.0 * validEx);
@@ -253,40 +229,51 @@ void VCFXInbreedingCalculator::calculateInbreeding(std::istream &in, std::ostrea
 
             // If skipBoundary_ is set and p is boundary
             if (skipBoundary_ && (p <= 0.0 || p >= 1.0)) {
-                // If user wants to count boundary as used
                 if (countBoundaryAsUsed_) {
-                    // This increments usedCount but adds 0 to sumExp
                     usedCount[s]++;
                 }
-                // Then continue, so we don't add eHet
                 continue;
             }
 
-            // Mark that we used this site for sample s
             usedCount[s]++;
-
-            // expected heterozygosity
             double eHet = 2.0 * p * (1.0 - p);
             sumExp[s] += eHet;
 
-            // observed heterozygosity increment if 0/1 => code=1
             if (code == 1) {
                 obsHet[s] += 1.0;
             }
         }
     }
 
-    // 4) Output
+    // Handle edge cases
+    if (!foundChrom) {
+        std::cerr << "Error: No #CHROM line found.\n";
+        out << "Sample\tInbreedingCoefficient\n";
+        return;
+    }
+    if (numSamples == 0) {
+        std::cerr << "Error: No sample columns found.\n";
+        out << "Sample\tInbreedingCoefficient\n";
+        return;
+    }
+    if (variantCount == 0) {
+        std::cerr << "No biallelic variants found.\n";
+        out << "Sample\tInbreedingCoefficient\n";
+        for (int s = 0; s < numSamples; s++) {
+            out << sampleNames[s] << "\tNA\n";
+        }
+        return;
+    }
+
+    // Output results
     out << "Sample\tInbreedingCoefficient\n";
     for (int s = 0; s < numSamples; s++) {
         if (usedCount[s] == 0) {
-            // No used sites => NA
             out << sampleNames[s] << "\tNA\n";
             continue;
         }
         double e = sumExp[s];
         if (e <= 0.0) {
-            // used some sites => but sumExp=0 => fully homo => F=1
             out << sampleNames[s] << "\t1.000000\n";
             continue;
         }
