@@ -1,6 +1,7 @@
 VCFX_phred_filter: Filter VCF lines by their QUAL field.
 
 Usage:
+  VCFX_phred_filter [options] [files...]
   VCFX_phred_filter [options] < input.vcf > output.vcf
 
 Options:
@@ -9,12 +10,19 @@ Options:
   -h, --help                    Display this help and exit
 
 Description:
-  Reads VCF lines from stdin. For each data line, parse the QUAL field.
+  Reads VCF lines from files or stdin. For each data line, parse the QUAL field.
   If QUAL >= threshold => print line. Otherwise, skip. By default, missing
   QUAL ('.') is treated as 0. Use --keep-missing-qual to treat '.' as pass.
 
+  When file arguments are provided, uses memory-mapped I/O for faster
+  processing of large files.
+
 Examples:
-  1) Keep variants with QUAL>=30:
+  1) Keep variants with QUAL>=30 (from file):
+     VCFX_phred_filter -p 30 input.vcf > out.vcf
+  2) Keep variants with QUAL>=30 (from stdin):
      VCFX_phred_filter -p 30 < in.vcf > out.vcf
-  2) Keep missing QUAL lines:
-     VCFX_phred_filter -p 30 --keep-missing-qual < in.vcf > out.vcf
+  3) Keep missing QUAL lines:
+     VCFX_phred_filter -p 30 --keep-missing-qual input.vcf > out.vcf
+  4) Process multiple files:
+     VCFX_phred_filter -p 20 file1.vcf file2.vcf > combined.vcf
