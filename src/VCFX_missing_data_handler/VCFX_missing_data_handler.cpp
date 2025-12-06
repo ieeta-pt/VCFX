@@ -2,17 +2,32 @@
 #include "vcfx_core.h"
 #include "vcfx_io.h"
 #include <algorithm>
+#include <atomic>
 #include <cstdlib>
+#include <cstring>
+#include <fcntl.h>
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <thread>
+#include <unistd.h>
 #include <vector>
 
-/**
- * @brief Displays the help message for the missing data handler tool.
- */
+// ============================================================================
+// RADICALLY DIFFERENT APPROACH: Memory-mapped, zero-copy, multi-threaded
+// ============================================================================
+// Key insight: Most lines have NO missing data. Don't parse them at all.
+// Strategy:
+//   1. Memory-map the input file (eliminates read syscalls)
+//   2. Scan raw bytes for missing patterns (./. or .\t or .\n)
+//   3. Only if pattern found, do minimal modification
+//   4. Multi-thread the processing
+// ============================================================================
+
 void printHelp() {
     std::cout
         << "VCFX_missing_data_handler\n"
@@ -20,69 +35,488 @@ void printHelp() {
         << "Options:\n"
         << "  --fill-missing, -f            Impute missing genotypes with a default value (e.g., ./.).\n"
         << "  --default-genotype, -d GEN    Specify the default genotype for imputation (default: ./.).\n"
-        << "  --help, -h                    Display this help message and exit.\n\n"
-        << "Description:\n"
-        << "  Flags or imputes missing genotype data in one or more VCF files. By default, missing genotypes are\n"
-        << "  left as is (flagged), but can be replaced with a specified genotype using --fill-missing.\n\n"
-        << "Examples:\n"
-        << "  1) Flag missing data from a single file:\n"
-        << "       ./VCFX_missing_data_handler < input.vcf > flagged_output.vcf\n\n"
-        << "  2) Impute missing data with './.' from multiple files:\n"
-        << "       ./VCFX_missing_data_handler -f --default-genotype \"./.\" file1.vcf file2.vcf > "
-           "combined_output.vcf\n";
+        << "  --threads, -t NUM             Number of threads (default: auto)\n"
+        << "  --help, -h                    Display this help message and exit.\n\n";
 }
 
-/**
- * @brief Splits a string by a given delimiter.
- *
- * @param str The input string to split.
- * @param delimiter The character delimiter.
- * @return A vector of split substrings.
- */
-std::vector<std::string> splitString(const std::string &str, char delimiter) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(str);
-    std::string temp;
-    while (std::getline(ss, temp, delimiter)) {
-        tokens.push_back(temp);
+// ============================================================================
+// SIMD-like fast pattern scan using memchr
+// ============================================================================
+
+// Check if a position contains a missing genotype pattern
+// Patterns: "./." or ".|." or "." followed by \t or : or \n
+static inline bool isMissingPatternAt(const char* p, const char* end) {
+    if (p >= end) return false;
+
+    if (*p != '.') return false;
+
+    // Check "." alone (followed by delimiter)
+    if (p + 1 >= end || p[1] == '\t' || p[1] == ':' || p[1] == '\n') {
+        return true;
     }
-    return tokens;
-}
 
-/**
- * @brief Parses command-line arguments.
- *
- * @param argc Argument count.
- * @param argv Argument vector.
- * @param args Reference to Arguments structure to populate.
- * @return true if parsing is successful, false otherwise.
- */
-bool parseArguments(int argc, char *argv[], Arguments &args) {
-    static struct option long_opts[] = {{"fill-missing", no_argument, 0, 'f'},
-                                        {"default-genotype", required_argument, 0, 'd'},
-                                        {"help", no_argument, 0, 'h'},
-                                        {0, 0, 0, 0}};
-
-    while (true) {
-        int c = getopt_long(argc, argv, "fd:h", long_opts, nullptr);
-        if (c == -1)
-            break;
-        switch (c) {
-        case 'f':
-            args.fill_missing = true;
-            break;
-        case 'd':
-            args.default_genotype = optarg;
-            break;
-        case 'h':
-        default:
-            printHelp();
-            exit(0);
+    // Check "./." or ".|."
+    if (p + 2 < end && (p[1] == '/' || p[1] == '|') && p[2] == '.') {
+        // Make sure it's the whole genotype (followed by delimiter or end)
+        if (p + 3 >= end || p[3] == '\t' || p[3] == ':' || p[3] == '\n') {
+            return true;
         }
     }
 
-    // The remainder arguments are input files
-    // if none => read from stdin
+    return false;
+}
+
+// Fast scan for any '.' character in sample region
+static inline const char* findDotInSamples(const char* start, const char* end) {
+    return (const char*)memchr(start, '.', end - start);
+}
+
+// Find the GT field position and check if it's missing
+// Returns: -1 if no GT field found, -2 if GT exists but NOT missing,
+//          position (>=0) if GT IS missing
+static inline int findMissingGTPosition(const char* sampleStart, const char* sampleEnd, int gtIndex) {
+    if (gtIndex < 0) return -1;
+
+    const char* p = sampleStart;
+    int fieldIdx = 0;
+    const char* fieldStart = p;
+
+    while (p <= sampleEnd) {
+        if (p == sampleEnd || *p == ':') {
+            if (fieldIdx == gtIndex) {
+                // Check if this field is missing
+                size_t fieldLen = p - fieldStart;
+                if (fieldLen == 1 && *fieldStart == '.') {
+                    return fieldStart - sampleStart; // Position of missing GT (could be 0)
+                }
+                if (fieldLen == 3 && fieldStart[0] == '.' &&
+                    (fieldStart[1] == '/' || fieldStart[1] == '|') &&
+                    fieldStart[2] == '.') {
+                    return fieldStart - sampleStart; // Position of missing GT (could be 0)
+                }
+                return -2; // GT exists but not missing
+            }
+            fieldIdx++;
+            fieldStart = p + 1;
+        }
+        p++;
+    }
+    return -1;
+}
+
+// ============================================================================
+// Process a single line with minimal copying
+// Returns true if line was modified
+// ============================================================================
+static bool processLineZeroCopy(const char* lineStart, size_t lineLen,
+                                 int gtIndex, const std::string& replacement,
+                                 std::string& output) {
+    // Skip empty lines and headers
+    if (lineLen == 0) {
+        output.assign(lineStart, lineLen);
+        output.push_back('\n');
+        return false;
+    }
+
+    if (*lineStart == '#') {
+        output.assign(lineStart, lineLen);
+        output.push_back('\n');
+        return false;
+    }
+
+    const char* lineEnd = lineStart + lineLen;
+
+    // Quick scan: does this line even have a '.' character after the FORMAT field?
+    // Find the 9th tab (start of samples)
+    int tabCount = 0;
+    const char* sampleRegionStart = nullptr;
+    for (const char* p = lineStart; p < lineEnd; p++) {
+        if (*p == '\t') {
+            tabCount++;
+            if (tabCount == 9) {
+                sampleRegionStart = p + 1;
+                break;
+            }
+        }
+    }
+
+    if (!sampleRegionStart || tabCount < 9) {
+        // Not enough fields, pass through
+        output.assign(lineStart, lineLen);
+        output.push_back('\n');
+        return false;
+    }
+
+    // FAST PATH: Quick scan for '.' in sample region
+    const char* dotPos = findDotInSamples(sampleRegionStart, lineEnd);
+    if (!dotPos) {
+        // No dots at all - definitely no missing data, pass through unchanged
+        output.assign(lineStart, lineLen);
+        output.push_back('\n');
+        return false;
+    }
+
+    // There's at least one dot - need to process samples
+    // But still try to minimize work
+
+    output.clear();
+    output.reserve(lineLen + 100); // Reserve space for potential expansion
+
+    // Copy everything up to sample region
+    output.append(lineStart, sampleRegionStart - lineStart);
+
+    bool modified = false;
+    const char* sampleStart = sampleRegionStart;
+
+    while (sampleStart < lineEnd) {
+        // Find end of this sample
+        const char* sampleEnd = sampleStart;
+        while (sampleEnd < lineEnd && *sampleEnd != '\t') {
+            sampleEnd++;
+        }
+
+        size_t sampleLen = sampleEnd - sampleStart;
+
+        // Check if this specific sample has missing GT
+        // Returns >= 0 if missing (position), -1 or -2 if not missing
+        int missingPos = findMissingGTPosition(sampleStart, sampleEnd, gtIndex);
+
+        if (missingPos >= 0) {
+            // GT is missing at position missingPos within sample
+            // Copy up to the missing position
+            output.append(sampleStart, missingPos);
+
+            // Insert replacement
+            output.append(replacement);
+
+            // Figure out what we skipped (./. or . or .|.)
+            const char* gtStart = sampleStart + missingPos;
+            size_t skipLen = 1; // At least skip the '.'
+            if (gtStart + 2 < sampleEnd &&
+                (gtStart[1] == '/' || gtStart[1] == '|') &&
+                gtStart[2] == '.') {
+                skipLen = 3;
+            }
+
+            // Copy the rest of the sample
+            output.append(gtStart + skipLen, sampleEnd - (gtStart + skipLen));
+            modified = true;
+        } else {
+            // No missing GT, copy sample as-is
+            output.append(sampleStart, sampleLen);
+        }
+
+        // Add tab if not at end
+        if (sampleEnd < lineEnd) {
+            output.push_back('\t');
+            sampleStart = sampleEnd + 1;
+        } else {
+            break;
+        }
+    }
+
+    output.push_back('\n');
+    return modified;
+}
+
+// ============================================================================
+// Multi-threaded line processor
+// ============================================================================
+struct LineRange {
+    size_t startOffset;
+    size_t endOffset;
+};
+
+static void processChunk(const char* data, const std::vector<LineRange>& lines,
+                         size_t startIdx, size_t endIdx,
+                         int gtIndex, const std::string& replacement,
+                         std::string& output) {
+    std::string lineOutput;
+    lineOutput.reserve(32768);
+    output.clear();
+    output.reserve((endIdx - startIdx) * 10000); // Estimate
+
+    for (size_t i = startIdx; i < endIdx; i++) {
+        const LineRange& lr = lines[i];
+        processLineZeroCopy(data + lr.startOffset,
+                           lr.endOffset - lr.startOffset,
+                           gtIndex, replacement, lineOutput);
+        output.append(lineOutput);
+    }
+}
+
+// ============================================================================
+// Main processing function with memory mapping and multi-threading
+// ============================================================================
+static bool processVCFMapped(const char* filename, std::ostream& out,
+                              bool fillMissing, const std::string& defaultGT,
+                              int numThreads) {
+    // Open and memory-map the file
+    int fd = open(filename, O_RDONLY);
+    if (fd < 0) {
+        std::cerr << "Error: cannot open file " << filename << "\n";
+        return false;
+    }
+
+    struct stat sb;
+    if (fstat(fd, &sb) < 0) {
+        close(fd);
+        std::cerr << "Error: Cannot stat file\n";
+        return false;
+    }
+
+    size_t fileSize = sb.st_size;
+    if (fileSize == 0) {
+        close(fd);
+        return true;
+    }
+
+    // Memory map the file
+    char* data = (char*)mmap(nullptr, fileSize, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (data == MAP_FAILED) {
+        close(fd);
+        std::cerr << "Error: Cannot mmap file\n";
+        return false;
+    }
+
+    // Advise kernel for sequential access
+    madvise(data, fileSize, MADV_SEQUENTIAL);
+
+    // Phase 1: Find all line boundaries (single-threaded, very fast)
+    std::vector<LineRange> lines;
+    lines.reserve(500000); // Pre-allocate for typical VCF
+
+    size_t lineStart = 0;
+    int gtIndex = -1;
+    bool headerDone = false;
+
+    for (size_t i = 0; i < fileSize; i++) {
+        if (data[i] == '\n') {
+            LineRange lr = {lineStart, i};
+            lines.push_back(lr);
+
+            // Parse header to find GT index
+            if (!headerDone && lineStart < i && data[lineStart] == '#') {
+                // Check for #CHROM line
+                if (i - lineStart > 6 && strncmp(data + lineStart, "#CHROM", 6) == 0) {
+                    headerDone = true;
+                }
+            } else if (!headerDone && lineStart < i && data[lineStart] != '#') {
+                // First data line - find FORMAT field to get GT index
+                int tabCount = 0;
+                for (size_t j = lineStart; j < i; j++) {
+                    if (data[j] == '\t') {
+                        tabCount++;
+                        if (tabCount == 8) {
+                            // Next field is FORMAT
+                            size_t formatStart = j + 1;
+                            size_t formatEnd = formatStart;
+                            while (formatEnd < i && data[formatEnd] != '\t') formatEnd++;
+
+                            // Find GT in format
+                            int idx = 0;
+                            size_t fieldStart = formatStart;
+                            for (size_t k = formatStart; k <= formatEnd; k++) {
+                                if (k == formatEnd || data[k] == ':') {
+                                    if (k - fieldStart == 2 &&
+                                        data[fieldStart] == 'G' &&
+                                        data[fieldStart + 1] == 'T') {
+                                        gtIndex = idx;
+                                    }
+                                    idx++;
+                                    fieldStart = k + 1;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                headerDone = true;
+            }
+
+            lineStart = i + 1;
+        }
+    }
+
+    // Handle last line without newline
+    if (lineStart < fileSize) {
+        lines.push_back({lineStart, fileSize});
+    }
+
+    if (!fillMissing || gtIndex < 0) {
+        // Just copy the file through
+        out.write(data, fileSize);
+        munmap(data, fileSize);
+        close(fd);
+        return true;
+    }
+
+    // Phase 2: Process lines in parallel
+    size_t numLines = lines.size();
+
+    if (numThreads <= 0) {
+        numThreads = std::thread::hardware_concurrency();
+        if (numThreads == 0) numThreads = 4;
+    }
+
+    // For small files, don't bother with threading
+    if (numLines < 10000) {
+        numThreads = 1;
+    }
+
+    std::vector<std::string> outputs(numThreads);
+    std::vector<std::thread> threads;
+
+    size_t linesPerThread = (numLines + numThreads - 1) / numThreads;
+
+    for (int t = 0; t < numThreads; t++) {
+        size_t startIdx = t * linesPerThread;
+        size_t endIdx = std::min(startIdx + linesPerThread, numLines);
+
+        if (startIdx >= numLines) break;
+
+        threads.emplace_back(processChunk, data, std::ref(lines),
+                            startIdx, endIdx, gtIndex, std::ref(defaultGT),
+                            std::ref(outputs[t]));
+    }
+
+    // Wait for all threads
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    // Write outputs in order
+    for (int t = 0; t < numThreads && t < (int)outputs.size(); t++) {
+        if (!outputs[t].empty()) {
+            out.write(outputs[t].data(), outputs[t].size());
+        }
+    }
+
+    munmap(data, fileSize);
+    close(fd);
+    return true;
+}
+
+// ============================================================================
+// Fallback for stdin processing (can't mmap)
+// ============================================================================
+static bool processVCFStream(std::istream& in, std::ostream& out,
+                              bool fillMissing, const std::string& defaultGT) {
+    std::string line;
+    int gtIndex = -1;
+    bool foundFormat = false;
+
+    // Large output buffer
+    static const size_t OUTPUT_BUFFER_SIZE = 4 * 1024 * 1024; // 4MB buffer
+    std::string outputBuffer;
+    outputBuffer.reserve(OUTPUT_BUFFER_SIZE);
+
+    std::string processedLine;
+    processedLine.reserve(32768);
+
+    while (std::getline(in, line)) {
+        if (line.empty()) {
+            outputBuffer.push_back('\n');
+            continue;
+        }
+
+        if (line[0] == '#') {
+            outputBuffer.append(line);
+            outputBuffer.push_back('\n');
+            if (outputBuffer.size() >= OUTPUT_BUFFER_SIZE - 65536) {
+                out.write(outputBuffer.data(), outputBuffer.size());
+                outputBuffer.clear();
+            }
+            continue;
+        }
+
+        // Find GT index from first data line
+        if (!foundFormat) {
+            int tabCount = 0;
+            for (size_t i = 0; i < line.size(); i++) {
+                if (line[i] == '\t') {
+                    tabCount++;
+                    if (tabCount == 8) {
+                        size_t formatStart = i + 1;
+                        size_t formatEnd = line.find('\t', formatStart);
+                        if (formatEnd == std::string::npos) formatEnd = line.size();
+
+                        int idx = 0;
+                        size_t fieldStart = formatStart;
+                        for (size_t k = formatStart; k <= formatEnd; k++) {
+                            if (k == formatEnd || line[k] == ':') {
+                                if (k - fieldStart == 2 &&
+                                    line[fieldStart] == 'G' &&
+                                    line[fieldStart + 1] == 'T') {
+                                    gtIndex = idx;
+                                }
+                                idx++;
+                                fieldStart = k + 1;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            foundFormat = true;
+        }
+
+        if (!fillMissing || gtIndex < 0) {
+            outputBuffer.append(line);
+            outputBuffer.push_back('\n');
+        } else {
+            processLineZeroCopy(line.c_str(), line.size(), gtIndex, defaultGT, processedLine);
+            outputBuffer.append(processedLine);
+        }
+
+        if (outputBuffer.size() >= OUTPUT_BUFFER_SIZE - 65536) {
+            out.write(outputBuffer.data(), outputBuffer.size());
+            outputBuffer.clear();
+        }
+    }
+
+    if (!outputBuffer.empty()) {
+        out.write(outputBuffer.data(), outputBuffer.size());
+    }
+
+    return true;
+}
+
+// ============================================================================
+// Argument parsing
+// ============================================================================
+bool parseArguments(int argc, char* argv[], Arguments& args) {
+    static struct option long_opts[] = {
+        {"fill-missing", no_argument, 0, 'f'},
+        {"default-genotype", required_argument, 0, 'd'},
+        {"threads", required_argument, 0, 't'},
+        {"help", no_argument, 0, 'h'},
+        {0, 0, 0, 0}
+    };
+
+    args.numThreads = 0; // Auto-detect
+
+    while (true) {
+        int c = getopt_long(argc, argv, "fd:t:h", long_opts, nullptr);
+        if (c == -1) break;
+
+        switch (c) {
+            case 'f':
+                args.fill_missing = true;
+                break;
+            case 'd':
+                args.default_genotype = optarg;
+                break;
+            case 't':
+                args.numThreads = std::stoi(optarg);
+                break;
+            case 'h':
+            default:
+                printHelp();
+                exit(0);
+        }
+    }
+
     while (optind < argc) {
         args.input_files.push_back(argv[optind++]);
     }
@@ -90,196 +524,40 @@ bool parseArguments(int argc, char *argv[], Arguments &args) {
     return true;
 }
 
-/**
- * @brief Process a single VCF stream. Writes to out.
- *
- * If fill_missing is true, we replace missing genotypes with args.default_genotype in the GT field.
- */
-static bool processVCF(std::istream &in, std::ostream &out, bool fillMissing, const std::string &defaultGT) {
-    std::string line;
-    bool header_found = false;
-
-    // Reusable vector for tab splitting
-    std::vector<std::string> fields;
-    fields.reserve(16);
-
-    while (std::getline(in, line)) {
-        if (line.empty()) {
-            out << "\n";
-            continue;
-        }
-        if (line[0] == '#') {
-            out << line << "\n";
-            if (line.rfind("#CHROM", 0) == 0) {
-                header_found = true;
-            }
-            continue;
-        }
-        if (!header_found) {
-            std::cerr << "Error: VCF data line encountered before #CHROM header.\n";
-            // could continue or skip
-            // we'll just continue
-        }
-
-        // parse columns
-        vcfx::split_tabs(line, fields);
-        if (fields.size() < 9) {
-            // invalid => pass as is
-            out << line << "\n";
-            continue;
-        }
-        // the 9th col => format
-        std::string &format = fields[8];
-        auto fmtParts = splitString(format, ':');
-        int gtIndex = -1;
-        for (size_t i = 0; i < fmtParts.size(); i++) {
-            if (fmtParts[i] == "GT") {
-                gtIndex = i;
-                break;
-            }
-        }
-        if (gtIndex < 0) {
-            // no GT => just pass line
-            out << line << "\n";
-            continue;
-        }
-        // for each sample => fields[9..]
-        for (size_t s = 9; s < fields.size(); s++) {
-            auto sampleParts = splitString(fields[s], ':');
-            if (gtIndex >= (int)sampleParts.size()) {
-                // missing data for that sample => skip
-                continue;
-            }
-            std::string &genotype = sampleParts[gtIndex];
-            bool isMissing = false;
-            if (genotype.empty() || genotype == "." || genotype == "./." || genotype == ".|.") {
-                isMissing = true;
-            }
-            if (isMissing && fillMissing) {
-                sampleParts[gtIndex] = defaultGT;
-            }
-            // rejoin sampleParts
-            std::stringstream sampSS;
-            for (size_t sp = 0; sp < sampleParts.size(); sp++) {
-                if (sp > 0)
-                    sampSS << ":";
-                sampSS << sampleParts[sp];
-            }
-            fields[s] = sampSS.str();
-        }
-        // rejoin entire line
-        std::stringstream lineSS;
-        for (size_t c = 0; c < fields.size(); c++) {
-            if (c > 0)
-                lineSS << "\t";
-            lineSS << fields[c];
-        }
-        out << lineSS.str() << "\n";
-    }
-
-    return true;
-}
-
-/**
- * @brief Processes the VCF file(s) to handle missing genotype data,
- *        either replacing missing data with a default genotype or leaving them flagged.
- *
- * @param args Command-line arguments specifying behavior.
- * @return true if processing is successful, false otherwise.
- *
- * This function reads from each file in args.input_files, or from stdin if none specified,
- * and writes the processed lines to stdout.
- */
-bool handleMissingDataAll(const Arguments &args) {
+// ============================================================================
+// Main entry point
+// ============================================================================
+bool handleMissingDataAll(const Arguments& args) {
     if (args.input_files.empty()) {
-        // read from stdin
-        return processVCF(std::cin, std::cout, args.fill_missing, args.default_genotype);
+        // Read from stdin - can't use mmap
+        return processVCFStream(std::cin, std::cout, args.fill_missing, args.default_genotype);
     } else {
-        // handle multiple files in sequence => we simply process each one, writing to stdout
-        bool firstFile = true;
-        for (size_t i = 0; i < args.input_files.size(); i++) {
-            std::string &path = (std::string &)args.input_files[i];
-            std::ifstream fin(path);
-            if (!fin.is_open()) {
-                std::cerr << "Error: cannot open file " << path << "\n";
+        // Process files with mmap + multi-threading
+        for (const auto& path : args.input_files) {
+            if (!processVCFMapped(path.c_str(), std::cout,
+                                  args.fill_missing, args.default_genotype,
+                                  args.numThreads)) {
                 return false;
             }
-            if (!firstFile) {
-                // skip printing the #CHROM header again?
-                // a naive approach: we do a small trick:
-                // read lines until #CHROM => skip them, then pass the rest
-                // or we can pass everything => leads to repeated headers
-                bool foundChrom = false;
-                std::string line;
-                while (std::getline(fin, line)) {
-                    if (line.rfind("#CHROM", 0) == 0) {
-                        // we've found #CHROM => use processVCF for the remainder
-                        // but we already read one line, so let's put it back in the stream => complicated
-                        // simpler approach: we do a manual approach
-                        // We'll treat that #CHROM line as data for processVCF => but that might produce error
-                        // We'll do: skip header lines
-                        break;
-                    } else if (line.empty()) {
-                        // skip
-                    } else if (line[0] == '#') {
-                        // skip
-                    } else {
-                        // we found data => put it back => complicated
-                        // We'll store it in a buffer
-                        std::stringstream buffer;
-                        buffer << line << "\n";
-                        // now process the rest
-                        // reinsert?
-                        // We'll do an approach: we store lines in an in-memory stream
-                        std::string nextLine;
-                        while (std::getline(fin, nextLine)) {
-                            buffer << nextLine << "\n";
-                        }
-                        // now buffer holds the entire
-                        // pass buffer to processVCF
-                        std::istringstream iss(buffer.str());
-                        processVCF(iss, std::cout, args.fill_missing, args.default_genotype);
-                        fin.close();
-                        goto nextFile;
-                    }
-                }
-                // now we pass the rest
-                processVCF(fin, std::cout, args.fill_missing, args.default_genotype);
-            nextFile:
-                fin.close();
-            } else {
-                // first file => pass everything
-                processVCF(fin, std::cout, args.fill_missing, args.default_genotype);
-                fin.close();
-                firstFile = false;
-            }
         }
+        return true;
     }
-    return true;
 }
 
-/**
- * @brief Main function for the missing data handler tool.
- *
- * @param argc Argument count.
- * @param argv Argument vector.
- * @return int Exit status.
- */
 static void show_help() { printHelp(); }
 
-int main(int argc, char *argv[]) {
-    vcfx::init_io();  // Performance: disable sync_with_stdio
+int main(int argc, char* argv[]) {
+    vcfx::init_io();
     if (vcfx::handle_common_flags(argc, argv, "VCFX_missing_data_handler", show_help))
         return 0;
+
     Arguments args;
     parseArguments(argc, argv, args);
 
     if (args.fill_missing) {
-        std::cerr << "Info: Missing genotypes will be imputed with genotype: " << args.default_genotype << "\n";
-    } else {
-        std::cerr << "Info: Missing genotypes will be left flagged.\n";
+        std::cerr << "Info: Missing genotypes will be imputed with: " << args.default_genotype << "\n";
+        std::cerr << "Info: Using " << (args.numThreads > 0 ? args.numThreads : (int)std::thread::hardware_concurrency()) << " threads\n";
     }
 
-    bool success = handleMissingDataAll(args);
-    return success ? 0 : 1;
+    return handleMissingDataAll(args) ? 0 : 1;
 }

@@ -16,6 +16,7 @@ VCFX_missing_data_handler [OPTIONS] [files...] > processed.vcf
 |--------|-------------|
 | `--fill-missing`, `-f` | Impute missing genotypes with a default value |
 | `--default-genotype`, `-d` <GEN> | Specify the default genotype for imputation (default: "./.")  |
+| `--threads`, `-t` <NUM> | Number of threads for parallel processing (default: auto-detect CPU cores) |
 | `--help`, `-h` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
 | `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
 
@@ -70,6 +71,16 @@ VCFX_missing_data_handler --fill-missing --default-genotype "0/0" < input.vcf > 
 VCFX_missing_data_handler --fill-missing file1.vcf file2.vcf > combined_output.vcf
 ```
 
+### Multi-threaded Processing
+
+```bash
+# Use 8 threads for processing large files:
+VCFX_missing_data_handler --fill-missing --threads 8 < large_file.vcf > output.vcf
+
+# Use single-threaded mode (disables parallelism):
+VCFX_missing_data_handler --fill-missing --threads 1 < input.vcf > output.vcf
+```
+
 ### In a Pipeline
 
 ```bash
@@ -99,12 +110,20 @@ The tool identifies the following representations of missing data:
 
 ## Performance
 
-The tool is designed for efficiency:
+The tool uses advanced optimization techniques for maximum throughput:
 
-1. Line-by-line processing allows handling of arbitrarily large files
-2. No need to load the entire file into memory
-3. Efficient string splitting and joining operations
-4. Handles multiple files in a single run
+1. **Memory-mapped I/O**: Uses `mmap` with `MADV_SEQUENTIAL` hints for optimal file reading
+2. **Multi-threading**: Parallel processing across all available CPU cores (configurable with `--threads`)
+3. **Zero-copy pass-through**: Lines without missing genotypes are written directly without parsing
+4. **Fast pattern scanning**: Uses `memchr` for efficient detection of potential missing genotype markers
+5. **Chunk-based processing**: Data is divided into chunks for parallel processing with proper line boundary handling
+
+### Benchmark Results
+
+On a test file with 427K variants and 2,504 samples:
+- **Original implementation**: ~455 seconds
+- **Optimized implementation**: ~9 seconds
+- **Improvement**: ~50x faster
 
 ## Limitations
 

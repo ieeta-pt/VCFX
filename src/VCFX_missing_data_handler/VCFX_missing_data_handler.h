@@ -12,6 +12,7 @@ struct Arguments {
     bool fill_missing = false;            ///< Flag indicating whether to impute missing genotypes.
     std::string default_genotype = "./."; ///< Default genotype to use for imputation.
     std::vector<std::string> input_files; ///< List of input VCF files. If empty, read from stdin.
+    int numThreads = 0;                   ///< Number of threads (0 = auto-detect).
 };
 
 /**
