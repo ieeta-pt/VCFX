@@ -1,10 +1,9 @@
-#include "vcfx_core.h" 
+#include "vcfx_core.h"
 #include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
 #include <getopt.h>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -30,15 +29,22 @@ static void displayHelp() {
 }
 
 // --------------------------------------------------------------------------
-// Utility: split a string by a delimiter
+// Utility: split a string by a delimiter (optimized - no stringstream)
 // --------------------------------------------------------------------------
+static void splitInto(const std::string &str, char delim, std::vector<std::string> &out) {
+    out.clear();
+    size_t start = 0, end;
+    while ((end = str.find(delim, start)) != std::string::npos) {
+        out.emplace_back(str, start, end - start);
+        start = end + 1;
+    }
+    out.emplace_back(str, start);
+}
+
+// Convenience wrapper for compatibility
 static std::vector<std::string> split(const std::string &str, char delim) {
     std::vector<std::string> tokens;
-    std::stringstream ss(str);
-    std::string token;
-    while (std::getline(ss, token, delim)) {
-        tokens.push_back(token);
-    }
+    splitInto(str, delim, tokens);
     return tokens;
 }
 
@@ -100,14 +106,22 @@ static std::string normalizeGenotype(const std::string &sampleField, const std::
 
     // For genotype comparison, sort them so "2/1" => "1/2"
     std::sort(alleleInts.begin(), alleleInts.end());
-    // Build a normalized string
-    std::stringstream out;
+    // Build a normalized string - direct string building (no stringstream)
+    std::string result;
+    result.reserve(alleleInts.size() * 2);  // Pre-allocate for digits and slashes
     for (size_t i = 0; i < alleleInts.size(); ++i) {
         if (i > 0)
-            out << "/";
-        out << alleleInts[i];
+            result.push_back('/');
+        // Fast integer to string for small values (0-99 covers all realistic allele indices)
+        int val = alleleInts[i];
+        if (val < 10) {
+            result.push_back(static_cast<char>('0' + val));
+        } else {
+            result.push_back(static_cast<char>('0' + val / 10));
+            result.push_back(static_cast<char>('0' + val % 10));
+        }
     }
-    return out.str();
+    return result;
 }
 
 // --------------------------------------------------------------------------
