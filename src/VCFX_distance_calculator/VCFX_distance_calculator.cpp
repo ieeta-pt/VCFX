@@ -28,21 +28,28 @@ void printHelp() {
 // --------------------------------------------------------------------------
 // parseVCFLine: Parses a VCF data line and extracts CHROM and POS.
 // Returns false if the line is a header or cannot be parsed.
+// OPTIMIZED: Conditional copy - only copy string if escape sequences exist
 // --------------------------------------------------------------------------
 bool parseVCFLine(const std::string &line, VCFVariant &variant, std::vector<std::string> &fields) {
     // Skip header lines or empty lines.
     if (line.empty() || line[0] == '#')
         return false;
 
-    // Fix line with literal \t characters (test data issue)
-    std::string fixed_line = line;
-    size_t pos = 0;
-    while ((pos = fixed_line.find("\\t", pos)) != std::string::npos) {
-        fixed_line.replace(pos, 2, "\t");
-        pos += 1; // Move past the tab
+    // OPTIMIZED: Only copy string if literal \t sequences exist (rare in real VCF data)
+    // Check first, then conditionally copy
+    const std::string *line_ptr = &line;
+    std::string fixed_line;
+    if (line.find("\\t") != std::string::npos) {
+        fixed_line = line;
+        size_t pos = 0;
+        while ((pos = fixed_line.find("\\t", pos)) != std::string::npos) {
+            fixed_line.replace(pos, 2, "\t");
+            pos += 1;
+        }
+        line_ptr = &fixed_line;
     }
 
-    vcfx::split_tabs(fixed_line, fields);
+    vcfx::split_tabs(*line_ptr, fields);
 
     // We expect at least two tab-delimited columns: CHROM and POS.
     if (fields.size() < 2) {
@@ -78,6 +85,7 @@ struct ChromStats {
 // --------------------------------------------------------------------------
 // calculateDistances: Reads a VCF stream, calculates inter-variant distances,
 // outputs a TSV line per variant, and writes summary statistics to stderr.
+// OPTIMIZED: Batch output formatting with snprintf
 // --------------------------------------------------------------------------
 bool calculateDistances(std::istream &in, std::ostream &out) {
     std::string line;
@@ -91,6 +99,11 @@ bool calculateDistances(std::istream &in, std::ostream &out) {
     // Reuse vector across iterations
     std::vector<std::string> fields;
     fields.reserve(16);
+
+    // OPTIMIZED: Pre-allocate output buffer for batch formatting
+    char outBuf[256];
+    std::string outLine;
+    outLine.reserve(256);
 
     // Output TSV header.
     out << "CHROM\tPOS\tPREV_POS\tDISTANCE\n";
@@ -122,7 +135,14 @@ bool calculateDistances(std::istream &in, std::ostream &out) {
         if (lastPosMap.find(variant.chrom) != lastPosMap.end()) {
             int prevPos = lastPosMap[variant.chrom];
             int distance = variant.pos - prevPos;
-            out << variant.chrom << "\t" << variant.pos << "\t" << prevPos << "\t" << distance << "\n";
+
+            // OPTIMIZED: Batch output with snprintf instead of multiple << operators
+            int len = snprintf(outBuf, sizeof(outBuf), "\t%d\t%d\t%d\n",
+                               variant.pos, prevPos, distance);
+            outLine.clear();
+            outLine.append(variant.chrom);
+            outLine.append(outBuf, len);
+            out.write(outLine.data(), outLine.size());
 
             // Update summary statistics.
             ChromStats &stats = chromStats[variant.chrom];
@@ -132,7 +152,12 @@ bool calculateDistances(std::istream &in, std::ostream &out) {
             stats.maxDistance = std::max(stats.maxDistance, distance);
         } else {
             // No previous variant on this chromosome; output NA for distance.
-            out << variant.chrom << "\t" << variant.pos << "\tNA\tNA\n";
+            // OPTIMIZED: Batch output
+            int len = snprintf(outBuf, sizeof(outBuf), "\t%d\tNA\tNA\n", variant.pos);
+            outLine.clear();
+            outLine.append(variant.chrom);
+            outLine.append(outBuf, len);
+            out.write(outLine.data(), outLine.size());
         }
 
         // Update last position for this chromosome.
