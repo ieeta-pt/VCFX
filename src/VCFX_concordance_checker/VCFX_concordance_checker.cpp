@@ -93,9 +93,14 @@ static bool parseArguments(int argc, char *argv[], ConcordanceArguments &args) {
 // ---------------------------------------------------------
 static std::string normalizeDiploidGenotype(const std::string &genotypeField,
                                             const std::vector<std::string> &altAlleles) {
-    // genotypeField might be "0/1", "2|3", ".", ...
-    // Step 1: replace '|' with '/'
+    // genotypeField might be "0/1:30:90" or "2|3", ".", ...
+    // Extract GT (the part before the first ':')
     std::string gt = genotypeField;
+    size_t colonPos = gt.find(':');
+    if (colonPos != std::string::npos) {
+        gt = gt.substr(0, colonPos);
+    }
+    // Step 1: replace '|' with '/'
     for (char &c : gt) {
         if (c == '|')
             c = '/';

@@ -19,6 +19,8 @@ VCFX_validator [OPTIONS] --input input.vcf
 | `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
 | `-s`, `--strict` | Enable stricter validation checks |
 | `-d`, `--report-dups` | Report duplicate records to stderr |
+| `-n`, `--no-dup-check` | Skip duplicate detection entirely (faster validation) |
+| `-b`, `--bloom-size N` | Bloom filter size in MB for duplicate detection (default: 128) |
 | `-i`, `--input FILE` | Input VCF file path (uses memory-mapped I/O for better performance) |
 | `-t`, `--threads N` | Number of threads (default: 1, reserved for future use) |
 
@@ -140,25 +142,40 @@ Error: no #CHROM line found in file.
 - Leading and trailing whitespace is trimmed from field values before validation
 
 ## Performance Considerations
-- **Memory-mapped I/O**: When using `-i`/`--input`, the tool uses memory-mapped file access with `MADV_SEQUENTIAL` hints for optimal read-ahead, significantly improving performance on large files
+
+### Optimizations
+- **Memory-mapped I/O**: When using file path argument, the tool uses memory-mapped file access with `MADV_SEQUENTIAL` hints for optimal read-ahead
+- **SIMD-optimized parsing**: Uses AVX2/SSE2 vectorized operations on x86_64 for newline finding and character counting
+- **Bloom filter**: Memory-efficient duplicate detection using a configurable bloom filter (default 128MB)
+- **DNA lookup table**: Fast base validation using a 256-byte lookup table instead of conditional checks
 - **FORMAT caching**: The FORMAT field is cached to avoid redundant parsing when consecutive lines use the same format
 - **Zero-copy parsing**: Uses `string_view` for efficient parsing without unnecessary string copies
 - **Stdin support**: For stdin input, the tool supports both plain text and gzip/BGZF compressed streams
-- Performance scales linearly with the size of the input file
-- No external dependencies or reference files are required
+
+### Benchmarks
+- Validates 427K variants with 2504 samples in ~20-25 seconds
+- With `--no-dup-check`: ~20 seconds (skips bloom filter operations)
+- Memory usage: ~128MB for bloom filter + minimal overhead
 
 ### Performance Tips
 For best performance with large files (multi-GB):
 ```bash
-# Use file input instead of stdin for memory-mapped I/O
-VCFX_validator -i large_file.vcf > validated.vcf
+# Use file path argument for memory-mapped I/O (fastest)
+VCFX_validator large_file.vcf
+
+# Skip duplicate checking if data is known to be clean
+VCFX_validator --no-dup-check large_file.vcf
+
+# Reduce memory usage with smaller bloom filter
+VCFX_validator --bloom-size 64 large_file.vcf
 
 # For compressed files, decompress and pipe (stdin mode)
-zcat large_file.vcf.gz | VCFX_validator > validated.vcf
+zcat large_file.vcf.gz | VCFX_validator
 ```
 
 ## Limitations
 - Does not validate VCF version compatibility
 - No validation of the content of meta-information lines beyond the '##' prefix
+- Bloom filter may report false positive duplicates (rare, <1% at 100M variants with 128MB filter)
 - Threading (`-t`) is reserved for future implementation
 

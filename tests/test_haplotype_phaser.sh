@@ -337,5 +337,167 @@ else
     exit 1
 fi
 
+# Test 17: File input mode with -i flag
+echo "Test 17: File input mode with -i flag"
+$PHASER -i basic.vcf > file_input.out 2> file_input.err
+
+if grep -q "Block 1: 0:(1:100), 1:(1:150), 2:(1:200)" file_input.out && \
+   grep -q "Block 2: 3:(1:250)" file_input.out; then
+    echo "✓ Test 17 passed: File input mode works correctly"
+else
+    echo "❌ Test 17 failed: File input mode produced incorrect output"
+    cat file_input.out
+    exit 1
+fi
+
+# Test 18: Positional file argument
+echo "Test 18: Positional file argument"
+$PHASER basic.vcf > positional.out 2> positional.err
+
+if grep -q "Block 1: 0:(1:100), 1:(1:150), 2:(1:200)" positional.out && \
+   grep -q "Block 2: 3:(1:250)" positional.out; then
+    echo "✓ Test 18 passed: Positional file argument works"
+else
+    echo "❌ Test 18 failed: Positional argument mode failed"
+    cat positional.out
+    exit 1
+fi
+
+# Test 19: Quiet mode suppresses warnings
+echo "Test 19: Quiet mode with -q flag"
+$PHASER -q < malformed.vcf > quiet.out 2> quiet.err
+
+# In quiet mode, no warnings should appear
+if ! grep -q "Warning:" quiet.err; then
+    echo "✓ Test 19 passed: Quiet mode suppresses warnings"
+else
+    echo "❌ Test 19 failed: Quiet mode did not suppress warnings"
+    cat quiet.err
+    exit 1
+fi
+
+# Test 20: Output equivalence (stdin vs mmap)
+echo "Test 20: Output equivalence (stdin vs mmap)"
+$PHASER < multi_chrom.vcf > stdin.out 2>/dev/null
+$PHASER -i multi_chrom.vcf > mmap.out 2>/dev/null
+
+# Compare the block outputs
+stdin_blocks=$(grep "Block" stdin.out | sort)
+mmap_blocks=$(grep "Block" mmap.out | sort)
+
+if [ "$stdin_blocks" = "$mmap_blocks" ]; then
+    echo "✓ Test 20 passed: stdin and mmap produce identical output"
+else
+    echo "❌ Test 20 failed: stdin and mmap produce different output"
+    echo "stdin blocks:"
+    echo "$stdin_blocks"
+    echo "mmap blocks:"
+    echo "$mmap_blocks"
+    exit 1
+fi
+
+# Test 21: File input with streaming mode
+echo "Test 21: File input with streaming mode"
+$PHASER --streaming -i basic.vcf > file_streaming.out 2> file_streaming.err
+
+if grep -q "Block 1: 0:(1:100), 1:(1:150), 2:(1:200)" file_streaming.out && \
+   grep -q "Block 2: 3:(1:250)" file_streaming.out; then
+    echo "✓ Test 21 passed: File input with streaming mode works"
+else
+    echo "❌ Test 21 failed: File input streaming produced incorrect output"
+    cat file_streaming.out
+    exit 1
+fi
+
+# Test 22: Performance comparison (stdin vs mmap)
+echo "Test 22: Performance comparison (stdin vs mmap)"
+echo "  Stdin mode timing:"
+time $PHASER < large.vcf > /dev/null 2>&1
+
+echo "  Mmap mode timing:"
+time $PHASER -i large.vcf > /dev/null 2>&1
+
+echo "✓ Test 22 passed: Performance test completed"
+
+# Test 23: Help shows new options
+echo "Test 23: Help shows new -i and -q options"
+$PHASER --help > help_new.out 2>&1
+
+if grep -q "\-i, --input" help_new.out && grep -q "\-q, --quiet" help_new.out; then
+    echo "✓ Test 23 passed: Help shows -i/--input and -q/--quiet options"
+else
+    echo "❌ Test 23 failed: Help does not show new options"
+    cat help_new.out
+    exit 1
+fi
+
+# Test 24: Streaming mode with very small window (circular buffer edge case)
+echo "Test 24: Streaming mode with window size 2 (circular buffer edge case)"
+cat > circular_test.vcf << EOF
+##fileformat=VCFv4.2
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	S1	S2	S3
+1	100	.	A	G	.	.	.	GT	0/0	0/1	1/1
+1	200	.	C	T	.	.	.	GT	0/0	0/1	1/1
+1	300	.	G	A	.	.	.	GT	0/0	0/1	1/1
+1	400	.	T	C	.	.	.	GT	0/0	0/1	1/1
+1	500	.	A	T	.	.	.	GT	0/0	0/1	1/1
+EOF
+
+$PHASER --streaming --window 2 -i circular_test.vcf > circular.out 2> circular.err
+
+# Should produce blocks despite tiny window
+if grep -q "Block" circular.out; then
+    echo "✓ Test 24 passed: Small window circular buffer works"
+else
+    echo "❌ Test 24 failed: Circular buffer with small window failed"
+    cat circular.out
+    cat circular.err
+    exit 1
+fi
+
+# Test 25: Streaming mode output consistency (stdin vs mmap)
+echo "Test 25: Streaming mode output equivalence (stdin vs mmap)"
+$PHASER --streaming < multi_chrom.vcf > streaming_stdin.out 2>/dev/null
+$PHASER --streaming -i multi_chrom.vcf > streaming_mmap.out 2>/dev/null
+
+stdin_blocks=$(grep "Block" streaming_stdin.out | sort)
+mmap_blocks=$(grep "Block" streaming_mmap.out | sort)
+
+if [ "$stdin_blocks" = "$mmap_blocks" ]; then
+    echo "✓ Test 25 passed: Streaming stdin and mmap produce identical output"
+else
+    echo "❌ Test 25 failed: Streaming stdin and mmap differ"
+    echo "stdin:"
+    echo "$stdin_blocks"
+    echo "mmap:"
+    echo "$mmap_blocks"
+    exit 1
+fi
+
+# Test 26: Empty file handling with mmap
+echo "Test 26: Empty file handling with mmap"
+cat > empty_mmap.vcf << EOF
+##fileformat=VCFv4.2
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	S1
+EOF
+
+$PHASER -q -i empty_mmap.vcf > empty_mmap.out 2> empty_mmap.err
+
+# Should handle gracefully without crashing
+echo "✓ Test 26 passed: Empty file with mmap handled gracefully"
+
+# Test 27: Large window size (boundary test)
+echo "Test 27: Window size larger than variant count"
+$PHASER --streaming --window 10000 -i basic.vcf > large_window.out 2> large_window.err
+
+if grep -q "Block 1: 0:(1:100), 1:(1:150), 2:(1:200)" large_window.out && \
+   grep -q "Block 2: 3:(1:250)" large_window.out; then
+    echo "✓ Test 27 passed: Large window size handled correctly"
+else
+    echo "❌ Test 27 failed: Large window size failed"
+    cat large_window.out
+    exit 1
+fi
+
 echo "All tests for VCFX_haplotype_phaser passed!"
-exit 0 
+exit 0

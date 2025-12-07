@@ -10,6 +10,31 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <functional>
+
+// ============================================================================
+// Transparent hash and equality for string_view lookups without allocation
+// ============================================================================
+
+struct StringHash {
+    using is_transparent = void;
+    size_t operator()(std::string_view sv) const noexcept {
+        return std::hash<std::string_view>{}(sv);
+    }
+    size_t operator()(const std::string& s) const noexcept {
+        return std::hash<std::string_view>{}(std::string_view(s));
+    }
+    size_t operator()(const char* s) const noexcept {
+        return std::hash<std::string_view>{}(std::string_view(s));
+    }
+};
+
+struct StringEqual {
+    using is_transparent = void;
+    bool operator()(std::string_view a, std::string_view b) const noexcept {
+        return a == b;
+    }
+};
 
 // Memory-mapped file wrapper for zero-copy I/O
 struct MappedFile {
@@ -30,8 +55,10 @@ class VCFXValidator {
     // Configuration flags
     bool strictMode = false;
     bool reportDuplicates = false;
+    bool skipDuplicateCheck = false;  // --no-dup-check option
     int threadCount = 1;  // Default single-threaded
     std::string inputFile;  // Input file path (empty or "-" for stdin)
+    size_t bloomSizeMB = 128;  // Default bloom filter size in MB
 
     // Number of columns in the #CHROM header line
     int headerColumnCount = 0;
@@ -45,9 +72,20 @@ class VCFXValidator {
         std::string type;
         int numericNumber = -1;  // Cached numeric value, -1 if not a number
     };
+
+    // Note: std::unordered_map heterogeneous lookup requires C++20 on macOS
+    // Using standard maps for portability
     std::unordered_map<std::string, FieldDef> infoDefs;
     std::unordered_map<std::string, FieldDef> formatDefs;
-    std::unordered_set<uint64_t> seenVariantHashes;  // Use hash instead of string
+
+    // Bloom filter for memory-efficient duplicate detection
+    std::vector<uint64_t> bloomFilter;
+    size_t bloomBitCount = 0;  // Total bits in bloom filter
+
+    // Bloom filter operations
+    void initBloomFilter(size_t sizeMB);
+    inline void bloomAdd(uint64_t hash);
+    inline bool bloomMayContain(uint64_t hash) const;
 
     // Reusable buffers to avoid allocations
     std::vector<std::string_view> fieldBuffer;

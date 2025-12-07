@@ -367,4 +367,98 @@ if ! grep -q "VCFX_phase_checker" out/phase_help.txt; then
 fi
 echo "  Test 9 passed."
 
+# Test 10: File input mode with -i flag
+echo "Test 10: File input mode with -i flag"
+$VCFX_EXECUTABLE -i data/phase_all_phased.vcf > out/phase_mmap_test.vcf 2>/dev/null
+diff -u expected/phase_all_phased.vcf out/phase_mmap_test.vcf || {
+    echo "  Test 10 failed. mmap output differs from expected."
+    exit 1
+}
+echo "  Test 10 passed."
+
+# Test 11: Positional file argument
+echo "Test 11: Positional file argument"
+$VCFX_EXECUTABLE data/phase_all_phased.vcf > out/phase_positional_test.vcf 2>/dev/null
+diff -u expected/phase_all_phased.vcf out/phase_positional_test.vcf || {
+    echo "  Test 11 failed. Positional file argument output differs from expected."
+    exit 1
+}
+echo "  Test 11 passed."
+
+# Test 12: Quiet mode with -q flag
+echo "Test 12: Quiet mode with -q flag"
+$VCFX_EXECUTABLE -q < data/phase_some_unphased.vcf > out/phase_quiet_test.vcf 2>out/phase_quiet_warnings.log
+diff -u expected/phase_some_unphased.vcf out/phase_quiet_test.vcf || {
+    echo "  Test 12 failed. Quiet mode output differs from expected."
+    exit 1
+}
+# Check that no warnings were emitted
+if [ -s out/phase_quiet_warnings.log ]; then
+    echo "  Test 12 failed. Quiet mode should not emit warnings."
+    cat out/phase_quiet_warnings.log
+    exit 1
+fi
+echo "  Test 12 passed."
+
+# Test 13: Output equivalence (stdin vs mmap)
+echo "Test 13: Output equivalence (stdin vs mmap)"
+$VCFX_EXECUTABLE < data/phase_large.vcf > out/phase_stdin_test.vcf 2>/dev/null
+$VCFX_EXECUTABLE -i data/phase_large.vcf > out/phase_mmap_large_test.vcf 2>/dev/null
+diff -u out/phase_stdin_test.vcf out/phase_mmap_large_test.vcf || {
+    echo "  Test 13 failed. stdin and mmap outputs differ."
+    exit 1
+}
+echo "  Test 13 passed."
+
+# Test 14: Performance comparison with 1000 variants
+echo "Test 14: Performance comparison with 1000 variants"
+echo "  stdin mode:"
+time $VCFX_EXECUTABLE < data/phase_large.vcf > /dev/null 2>&1
+echo "  mmap mode:"
+time $VCFX_EXECUTABLE -i data/phase_large.vcf > /dev/null 2>&1
+echo "  Test 14 passed."
+
+# Test 15: Large-scale performance test (100K variants) - optional benchmark
+echo "Test 15: Large-scale performance test (100K variants)"
+# Create large test file if it doesn't exist
+if [ ! -f data/phase_100k.vcf ]; then
+  echo "  Creating 100K variant test file..."
+  cat > data/phase_100k.vcf << EOF
+##fileformat=VCFv4.2
+##source=VCFX
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total read depth">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1	SAMPLE2	SAMPLE3
+EOF
+
+  # Add 100000 variant lines
+  for i in $(seq 1 100000); do
+    if [ $((i % 5)) -eq 0 ]; then
+      # Every 5th line has unphased genotypes
+      echo "chr1	$((10000 + $i))	rs$i	A	G	100	PASS	DP=50	GT:DP	0/1:30	0|1:25	0|1:28" >> data/phase_100k.vcf
+    else
+      # All others are phased
+      echo "chr1	$((10000 + $i))	rs$i	A	G	100	PASS	DP=50	GT:DP	0|1:30	0|1:25	0|1:28" >> data/phase_100k.vcf
+    fi
+  done
+  echo "  100K variant file created."
+fi
+
+echo "  Running 100K variant performance test..."
+echo "  stdin mode:"
+time $VCFX_EXECUTABLE -q < data/phase_100k.vcf > /dev/null 2>&1
+echo "  mmap mode:"
+time $VCFX_EXECUTABLE -q -i data/phase_100k.vcf > /dev/null 2>&1
+
+# Verify output counts match between modes
+stdin_count=$($VCFX_EXECUTABLE -q < data/phase_100k.vcf 2>/dev/null | grep -v "^#" | wc -l)
+mmap_count=$($VCFX_EXECUTABLE -q -i data/phase_100k.vcf 2>/dev/null | grep -v "^#" | wc -l)
+if [ "$stdin_count" -ne "$mmap_count" ]; then
+    echo "  Test 15 failed. stdin output count ($stdin_count) differs from mmap count ($mmap_count)."
+    exit 1
+fi
+echo "  Output counts match: $stdin_count variants"
+echo "  Test 15 passed."
+
 echo "All VCFX_phase_checker tests passed!" 

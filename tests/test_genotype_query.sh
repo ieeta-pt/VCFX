@@ -323,6 +323,187 @@ fi
 echo
 
 ###############################################################################
+# Test 11: File input mode with -i flag
+###############################################################################
+echo "-----------------------------------------------------"
+echo "Running test_11_file_input_mode"
+FILE_OUT="${TMP_OUT_DIR}/test_11_file_input.vcf"
+"$TOOL" -g "0/1" -i "${TMP_DATA_DIR}/single_sample.vcf" > "$FILE_OUT"
+
+if diff -u <(strip_trailing "${TMP_EXP_DIR}/single_sample_flex_01.vcf") \
+           <(strip_trailing "$FILE_OUT"); then
+    echo "✅ test_11_file_input_mode passed"
+else
+    echo "❌ test_11_file_input_mode failed"
+    exit 1
+fi
+echo
+
+###############################################################################
+# Test 12: Positional file argument
+###############################################################################
+echo "-----------------------------------------------------"
+echo "Running test_12_positional_file"
+POS_OUT="${TMP_OUT_DIR}/test_12_positional.vcf"
+"$TOOL" -g "0/1" "${TMP_DATA_DIR}/single_sample.vcf" > "$POS_OUT"
+
+if diff -u <(strip_trailing "${TMP_EXP_DIR}/single_sample_flex_01.vcf") \
+           <(strip_trailing "$POS_OUT"); then
+    echo "✅ test_12_positional_file passed"
+else
+    echo "❌ test_12_positional_file failed"
+    exit 1
+fi
+echo
+
+###############################################################################
+# Test 13: Quiet mode
+###############################################################################
+echo "-----------------------------------------------------"
+echo "Running test_13_quiet_mode"
+QUIET_ERR="${TMP_OUT_DIR}/test_13_stderr.txt"
+"$TOOL" -g "0/1" -q < "${TMP_DATA_DIR}/missing_malformed.vcf" > /dev/null 2> "$QUIET_ERR"
+
+if [ ! -s "$QUIET_ERR" ]; then
+    echo "✅ test_13_quiet_mode passed (no stderr output)"
+else
+    echo "❌ test_13_quiet_mode failed (stderr should be empty)"
+    cat "$QUIET_ERR"
+    exit 1
+fi
+echo
+
+###############################################################################
+# Test 14: Output equivalence (stdin vs mmap)
+###############################################################################
+echo "-----------------------------------------------------"
+echo "Running test_14_output_equivalence"
+STDIN_OUT="${TMP_OUT_DIR}/test_14_stdin.vcf"
+MMAP_OUT="${TMP_OUT_DIR}/test_14_mmap.vcf"
+
+"$TOOL" -g "1/1" < "${TMP_DATA_DIR}/multi_sample.vcf" > "$STDIN_OUT"
+"$TOOL" -g "1/1" -i "${TMP_DATA_DIR}/multi_sample.vcf" > "$MMAP_OUT"
+
+if diff -u <(strip_trailing "$STDIN_OUT") <(strip_trailing "$MMAP_OUT"); then
+    echo "✅ test_14_output_equivalence passed"
+else
+    echo "❌ test_14_output_equivalence failed"
+    exit 1
+fi
+echo
+
+###############################################################################
+# Test 15: Performance test (1000 variants)
+###############################################################################
+echo "-----------------------------------------------------"
+echo "Running test_15_performance_1000"
+PERF_FILE="${TMP_DATA_DIR}/perf_1000.vcf"
+
+# Generate test file
+{
+    echo -e "##fileformat=VCFv4.2"
+    echo -e "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS1\tS2\tS3"
+    for i in $(seq 1 1000); do
+        gt=$((i % 3))
+        echo -e "chr1\t${i}00\trs${i}\tA\tG\t.\tPASS\t.\tGT\t0/${gt}\t${gt}|1\t1/1"
+    done
+} > "$PERF_FILE"
+
+# Time stdin mode (run 3 times and take average)
+STDIN_TOTAL=0
+for run in 1 2 3; do
+    START=$(python3 -c "import time; print(time.time())")
+    "$TOOL" -g "0/1" < "$PERF_FILE" > /dev/null 2>&1
+    END=$(python3 -c "import time; print(time.time())")
+    ELAPSED=$(python3 -c "print(($END - $START)*1000)")
+    STDIN_TOTAL=$(python3 -c "print($STDIN_TOTAL + $ELAPSED)")
+done
+STDIN_TIME=$(python3 -c "print(f'{$STDIN_TOTAL/3:.1f}')")
+
+# Time mmap mode (run 3 times and take average)
+MMAP_TOTAL=0
+for run in 1 2 3; do
+    START=$(python3 -c "import time; print(time.time())")
+    "$TOOL" -g "0/1" -i "$PERF_FILE" > /dev/null 2>&1
+    END=$(python3 -c "import time; print(time.time())")
+    ELAPSED=$(python3 -c "print(($END - $START)*1000)")
+    MMAP_TOTAL=$(python3 -c "print($MMAP_TOTAL + $ELAPSED)")
+done
+MMAP_TIME=$(python3 -c "print(f'{$MMAP_TOTAL/3:.1f}')")
+
+echo "Performance (1000 variants, 3 samples, avg of 3 runs):"
+echo "  stdin mode: ${STDIN_TIME}ms"
+echo "  mmap mode:  ${MMAP_TIME}ms"
+echo "✅ test_15_performance_1000 completed"
+echo
+
+###############################################################################
+# Test 16: Performance test (100K variants - benchmark only)
+###############################################################################
+echo "-----------------------------------------------------"
+echo "Running test_16_performance_100k (benchmark)"
+PERF_FILE_100K="${TMP_DATA_DIR}/perf_100k.vcf"
+
+# Generate 100K variant test file
+{
+    echo -e "##fileformat=VCFv4.2"
+    echo -e "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS1\tS2\tS3"
+    for i in $(seq 1 100000); do
+        gt=$((i % 3))
+        echo -e "chr1\t${i}00\t.\tA\tG\t.\tPASS\t.\tGT\t0/${gt}\t${gt}|1\t1/1"
+    done
+} > "$PERF_FILE_100K"
+
+# Time stdin mode
+START=$(python3 -c "import time; print(time.time())")
+"$TOOL" -g "0/1" < "$PERF_FILE_100K" > /dev/null 2>&1
+END=$(python3 -c "import time; print(time.time())")
+STDIN_TIME_100K=$(python3 -c "print(f'{($END - $START)*1000:.1f}')")
+
+# Time mmap mode
+START=$(python3 -c "import time; print(time.time())")
+"$TOOL" -g "0/1" -i "$PERF_FILE_100K" > /dev/null 2>&1
+END=$(python3 -c "import time; print(time.time())")
+MMAP_TIME_100K=$(python3 -c "print(f'{($END - $START)*1000:.1f}')")
+
+# Calculate speedup
+SPEEDUP=$(python3 -c "print(f'{float($STDIN_TIME_100K)/float($MMAP_TIME_100K):.1f}')")
+
+echo "Performance (100K variants, 3 samples):"
+echo "  stdin mode: ${STDIN_TIME_100K}ms"
+echo "  mmap mode:  ${MMAP_TIME_100K}ms"
+echo "  speedup:    ${SPEEDUP}x"
+echo "✅ test_16_performance_100k completed"
+echo
+
+###############################################################################
+# Test 17: Verify flexible matching (0/1 matches 1/0, 0|1, 1|0)
+###############################################################################
+echo "-----------------------------------------------------"
+echo "Running test_17_flexible_matching"
+FLEX_FILE="${TMP_DATA_DIR}/flex_test.vcf"
+
+# Create test file with all genotype orderings
+{
+    echo -e "##fileformat=VCFv4.2"
+    echo -e "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS1"
+    echo -e "chr1\t100\t.\tA\tG\t.\t.\t.\tGT\t0/1"
+    echo -e "chr1\t200\t.\tA\tG\t.\t.\t.\tGT\t1/0"
+    echo -e "chr1\t300\t.\tA\tG\t.\t.\t.\tGT\t0|1"
+    echo -e "chr1\t400\t.\tA\tG\t.\t.\t.\tGT\t1|0"
+} > "$FLEX_FILE"
+
+# Query for 0/1 - should match all 4
+COUNT=$("$TOOL" -g "0/1" -i "$FLEX_FILE" | grep -v "^#" | wc -l | tr -d ' ')
+if [ "$COUNT" -eq 4 ]; then
+    echo "✅ test_17_flexible_matching passed (matched 4/4 genotypes)"
+else
+    echo "❌ test_17_flexible_matching failed (matched $COUNT/4)"
+    exit 1
+fi
+echo
+
+###############################################################################
 echo "All VCFX_genotype_query tests passed successfully!"
 ###############################################################################
 exit 0

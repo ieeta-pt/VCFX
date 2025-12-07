@@ -1,5 +1,5 @@
 #include "VCFX_validator.h"
-#include "vcfx_core.h" 
+#include "vcfx_core.h"
 #include "vcfx_io.h"
 #include <algorithm>
 #include <cctype>
@@ -12,6 +12,143 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+// ============================================================================
+// SIMD includes for x86_64 platforms
+// ============================================================================
+#if defined(__x86_64__) && defined(__AVX2__)
+#include <immintrin.h>
+#define USE_AVX2 1
+#elif defined(__x86_64__) && defined(__SSE2__)
+#include <emmintrin.h>
+#define USE_SSE2 1
+#endif
+
+// ============================================================================
+// SIMD-optimized helper functions
+// ============================================================================
+
+#if defined(USE_AVX2)
+// Find next newline using AVX2 (32 bytes at a time)
+static inline const char* findNewlineSIMD(const char* p, const char* end) {
+    const __m256i nl = _mm256_set1_epi8('\n');
+    while (p + 32 <= end) {
+        __m256i chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p));
+        __m256i cmp = _mm256_cmpeq_epi8(chunk, nl);
+        int mask = _mm256_movemask_epi8(cmp);
+        if (mask) {
+            return p + __builtin_ctz(static_cast<unsigned int>(mask));
+        }
+        p += 32;
+    }
+    return static_cast<const char*>(memchr(p, '\n', static_cast<size_t>(end - p)));
+}
+
+// Count character occurrences using AVX2
+static inline size_t countCharSIMD(const char* data, size_t len, char c) {
+    size_t count = 0;
+    const __m256i target = _mm256_set1_epi8(c);
+    const char* end = data + len;
+
+    while (data + 32 <= end) {
+        __m256i chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(data));
+        __m256i cmp = _mm256_cmpeq_epi8(chunk, target);
+        count += __builtin_popcount(_mm256_movemask_epi8(cmp));
+        data += 32;
+    }
+
+    // Handle remainder
+    while (data < end) {
+        if (*data == c) count++;
+        data++;
+    }
+    return count;
+}
+
+#elif defined(USE_SSE2)
+// Find next newline using SSE2 (16 bytes at a time)
+static inline const char* findNewlineSIMD(const char* p, const char* end) {
+    const __m128i nl = _mm_set1_epi8('\n');
+    while (p + 16 <= end) {
+        __m128i chunk = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
+        __m128i cmp = _mm_cmpeq_epi8(chunk, nl);
+        int mask = _mm_movemask_epi8(cmp);
+        if (mask) {
+            return p + __builtin_ctz(static_cast<unsigned int>(mask));
+        }
+        p += 16;
+    }
+    return static_cast<const char*>(memchr(p, '\n', static_cast<size_t>(end - p)));
+}
+
+// Count character occurrences using SSE2
+static inline size_t countCharSIMD(const char* data, size_t len, char c) {
+    size_t count = 0;
+    const __m128i target = _mm_set1_epi8(c);
+    const char* end = data + len;
+
+    while (data + 16 <= end) {
+        __m128i chunk = _mm_loadu_si128(reinterpret_cast<const __m128i*>(data));
+        __m128i cmp = _mm_cmpeq_epi8(chunk, target);
+        count += __builtin_popcount(_mm_movemask_epi8(cmp));
+        data += 16;
+    }
+
+    // Handle remainder
+    while (data < end) {
+        if (*data == c) count++;
+        data++;
+    }
+    return count;
+}
+
+#else
+// Portable fallback using memchr (still SIMD-optimized in libc)
+static inline const char* findNewlineSIMD(const char* p, const char* end) {
+    return static_cast<const char*>(memchr(p, '\n', static_cast<size_t>(end - p)));
+}
+
+// Portable fallback for character counting
+static inline size_t countCharSIMD(const char* data, size_t len, char c) {
+    size_t count = 0;
+    for (size_t i = 0; i < len; i++) {
+        if (data[i] == c) count++;
+    }
+    return count;
+}
+#endif
+
+// ============================================================================
+// DNA validation lookup table (faster than conditionals)
+// Valid: A=65, C=67, G=71, N=78, T=84, a=97, c=99, g=103, n=110, t=116
+// ============================================================================
+static const uint8_t DNA_TABLE[256] = {
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 0-15
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 16-31
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 32-47
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 48-63
+    0,1,0,1,0,0,0,1,0,0,0,0,0,0,1,0,  // 64-79:  A=65, C=67, G=71, N=78
+    0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,  // 80-95:  T=84
+    0,1,0,1,0,0,0,1,0,0,0,0,0,0,1,0,  // 96-111: a=97, c=99, g=103, n=110
+    0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,  // 112-127: t=116
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 128-143
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 144-159
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 160-175
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 176-191
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 192-207
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 208-223
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 224-239
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   // 240-255
+};
+
+// Fast DNA validation using lookup table
+static inline bool isValidDNAFast(const char* data, size_t len) {
+    if (len == 0) return false;
+    for (size_t i = 0; i < len; i++) {
+        if (!DNA_TABLE[static_cast<unsigned char>(data[i])]) return false;
+    }
+    return true;
+}
 
 // ============================================================================
 // MappedFile implementation - zero-copy file I/O
@@ -61,6 +198,39 @@ MappedFile::~MappedFile() {
 }
 
 // ============================================================================
+// Bloom filter implementation for memory-efficient duplicate detection
+// ============================================================================
+
+void VCFXValidator::initBloomFilter(size_t sizeMB) {
+    // Convert MB to bits: sizeMB * 1024 * 1024 * 8 bits
+    bloomBitCount = sizeMB * 1024ULL * 1024ULL * 8ULL;
+    // Allocate as 64-bit words
+    size_t wordCount = (bloomBitCount + 63) / 64;
+    bloomFilter.resize(wordCount, 0);
+}
+
+inline void VCFXValidator::bloomAdd(uint64_t hash) {
+    // Use two hash functions derived from the single hash (double hashing)
+    size_t h1 = hash % bloomBitCount;
+    size_t h2 = (hash >> 17) % bloomBitCount;
+    size_t h3 = ((hash >> 34) ^ (hash >> 51)) % bloomBitCount;
+
+    bloomFilter[h1 / 64] |= (1ULL << (h1 % 64));
+    bloomFilter[h2 / 64] |= (1ULL << (h2 % 64));
+    bloomFilter[h3 / 64] |= (1ULL << (h3 % 64));
+}
+
+inline bool VCFXValidator::bloomMayContain(uint64_t hash) const {
+    size_t h1 = hash % bloomBitCount;
+    size_t h2 = (hash >> 17) % bloomBitCount;
+    size_t h3 = ((hash >> 34) ^ (hash >> 51)) % bloomBitCount;
+
+    return (bloomFilter[h1 / 64] & (1ULL << (h1 % 64))) &&
+           (bloomFilter[h2 / 64] & (1ULL << (h2 % 64))) &&
+           (bloomFilter[h3 / 64] & (1ULL << (h3 % 64)));
+}
+
+// ============================================================================
 // Fast inline helper implementations
 // ============================================================================
 
@@ -84,13 +254,8 @@ inline std::string_view VCFXValidator::trimView(std::string_view sv) {
 }
 
 inline bool VCFXValidator::isValidDNA(std::string_view sv) {
-    if (sv.empty()) return false;
-    for (char c : sv) {
-        char u = c | 0x20;  // Fast lowercase for ASCII letters
-        if (u != 'a' && u != 'c' && u != 'g' && u != 't' && u != 'n')
-            return false;
-    }
-    return true;
+    // Use optimized lookup table version
+    return isValidDNAFast(sv.data(), sv.size());
 }
 
 // Fast genotype validation without regex
@@ -203,11 +368,8 @@ inline bool VCFXValidator::parseNonNegativeDouble(std::string_view sv) {
 }
 
 inline size_t VCFXValidator::countChar(std::string_view sv, char c) {
-    size_t count = 0;
-    for (char ch : sv) {
-        if (ch == c) ++count;
-    }
-    return count;
+    // Use SIMD-optimized version
+    return countCharSIMD(sv.data(), sv.size(), c);
 }
 
 // ============================================================================
@@ -224,15 +386,21 @@ int VCFXValidator::run(int argc, char *argv[]) {
     static struct option long_opts[] = {{"help", no_argument, 0, 'h'},
                                         {"strict", no_argument, 0, 's'},
                                         {"report-dups", no_argument, 0, 'd'},
+                                        {"no-dup-check", no_argument, 0, 'n'},
+                                        {"bloom-size", required_argument, 0, 'b'},
                                         {"threads", required_argument, 0, 't'},
                                         {0, 0, 0, 0}};
     while (true) {
-        int c = ::getopt_long(argc, argv, "hsd t:", long_opts, nullptr);
+        int c = ::getopt_long(argc, argv, "hsdn b:t:", long_opts, nullptr);
         if (c == -1) break;
         switch (c) {
         case 'h': showHelp = true; break;
         case 's': strictMode = true; break;
         case 'd': reportDuplicates = true; break;
+        case 'n': skipDuplicateCheck = true; break;
+        case 'b':
+            bloomSizeMB = static_cast<size_t>(std::max(1, std::atoi(optarg)));
+            break;
         case 't':
             threadCount = std::max(1, std::atoi(optarg));
             break;
@@ -254,8 +422,12 @@ int VCFXValidator::run(int argc, char *argv[]) {
     sampleBuffer.reserve(16);
     formatPartsBuffer.reserve(16);
     infoTokenBuffer.reserve(32);
-    seenVariantHashes.reserve(1000000);  // Expect large files
     cachedFormatParts.reserve(16);
+
+    // Initialize bloom filter for duplicate detection (unless disabled)
+    if (!skipDuplicateCheck) {
+        initBloomFilter(bloomSizeMB);
+    }
 
     bool ok;
     // Use mmap for file input, stdin for pipe/stdin
@@ -273,10 +445,12 @@ void VCFXValidator::displayHelp() {
                  "  VCFX_validator [options] [input.vcf]\n"
                  "  VCFX_validator [options] < input.vcf\n\n"
                  "Options:\n"
-                 "  -h, --help        Show this help.\n"
-                 "  -s, --strict      Enable stricter checks.\n"
-                 "  -d, --report-dups Report duplicate records.\n"
-                 "  -t, --threads N   Reserved for future multi-threaded validation.\n\n"
+                 "  -h, --help          Show this help.\n"
+                 "  -s, --strict        Enable stricter checks.\n"
+                 "  -d, --report-dups   Report duplicate records.\n"
+                 "  -n, --no-dup-check  Skip duplicate detection (faster).\n"
+                 "  -b, --bloom-size N  Bloom filter size in MB (default: 128).\n"
+                 "  -t, --threads N     Reserved for future multi-threaded validation.\n\n"
                  "Description:\n"
                  "  Validates:\n"
                  "   * All '##' lines are recognized as meta lines.\n"
@@ -286,14 +460,17 @@ void VCFXValidator::displayHelp() {
                  "     INFO fields are checked against header definitions.\n"
                  "   * FORMAT fields and genotype values are validated.\n"
                  "   * REF and ALT sequences must contain only A,C,G,T,N.\n"
-                 "   * Duplicate variants are detected when --report-dups is used.\n"
+                 "   * Duplicate variants are detected (use --no-dup-check to skip).\n"
                  "  In strict mode additional checks are performed:\n"
                  "   * Data line column count must match the #CHROM header.\n"
                  "   * Sample columns must match the FORMAT field structure.\n"
                  "   * Any warning is treated as an error.\n"
                  "  Exits 0 if pass, 1 if fail.\n\n"
-                 "  For best performance, pass file path directly (uses memory-mapping).\n"
-                 "  Pipe/stdin input also supported but slightly slower.\n";
+                 "Performance:\n"
+                 "  * Pass file path directly for memory-mapped I/O (fastest).\n"
+                 "  * Uses SIMD-optimized parsing on x86_64 (AVX2/SSE2).\n"
+                 "  * Bloom filter uses " << bloomSizeMB << "MB for duplicate detection.\n"
+                 "  * Use --no-dup-check when data is known to be clean.\n";
 }
 
 bool VCFXValidator::validateMetaLine(std::string_view line, int lineNumber) {
@@ -546,28 +723,23 @@ bool VCFXValidator::validateDataLine(std::string_view line, int lineNumber) {
                 return false;
             }
 
+            // Look up INFO field definition
             std::string keyStr(key);
             auto it = infoDefs.find(keyStr);
             if (it == infoDefs.end()) {
-                std::string msg = "INFO field " + keyStr + " not defined in header";
-                if (strictMode) {
-                    std::cerr << "Error: " << msg << " on line " << lineNumber << ".\n";
-                    return false;
-                } else {
-                    std::cerr << "Warning: " << msg << " on line " << lineNumber << ".\n";
-                }
+                std::cerr << (strictMode ? "Error: " : "Warning: ")
+                          << "INFO field " << key << " not defined in header on line "
+                          << lineNumber << ".\n";
+                if (strictMode) return false;
             } else if (eq != std::string_view::npos && it->second.numericNumber >= 0) {
                 // Check value count
                 size_t have = countChar(val, ',') + 1;
                 if (have != static_cast<size_t>(it->second.numericNumber)) {
-                    std::string msg = "INFO field " + keyStr + " expected " +
-                                      it->second.number + " values";
-                    if (strictMode) {
-                        std::cerr << "Error: " << msg << " on line " << lineNumber << ".\n";
-                        return false;
-                    } else {
-                        std::cerr << "Warning: " << msg << " on line " << lineNumber << ".\n";
-                    }
+                    std::cerr << (strictMode ? "Error: " : "Warning: ")
+                              << "INFO field " << key << " expected "
+                              << it->second.number << " values on line "
+                              << lineNumber << ".\n";
+                    if (strictMode) return false;
                 }
             }
             anyValid = true;
@@ -637,13 +809,10 @@ bool VCFXValidator::validateDataLine(std::string_view line, int lineNumber) {
                 for (const auto &fpStr : cachedFormatParts) {
                     auto it = formatDefs.find(fpStr);
                     if (it == formatDefs.end()) {
-                        std::string msg = "FORMAT field " + fpStr + " not defined in header";
-                        if (strictMode) {
-                            std::cerr << "Error: " << msg << " on line " << lineNumber << ".\n";
-                            return false;
-                        } else {
-                            std::cerr << "Warning: " << msg << " on line " << lineNumber << ".\n";
-                        }
+                        std::cerr << (strictMode ? "Error: " : "Warning: ")
+                                  << "FORMAT field " << fpStr << " not defined in header on line "
+                                  << lineNumber << ".\n";
+                        if (strictMode) return false;
                     }
                 }
 
@@ -701,14 +870,11 @@ bool VCFXValidator::validateDataLine(std::string_view line, int lineNumber) {
                     if (it != formatDefs.end() && it->second.numericNumber >= 0) {
                         size_t have = countChar(sampleBuffer[j], ',') + 1;
                         if (have != static_cast<size_t>(it->second.numericNumber)) {
-                            std::string msg = "FORMAT field " + keyStr + " expected " +
-                                              it->second.number + " values";
-                            if (strictMode) {
-                                std::cerr << "Error: " << msg << " on line " << lineNumber << ".\n";
-                                return false;
-                            } else {
-                                std::cerr << "Warning: " << msg << " on line " << lineNumber << ".\n";
-                            }
+                            std::cerr << (strictMode ? "Error: " : "Warning: ")
+                                      << "FORMAT field " << keyStr << " expected "
+                                      << it->second.number << " values on line "
+                                      << lineNumber << ".\n";
+                            if (strictMode) return false;
                         }
                     }
                 }
@@ -724,21 +890,23 @@ bool VCFXValidator::validateDataLine(std::string_view line, int lineNumber) {
         }
     }
 
-    // Duplicate detection using hash
-    uint64_t variantHash = hashVariant(chrom, posStr, ref, alt);
-    if (seenVariantHashes.count(variantHash)) {
-        if (reportDuplicates) {
-            std::cerr << "Duplicate at line " << lineNumber << "\n";
+    // Duplicate detection using bloom filter (unless disabled)
+    if (!skipDuplicateCheck) {
+        uint64_t variantHash = hashVariant(chrom, posStr, ref, alt);
+        if (bloomMayContain(variantHash)) {
+            // Potential duplicate detected by bloom filter
+            if (reportDuplicates) {
+                std::cerr << "Duplicate at line " << lineNumber << "\n";
+            }
+            std::string msg = "duplicate variant";
+            if (strictMode) {
+                std::cerr << "Error: " << msg << " on line " << lineNumber << ".\n";
+                return false;
+            } else {
+                std::cerr << "Warning: " << msg << " on line " << lineNumber << ".\n";
+            }
         }
-        std::string msg = "duplicate variant";
-        if (strictMode) {
-            std::cerr << "Error: " << msg << " on line " << lineNumber << ".\n";
-            return false;
-        } else {
-            std::cerr << "Warning: " << msg << " on line " << lineNumber << ".\n";
-        }
-    } else {
-        seenVariantHashes.insert(variantHash);
+        bloomAdd(variantHash);
     }
 
     return true;
@@ -766,10 +934,10 @@ bool VCFXValidator::validateVCFMmap(const char* filepath) {
     bool foundChromLine = false;
     int dataLineCount = 0;
 
-    // Process lines using memchr for fast newline scanning
+    // Process lines using SIMD-optimized newline scanning
     while (ptr < end) {
-        // Find end of line using memchr (highly optimized, often SIMD)
-        const char* lineEnd = static_cast<const char*>(memchr(ptr, '\n', end - ptr));
+        // Find end of line using SIMD (AVX2/SSE2 on x86_64, memchr fallback)
+        const char* lineEnd = findNewlineSIMD(ptr, end);
         if (!lineEnd) lineEnd = end;
 
         std::string_view line(ptr, lineEnd - ptr);
