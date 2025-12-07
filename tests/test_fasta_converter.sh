@@ -450,4 +450,81 @@ else
     exit 1
 fi
 
+# NEW TEST 16: File input mode with -i flag
+echo "Test 16: File input mode with -i flag"
+$FASTA_CONVERTER -i basic.vcf > output_file_input.fasta
+if diff -q output_file_input.fasta output_basic.fasta > /dev/null; then
+    echo "✓ Test 16 passed: -i file input works correctly"
+else
+    echo "❌ Test 16 failed: -i file input output mismatch"
+    exit 1
+fi
+
+# NEW TEST 17: Positional file argument
+echo "Test 17: Positional file argument"
+$FASTA_CONVERTER basic.vcf > output_positional.fasta
+if diff -q output_positional.fasta output_basic.fasta > /dev/null; then
+    echo "✓ Test 17 passed: positional file argument works correctly"
+else
+    echo "❌ Test 17 failed: positional file argument output mismatch"
+    exit 1
+fi
+
+# NEW TEST 18: Quiet mode suppresses warnings
+echo "Test 18: Quiet mode suppresses warnings"
+$FASTA_CONVERTER -q < missing_columns.vcf > output_quiet.fasta 2> quiet.err
+if [ ! -s quiet.err ]; then
+    echo "✓ Test 18 passed: quiet mode suppresses warnings"
+else
+    echo "❌ Test 18 failed: quiet mode did not suppress warnings"
+    cat quiet.err
+    exit 1
+fi
+
+# NEW TEST 19: Output equivalence - stdin vs mmap
+echo "Test 19: Output equivalence - stdin vs mmap"
+$FASTA_CONVERTER < multiallelic.vcf > output_stdin.fasta 2>/dev/null
+$FASTA_CONVERTER -i multiallelic.vcf > output_mmap.fasta 2>/dev/null
+if diff -q output_stdin.fasta output_mmap.fasta > /dev/null; then
+    echo "✓ Test 19 passed: mmap output matches stdin output"
+else
+    echo "❌ Test 19 failed: mmap output differs from stdin"
+    diff output_stdin.fasta output_mmap.fasta
+    exit 1
+fi
+
+# NEW TEST 20: File input with --input long option
+echo "Test 20: File input with --input long option"
+$FASTA_CONVERTER --input basic.vcf > output_long_opt.fasta 2>/dev/null
+if diff -q output_long_opt.fasta output_basic.fasta > /dev/null; then
+    echo "✓ Test 20 passed: --input long option works correctly"
+else
+    echo "❌ Test 20 failed: --input long option output mismatch"
+    exit 1
+fi
+
+# NEW TEST 21: Help shows new options (-i, -q)
+echo "Test 21: Help shows new options"
+$FASTA_CONVERTER --help > help_new.txt 2>&1
+if grep -q "\-i" help_new.txt && grep -q "\-q" help_new.txt; then
+    echo "✓ Test 21 passed: help shows -i and -q options"
+else
+    echo "❌ Test 21 failed: help does not show new options"
+    cat help_new.txt
+    exit 1
+fi
+
+# NEW TEST 22: Nonexistent file error handling
+echo "Test 22: Nonexistent file error handling"
+set +e  # Temporarily disable exit on error
+$FASTA_CONVERTER -i nonexistent_file.vcf > /dev/null 2> nonexistent.err
+exit_code=$?
+set -e  # Re-enable exit on error
+if [ $exit_code -ne 0 ]; then
+    echo "✓ Test 22 passed: nonexistent file causes error exit"
+else
+    echo "❌ Test 22 failed: nonexistent file did not cause error"
+    exit 1
+fi
+
 echo "All tests for VCFX_fasta_converter passed!" 

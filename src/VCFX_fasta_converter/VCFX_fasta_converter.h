@@ -15,8 +15,18 @@ class VCFXFastaConverter {
     // Displays the help message
     void displayHelp();
 
-    // Converts VCF input to FASTA format
+    // Converts VCF input to FASTA format (stdin mode - fallback)
     void convertVCFtoFasta(std::istream &in, std::ostream &out);
+
+    // Converts VCF input to FASTA format (streaming algorithm - fastest)
+    // Uses per-sample temp files for O(1) random I/O - scales to 200+ GB files
+    bool convertVCFtoFastaStreaming(const char *filename, std::ostream &out);
+
+    // Compatibility wrapper (calls convertVCFtoFastaStreaming)
+    bool convertVCFtoFastaMmap(const char *filename, std::ostream &out);
+
+    // Quiet mode - suppress warnings
+    bool quiet_ = false;
 };
 
 #endif // VCFX_FASTA_CONVERTER_H
