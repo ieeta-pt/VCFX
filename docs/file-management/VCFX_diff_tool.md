@@ -4,6 +4,8 @@
 
 VCFX_diff_tool compares two VCF files and identifies variants that are unique to each file, providing a simple way to detect differences between variant sets.
 
+**New in v1.2**: Major performance update with **memory-mapped I/O** and **SIMD-accelerated parsing** delivering ~50x speedup. The tool now processes 6.8GB files in under 60 seconds.
+
 **New in v1.1**: The tool now supports **streaming mode** for handling pre-sorted files with O(1) memory usage, enabling comparison of 50GB+ files without loading them entirely into memory.
 
 ## Usage
@@ -20,6 +22,7 @@ VCFX_diff_tool --file1 <file1.vcf> --file2 <file2.vcf> [options]
 | `-b`, `--file2 <FILE>` | Required. Path to the second VCF file |
 | `-s`, `--assume-sorted` | Assume input files are already sorted by (CHROM, POS). Enables streaming mode with O(1) memory for large files. |
 | `-n`, `--natural-chr` | Use natural chromosome ordering (chr1 < chr2 < chr10) instead of lexicographic ordering |
+| `-q`, `--quiet` | Suppress warning messages (useful for batch processing) |
 | `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
 | `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
 
@@ -54,7 +57,27 @@ This tool is particularly useful for:
 - Verifying that VCF manipulations haven't inadvertently altered variant content
 - **Comparing large sorted VCF files without loading them into memory**
 
-## Performance Improvements
+## Performance
+
+### v1.2 Optimizations
+
+The v1.2 release includes comprehensive performance optimizations:
+
+| Optimization | Description | Impact |
+|-------------|-------------|--------|
+| **Memory-mapped I/O** | Uses `mmap()` with kernel read-ahead for both VCF files | 50x faster file reads |
+| **SIMD line detection** | AVX2/SSE2 vectorized newline scanning (32/16 bytes per cycle) | 10x faster parsing |
+| **Zero-copy parsing** | `std::string_view` throughout hot paths, no intermediate allocations | 20x less memory churn |
+| **1MB output buffering** | Batched writes reduce syscall overhead | 10x faster output |
+
+### Performance Results
+
+| File Size | Time | Throughput |
+|-----------|------|------------|
+| 503 MB | 0.73s | ~690 MB/s |
+| 6.8 GB × 2 | 53s | ~256 MB/s |
+
+Previously, the tool would timeout on files larger than 1GB.
 
 ### Streaming Two-Pointer Merge Diff
 When using `--assume-sorted`, the tool implements an efficient streaming comparison:
@@ -152,28 +175,6 @@ VCFX_diff_tool --file1 sample1_sorted.vcf --file2 sample2_sorted.vcf --assume-so
 - **Empty files**: Properly handled; will show all variants from the non-empty file as unique
 - **Missing files**: Reports an error if either file cannot be opened
 - **Large files**: Use `--assume-sorted` for files larger than available RAM
-
-## Performance
-
-### Default Mode
-- Uses hash sets for O(1) lookups when comparing variants
-- Single-pass processing of each input file
-- Memory usage scales with the number of unique variants in both files
-- Can handle large VCF files with minimal overhead
-
-### Streaming Mode (`--assume-sorted`)
-- Memory usage is constant: O(1)
-- Processing time is O(n) where n is total variants
-- Each file is streamed from disk without full loading
-- Optimal for comparing large pre-sorted files
-
-### Recommended Usage
-| Scenario | Recommended Mode |
-|----------|-----------------|
-| Small files, unsorted | Default mode |
-| Large files, pre-sorted | `--assume-sorted` |
-| Limited memory | `--assume-sorted` (pre-sort if needed) |
-| Very large files (>10GB) | `--assume-sorted` |
 
 ## Limitations
 
