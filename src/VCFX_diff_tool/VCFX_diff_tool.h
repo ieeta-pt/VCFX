@@ -11,6 +11,8 @@
 // Supports two modes:
 // 1. Default: Load both files into hash sets (works with unsorted files)
 // 2. Streaming (--assume-sorted): Two-pointer merge diff with O(1) memory
+//
+// Performance: Uses memory-mapped I/O with SIMD-accelerated parsing
 class VCFXDiffTool {
   public:
     // Entry point for the tool
@@ -20,14 +22,19 @@ class VCFXDiffTool {
     // Displays the help message
     void displayHelp();
 
-    // === Default mode (hash-set based) ===
+    // === OPTIMIZED mmap-based implementations ===
+    // These are used by default for file input
+    // Returns false if files cannot be opened
+    bool diffInMemoryMmap(const std::string &file1Path, const std::string &file2Path);
+    bool diffStreamingMmap(const std::string &file1Path, const std::string &file2Path);
+
+    // === Fallback implementations (kept for compatibility) ===
     // Loads variants from a VCF file into a set
     bool loadVariants(const std::string &filePath, std::unordered_set<std::string> &variants);
 
     // Compare using hash sets (original algorithm)
     void diffInMemory(const std::string &file1Path, const std::string &file2Path);
 
-    // === Streaming mode (two-pointer merge) ===
     // Compare sorted files using O(1) memory
     void diffStreaming(const std::string &file1Path, const std::string &file2Path);
 
@@ -48,6 +55,7 @@ class VCFXDiffTool {
     // Configuration
     bool assumeSorted = false;
     bool naturalChromOrder = false;
+    bool quiet_ = false;
 };
 
 #endif // VCFX_DIFF_TOOL_H
