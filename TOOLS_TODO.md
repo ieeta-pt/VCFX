@@ -2,9 +2,11 @@
 
 **Last Updated:** December 8, 2025
 
-## ✅ ALL TOOLS OPTIMIZED!
+## Summary
 
-All 23 computationally intensive VCFX tools have been optimized with mmap + SIMD acceleration.
+- **23 tools optimized** with mmap + SIMD acceleration
+- **8 tools need optimization** (identified as slow on 4GB file)
+- **30 tools already fast** (<1 second on 4GB file)
 
 ---
 
@@ -37,9 +39,28 @@ All 23 computationally intensive VCFX tools have been optimized with mmap + SIMD
 
 ---
 
-## Fast Tools (Already performant, <1 second)
+## Needs Optimization (8 tools, >60s on 4GB file)
+
+These tools were identified as slow when processing large files:
+
+| Tool | Status | Notes |
+|------|--------|-------|
+| **VCFX_af_subsetter** | Needs mmap | >60s on 4GB file |
+| **VCFX_cross_sample_concordance** | Needs mmap | >60s on 4GB file |
+| **VCFX_distance_calculator** | Needs mmap | >60s on 4GB file |
+| **VCFX_dosage_calculator** | Needs mmap | >60s on 4GB file |
+| **VCFX_duplicate_remover** | Needs mmap | >60s on 4GB file |
+| **VCFX_metadata_summarizer** | Needs mmap | >60s on 4GB file |
+| **VCFX_multiallelic_splitter** | Needs mmap | >60s on 4GB file |
+| **VCFX_variant_classifier** | Needs mmap | >60s on 4GB file |
+
+---
+
+## Fast Tools (Already performant, <1 second on 4GB file)
 
 These tools already perform well without optimization:
+
+**Original fast tools:**
 - VCFX_reformatter: 0.15s
 - VCFX_header_parser: 0.17s
 - VCFX_merger: 0.17s
@@ -53,6 +74,25 @@ These tools already perform well without optimization:
 - VCFX_subsampler: 0.22s
 - VCFX_allele_balance_filter: 0.26s
 - VCFX_ancestry_assigner: 0.28s
+
+**Newly verified fast tools (on 4GB file):**
+- VCFX_alignment_checker: 0.05s
+- VCFX_ancestry_inferrer: 0.02s
+- VCFX_annotation_extractor: 0.03s
+- VCFX_compressor: 0.02s
+- VCFX_field_extractor: 0.07s
+- VCFX_format_converter: 0.02s
+- VCFX_gl_filter: 0.02s
+- VCFX_impact_filter: 0.02s
+- VCFX_info_aggregator: 0.02s
+- VCFX_info_parser: 0.02s
+- VCFX_info_summarizer: 0.02s
+- VCFX_population_filter: 0.06s
+- VCFX_position_subsetter: 0.03s
+- VCFX_record_filter: 0.02s
+- VCFX_ref_comparator: 0.02s
+- VCFX_region_subsampler: 0.02s
+- VCFX_sample_extractor: 0.02s
 
 ---
 
