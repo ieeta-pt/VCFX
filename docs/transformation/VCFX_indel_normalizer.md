@@ -5,19 +5,22 @@
 
 ## Usage
 ```bash
+VCFX_indel_normalizer [OPTIONS] [input.vcf]
 VCFX_indel_normalizer [OPTIONS] < input.vcf > normalized.vcf
 ```
 
 ## Options
 | Option | Description |
 |--------|-------------|
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapping for best performance) |
+| `-q`, `--quiet` | Suppress informational messages |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 `VCFX_indel_normalizer` processes a VCF file and normalizes indel variants by:
 
-1. Reading the VCF file from standard input
+1. Reading the VCF file using memory-mapped I/O for extreme performance
 2. Preserving all header lines without modification
 3. For variants with multiple alternate alleles (comma-separated ALT values):
    - Splitting them into separate lines, one per alternate allele
@@ -25,7 +28,7 @@ VCFX_indel_normalizer [OPTIONS] < input.vcf > normalized.vcf
    - Removing the longest common prefix from REF and ALT, keeping at least one base
    - Removing the longest common suffix from REF and ALT, keeping at least one base
    - Adjusting the position (POS) to account for removed leading bases
-5. Writing the normalized variants to standard output
+5. Writing the normalized variants using buffered output
 
 This normalization ensures that variants are represented in a consistent, minimal left-aligned form, which is important for variant comparison, annotation, and analysis.
 
@@ -55,10 +58,26 @@ For variants with multiple alternate alleles:
 
 ## Examples
 
-### Basic Usage
+### File Input Mode (Recommended)
+
+Use memory-mapped file I/O for best performance:
+
+```bash
+VCFX_indel_normalizer -i input.vcf > normalized.vcf
+VCFX_indel_normalizer input.vcf > normalized.vcf
+```
+
+### Basic Usage (Stdin)
+
 Normalize indels in a VCF file:
 ```bash
 VCFX_indel_normalizer < input.vcf > normalized.vcf
+```
+
+### Quiet Mode for Scripts
+
+```bash
+VCFX_indel_normalizer -q -i input.vcf > normalized.vcf
 ```
 
 ### Example Transformations
@@ -96,10 +115,23 @@ After:  chr1 100 . A    C
 - Lines with fewer than 10 columns (minimum for a VCF with samples) are output unchanged
 - Lines with invalid position values are output unchanged
 
-## Performance Considerations
-- The tool processes VCF files line by line, with minimal memory requirements
-- Performance scales linearly with input file size
-- No external reference genome is required, making it lightweight and portable
+## Performance Characteristics
+
+The tool uses several optimizations for extreme performance:
+
+- **Memory-mapped I/O**: Uses `mmap()` for file input to minimize syscall overhead
+- **SIMD acceleration**: Uses NEON/SSE2/AVX2 instructions for fast line/tab scanning
+- **Zero-copy parsing**: Parses VCF fields without creating intermediate strings
+- **Buffered output**: Uses 4MB output buffer with direct `write()` syscalls
+
+### Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)
+
+| Mode | Time |
+|------|------|
+| mmap (-i) | ~4s |
+| stdin | ~4.9 min |
+
+**Speedup: ~73x** with memory-mapped I/O
 
 ## Limitations
 - This tool performs simple left-alignment without checking for sequence repeats in a reference genome
@@ -107,4 +139,4 @@ After:  chr1 100 . A    C
 - Cannot handle complex structural variants beyond simple indels
 - Limited to the information available in the VCF file itself
 - No automatic breakup of complex variants (substitutions that could be represented as indels)
-- No variant filtering capabilities 
+- No variant filtering capabilities

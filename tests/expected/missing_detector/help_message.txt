@@ -1,15 +1,26 @@
-VCFX_missing_detector: Detect variants with missing sample genotypes.
+VCFX_missing_detector v2.0 - Extreme-performance missing genotype detector
 
 Usage:
-  VCFX_missing_detector [options] < input.vcf > flagged.vcf
+  VCFX_missing_detector [OPTIONS] [input.vcf]
+  VCFX_missing_detector [OPTIONS] < input.vcf > flagged.vcf
 
 Options:
-  -h, --help    Display this help message and exit
+  -i, --input FILE   Input VCF file (uses memory-mapping for best performance)
+  -t, --threads N    Number of threads (default: auto)
+  -q, --quiet        Suppress informational messages
+  -h, --help         Display this help message and exit
+  -v, --version      Show program version and exit
 
 Description:
-  Reads a VCF from stdin, checks each sample's genotype for missing data,
-  and if any sample has a missing genotype, appends 'MISSING_GENOTYPES=1'
-  in the INFO field.
+  Detects variants with missing sample genotypes and flags them
+  with 'MISSING_GENOTYPES=1' in the INFO field.
+
+Performance:
+  - Memory-mapped I/O: Use -i flag for extreme speed
+  - SIMD-accelerated '.' character search (AVX2/SSE2/NEON)
+  - Multi-threaded chunk processing
+  - Zero-copy output for lines without missing genotypes
 
 Example:
-  VCFX_missing_detector < input.vcf > flagged_output.vcf 
+  VCFX_missing_detector -i input.vcf > flagged.vcf
+  VCFX_missing_detector < input.vcf > flagged.vcf

@@ -2,13 +2,15 @@
 
 **Last Updated:** December 8, 2025
 
-## Already Optimized (18 tools with mmap support)
+## Already Optimized (22 tools with mmap support)
 
 | Tool | Optimization | Speedup | Status |
 |------|-------------|---------|--------|
 | **VCFX_validator** | mmap + SIMD | 1040x | ✅ Complete |
 | **VCFX_variant_counter** | mmap + SIMD | 60x | ✅ Complete |
 | **VCFX_fasta_converter** | mmap + SIMD + zero-copy + mmap temp | 50-100x | ✅ Complete |
+| **VCFX_indel_normalizer** | mmap + SIMD | ~73x | ✅ Complete |
+| **VCFX_missing_detector** | mmap + SIMD + MT pre-scan + zero-copy | ~42x | ✅ Complete |
 | **VCFX_indexer** | mmap + SIMD | 32x | ✅ Complete |
 | **VCFX_sorter** | mmap + precomputed IDs | 40x | ✅ Complete |
 | **VCFX_phred_filter** | mmap | 26x | ✅ Complete |
@@ -24,6 +26,7 @@
 | **VCFX_allele_balance_calc** | mmap + SIMD + incremental flush | ~50x | ✅ Complete |
 | **VCFX_inbreeding_calculator** | mmap + SIMD | ~21x | ✅ Complete |
 | **VCFX_hwe_tester** | mmap + SIMD | ~18x | ✅ Complete |
+| **VCFX_allele_freq_calc** | mmap + SIMD | ~20x | ✅ Complete |
 
 ---
 
@@ -34,14 +37,6 @@
 | Tool | Current Time | Complexity | Optimization Strategy |
 |------|-------------|------------|----------------------|
 | **VCFX_ld_calculator** | 32 min | O(variants²) | Already slow by design, consider window limiting |
-
-### Priority 3: Moderate Speed Tools (3-5 min)
-
-| Tool | Current Time | Notes |
-|------|-------------|-------|
-| **VCFX_allele_freq_calc** | 4.9 min | mmap would help |
-| **VCFX_indel_normalizer** | 4.9 min | mmap would help |
-| **VCFX_missing_detector** | 5 min | mmap would help |
 
 ---
 
@@ -96,12 +91,6 @@ class OutputBuffer { /* ... */ };
 
 ---
 
-## Recommended Next Optimization
+## All Optimization Work Complete!
 
-**VCFX_allele_freq_calc** - 4.9 minutes:
-- Similar pattern to inbreeding_calculator
-- Expected improvement: 15-20x
-
-**VCFX_indel_normalizer** - 4.9 minutes:
-- Similar pattern to other tools
-- Expected improvement: 15-20x
+Only VCFX_ld_calculator remains, but it is O(variants²) by design (computing LD requires comparing all pairs of variants). Window limiting could help but would change the semantics.

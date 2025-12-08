@@ -7,6 +7,7 @@ VCFX_missing_detector identifies and flags variants in a VCF file that contain m
 ## Usage
 
 ```bash
+VCFX_missing_detector [OPTIONS] [input.vcf]
 VCFX_missing_detector [OPTIONS] < input.vcf > flagged.vcf
 ```
 
@@ -14,20 +15,21 @@ VCFX_missing_detector [OPTIONS] < input.vcf > flagged.vcf
 
 | Option | Description |
 |--------|-------------|
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapping for best performance) |
+| `-t`, `--threads N` | Number of threads for parallel scanning (default: auto) |
+| `-q`, `--quiet` | Suppress informational messages |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 
 VCFX_missing_detector analyzes a VCF file to identify variants with missing genotype data. The tool:
 
-1. Reads a VCF file from standard input line by line
-2. For each variant, examines the genotype (GT) field of all samples
-3. Identifies missing genotypes where:
-   - The entire genotype is missing (e.g., `./.`, `.|.`, or `.`)
-   - Either allele in a diploid genotype is missing (e.g., `./0`, `1/.`)
-4. Adds a flag `MISSING_GENOTYPES=1` to the INFO field of variants with any missing data
-5. Writes the processed VCF to standard output
+1. Reads a VCF file using memory-mapped I/O for extreme performance
+2. Uses SIMD-accelerated scanning to detect '.' characters in sample columns
+3. Multi-threaded pre-scan determines if any missing genotypes exist
+4. For each variant with missing data, adds `MISSING_GENOTYPES=1` to the INFO field
+5. Uses zero-copy output for unchanged lines
 
 This simple annotation allows researchers to easily:
 - Filter variants based on missing data presence using standard VCF tools
@@ -46,34 +48,40 @@ This annotation is appended to the existing INFO field, or replaces the `.` plac
 
 ## Examples
 
-### Basic Usage
+### File Input Mode (Recommended)
+
+Use memory-mapped file I/O for best performance:
 
 ```bash
-# Flag variants with missing genotypes
-./VCFX_missing_detector < input.vcf > flagged.vcf
+VCFX_missing_detector -i input.vcf > flagged.vcf
+VCFX_missing_detector input.vcf > flagged.vcf
+```
+
+### Basic Usage (Stdin)
+
+```bash
+VCFX_missing_detector < input.vcf > flagged.vcf
 ```
 
 ### In a Pipeline with Filtering
 
 ```bash
 # Flag variants with missing genotypes, then filter to keep only complete variants
-./VCFX_missing_detector < input.vcf | grep -v "MISSING_GENOTYPES=1" > complete_variants.vcf
+VCFX_missing_detector -i input.vcf | grep -v "MISSING_GENOTYPES=1" > complete_variants.vcf
 ```
 
 ### Counting Missing Variants
 
 ```bash
 # Count variants with missing genotypes
-./VCFX_missing_detector < input.vcf | grep "MISSING_GENOTYPES=1" | wc -l
+VCFX_missing_detector -i input.vcf | grep "MISSING_GENOTYPES=1" | wc -l
 ```
 
-### Counting All Variants Before Summary
+### Quiet Mode for Scripts
 
 ```bash
-# Count total variants and those with missing data
-./VCFX_missing_detector < input.vcf > flagged.vcf
-echo "Total variants: $(grep -v "^#" flagged.vcf | wc -l)"
-echo "Variants with missing data: $(grep "MISSING_GENOTYPES=1" flagged.vcf | wc -l)"
+# Suppress progress messages
+VCFX_missing_detector -q -i input.vcf > flagged.vcf
 ```
 
 ## Missing Genotype Detection
@@ -99,15 +107,24 @@ The tool implements several strategies for handling edge cases:
 6. **Header lines**: Passed through unchanged
 7. **Non-diploid genotypes**: The tool focuses on diploid genotypes with a single delimiter ('/' or '|')
 
-## Performance
+## Performance Characteristics
 
-VCFX_missing_detector is designed for efficiency:
+The tool uses several optimizations for extreme performance:
 
-1. Single-pass processing with O(n) time complexity where n is the number of variants
-2. Minimal memory usage, with no requirement to load the entire file
-3. String operations optimized for performance
-4. Line-by-line processing enabling streaming workflow
-5. Disk I/O limited only to reading input and writing output
+- **Memory-mapped I/O**: Uses `mmap()` for file input to minimize syscall overhead
+- **SIMD acceleration**: Uses NEON/SSE2/AVX2 instructions for fast '.' character scanning
+- **Multi-threaded pre-scan**: Parallel scanning to determine if file has any missing genotypes
+- **Zero-copy fast path**: Files with no missing genotypes are copied verbatim without per-line parsing
+- **Batched zero-copy output**: Groups consecutive unchanged lines into single `write()` calls
+
+### Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)
+
+| Mode | Time | Notes |
+|------|------|-------|
+| mmap (-i) | ~7s | Multi-threaded pre-scan + zero-copy output |
+| stdin | ~5 min | Buffered I/O |
+
+**Speedup: ~42x** with memory-mapped I/O
 
 ## Limitations
 
@@ -115,6 +132,6 @@ VCFX_missing_detector is designed for efficiency:
 2. Limited to checking the GT field; does not evaluate other potential indicators of missing data
 3. No built-in functionality to annotate the percentage or count of samples with missing data
 4. No option to customize the INFO field tag name from the default "MISSING_GENOTYPES"
-5. Cannot perform sample-specific missing data analysis, such as identifying which samples contribute most to missingness
+5. Cannot perform sample-specific missing data analysis
 6. No threshold options (e.g., flag only if more than X% of samples have missing data)
-7. Limited to binary detection (missing/not missing) without quantifying the degree of missingness 
+7. Limited to binary detection (missing/not missing) without quantifying the degree of missingness
