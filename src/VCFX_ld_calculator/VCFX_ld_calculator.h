@@ -5,8 +5,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdint>
 
-// Holds minimal data for a single variant
+// Holds minimal data for a single variant (used in matrix mode)
 struct LDVariant {
     std::string chrom;
     int pos;
@@ -32,21 +33,28 @@ class VCFXLDCalculator {
     void computeLDStreaming(std::istream &in, std::ostream &out, const std::string &regionChrom,
                             int regionStart, int regionEnd, size_t windowSize, double threshold);
 
+    // Optimized mmap-based versions
+    void computeLDStreamingMmap(const char* data, size_t size, int outFd, const std::string &regionChrom,
+                                 int regionStart, int regionEnd, size_t windowSize, double threshold,
+                                 int maxDistance);
+    void computeLDMatrixMmap(const char* data, size_t size, int outFd, const std::string &regionChrom,
+                              int regionStart, int regionEnd, int numThreads);
+
     // parse a single genotype string => code
     int parseGenotype(const std::string &s);
 
     // compute r^2 for two variant's genotype arrays
     double computeRsq(const std::vector<int> &g1, const std::vector<int> &g2);
 
-    // Parse VCF line and return variant (returns false if line should be skipped)
-    bool parseVCFLine(const std::string &line, const std::vector<std::string> &fields,
-                      int numSamples, LDVariant &variant);
-
     // Configuration
     bool streamingMode = true;   // Default: streaming mode for performance
     bool matrixMode = false;     // Explicit matrix mode (backward compat)
     size_t windowSize = 1000;    // Default window size
     double ldThreshold = 0.0;    // Default: output all pairs
+    int numThreads = 0;          // 0 = auto-detect
+    int maxDistance = 0;         // 0 = no distance limit
+    bool quiet = false;          // Suppress informational messages
+    std::string inputFile;       // Empty = stdin
 };
 
 #endif // VCFX_LD_CALCULATOR_H

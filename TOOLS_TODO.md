@@ -2,7 +2,13 @@
 
 **Last Updated:** December 8, 2025
 
-## Already Optimized (22 tools with mmap support)
+## ✅ ALL TOOLS OPTIMIZED!
+
+All 23 computationally intensive VCFX tools have been optimized with mmap + SIMD acceleration.
+
+---
+
+## Optimized Tools (23 total)
 
 | Tool | Optimization | Speedup | Status |
 |------|-------------|---------|--------|
@@ -27,22 +33,13 @@
 | **VCFX_inbreeding_calculator** | mmap + SIMD | ~21x | ✅ Complete |
 | **VCFX_hwe_tester** | mmap + SIMD | ~18x | ✅ Complete |
 | **VCFX_allele_freq_calc** | mmap + SIMD | ~20x | ✅ Complete |
+| **VCFX_ld_calculator** | mmap + SIMD r² + MT matrix + distance pruning | 5-60x | ✅ Complete |
 
 ---
 
-## Still Need Optimization
+## Fast Tools (Already performant, <1 second)
 
-### Priority 1: Very Slow Tools (>5 min on 4GB file)
-
-| Tool | Current Time | Complexity | Optimization Strategy |
-|------|-------------|------------|----------------------|
-| **VCFX_ld_calculator** | 32 min | O(variants²) | Already slow by design, consider window limiting |
-
----
-
-## Fast Tools (No optimization needed, <1 second)
-
-These tools already perform well:
+These tools already perform well without optimization:
 - VCFX_reformatter: 0.15s
 - VCFX_header_parser: 0.17s
 - VCFX_merger: 0.17s
@@ -77,20 +74,14 @@ struct MappedFile {
 // 2. MADV_SEQUENTIAL hint
 madvise((void*)data, size, MADV_SEQUENTIAL | MADV_WILLNEED);
 
-// 3. SIMD line scanning (AVX2/SSE2/memchr fallback)
+// 3. SIMD line scanning (AVX2/SSE2/NEON)
 static inline const char* findNewlineSIMD(const char* p, const char* end);
 
 // 4. Zero-copy parsing with string_view
 static inline std::string_view extractField(const char* line, int fieldIdx);
 
-// 5. 1MB output buffer
+// 5. 4MB output buffer
 class OutputBuffer { /* ... */ };
 
-// 6. CLI: -i/--input FILE, -q/--quiet
+// 6. CLI: -i/--input FILE, -q/--quiet, -t/--threads (where applicable)
 ```
-
----
-
-## All Optimization Work Complete!
-
-Only VCFX_ld_calculator remains, but it is O(variants²) by design (computing LD requires comparing all pairs of variants). Window limiting could help but would change the semantics.
