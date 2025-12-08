@@ -5,8 +5,25 @@
 #include <string>
 #include <unordered_set>
 
-// Function to display help message
-void printHelp();
+// Class to encapsulate duplicate remover functionality
+class VCFXDuplicateRemover {
+  public:
+    // Entry point for the tool
+    int run(int argc, char *argv[]);
+
+  private:
+    // Displays the help message
+    void displayHelp();
+
+    // Remove duplicates from stdin
+    bool removeDuplicates(std::istream &in, std::ostream &out);
+
+    // Process file using memory-mapped I/O (optimized for large files)
+    bool processFileMmap(const char* filename, std::ostream &out);
+
+    // Quiet mode flag
+    bool quietMode = false;
+};
 
 // Structure to represent a unique variant key
 struct VariantKey {
@@ -34,8 +51,5 @@ struct VariantKeyHash {
         return seed;
     }
 };
-
-// Function to remove duplicate variants from a VCF file
-bool removeDuplicates(std::istream &in, std::ostream &out);
 
 #endif // VCFX_DUPLICATE_REMOVER_H

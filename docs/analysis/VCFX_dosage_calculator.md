@@ -7,15 +7,24 @@ VCFX_dosage_calculator computes the genetic dosage (count of alternate alleles) 
 ## Usage
 
 ```bash
+# Standard mode (stdin)
 VCFX_dosage_calculator [OPTIONS] < input.vcf > dosage_output.txt
+
+# File mode (optimized for large files)
+VCFX_dosage_calculator -i input.vcf > dosage_output.txt
+
+# Positional argument mode
+VCFX_dosage_calculator input.vcf > dosage_output.txt
 ```
 
 ## Options
 
 | Option | Description |
 |--------|-------------|
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapped I/O for best performance on large files) |
+| `-q`, `--quiet` | Suppress warning messages |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 
@@ -51,10 +60,22 @@ Where `Dosages` is a comma-separated list of dosage values for each sample, in t
 
 ## Examples
 
-### Basic Usage
+### Basic Usage (stdin)
 
 ```bash
 ./VCFX_dosage_calculator < input.vcf > dosage_results.txt
+```
+
+### File Mode (recommended for large files)
+
+```bash
+./VCFX_dosage_calculator -i input.vcf > dosage_results.txt
+```
+
+### Quiet Mode (suppress warnings)
+
+```bash
+./VCFX_dosage_calculator -q -i input.vcf > dosage_results.txt
 ```
 
 ### Viewing Results
@@ -87,7 +108,21 @@ head -n 5 dosage_results.txt | column -t
 
 ## Performance
 
-The tool processes VCF files line by line with minimal memory requirements. Performance is primarily dependent on the number of samples in the VCF file, as each sample's genotype must be processed for every variant.
+The tool offers two execution modes with different performance characteristics:
+
+### File Mode (-i/--input)
+When using the `-i` option, the tool uses memory-mapped I/O (mmap) with SIMD-accelerated newline detection for optimal performance on large files. This mode provides approximately **8-10x speedup** compared to stdin mode.
+
+| File Size | Variants | Samples | Stdin Mode | File Mode | Speedup |
+|-----------|----------|---------|------------|-----------|---------|
+| 4 GB      | 427K     | 2504    | ~2m 41s    | ~18s      | ~9x     |
+
+### Stdin Mode (default)
+For smaller files or pipeline usage, the stdin mode processes input line by line with minimal memory requirements. Performance is primarily dependent on the number of samples in the VCF file, as each sample's genotype must be processed for every variant.
+
+### Recommendations
+- For files > 100MB, use `-i input.vcf` for best performance
+- For pipelines or compressed input, use stdin mode with `zcat file.vcf.gz | VCFX_dosage_calculator`
 
 ## Limitations
 

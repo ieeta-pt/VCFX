@@ -265,4 +265,221 @@ else
     exit 1
 fi
 
-echo "All tests for VCFX_dosage_calculator passed!" 
+# Test 10: File input mode (-i option) vs stdin mode
+echo "Test 10: File input mode (-i option) vs stdin mode"
+$DOSAGE_TOOL -i basic.vcf > output_file_mode.txt 2>/dev/null
+
+if diff -q output_basic.txt output_file_mode.txt > /dev/null; then
+    echo "✓ Test 10 passed"
+else
+    echo "❌ Test 10 failed"
+    echo "File mode output differs from stdin mode"
+    echo "Expected (stdin mode):"
+    cat output_basic.txt
+    echo "Actual (file mode):"
+    cat output_file_mode.txt
+    exit 1
+fi
+
+# Test 11: File input mode with multi-allelic
+echo "Test 11: File input mode with multi-allelic"
+$DOSAGE_TOOL -i multi_allelic.vcf > output_file_multi_allelic.txt 2>/dev/null
+
+if diff -q output_multi_allelic.txt output_file_multi_allelic.txt > /dev/null; then
+    echo "✓ Test 11 passed"
+else
+    echo "❌ Test 11 failed"
+    echo "File mode output differs from stdin mode for multi-allelic"
+    exit 1
+fi
+
+# Test 12: Quiet mode suppresses warnings
+echo "Test 12: Quiet mode suppresses warnings"
+$DOSAGE_TOOL -q < malformed.vcf 2> quiet_stderr.txt > /dev/null
+
+if [ ! -s quiet_stderr.txt ]; then
+    echo "✓ Test 12 passed"
+else
+    echo "❌ Test 12 failed"
+    echo "Quiet mode should suppress warnings, but got:"
+    cat quiet_stderr.txt
+    exit 1
+fi
+
+# Test 13: Positional argument for file input
+echo "Test 13: Positional argument for file input"
+$DOSAGE_TOOL basic.vcf > output_positional.txt 2>/dev/null
+
+if diff -q output_basic.txt output_positional.txt > /dev/null; then
+    echo "✓ Test 13 passed"
+else
+    echo "❌ Test 13 failed"
+    echo "Positional argument file mode differs from stdin mode"
+    exit 1
+fi
+
+# Test 14: Empty VCF file (only headers)
+echo "Test 14: Empty VCF file (only headers)"
+cat > empty_variants.vcf << EOF
+##fileformat=VCFv4.2
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1	SAMPLE2
+EOF
+
+cat > expected_empty.txt << EOF
+CHROM	POS	ID	REF	ALT	Dosages
+EOF
+
+$DOSAGE_TOOL < empty_variants.vcf > output_empty.txt 2>/dev/null
+
+if diff -q output_empty.txt expected_empty.txt > /dev/null; then
+    echo "✓ Test 14 passed"
+else
+    echo "❌ Test 14 failed"
+    echo "Expected:"
+    cat expected_empty.txt
+    echo "Actual:"
+    cat output_empty.txt
+    exit 1
+fi
+
+# Test 15: Single variant file
+echo "Test 15: Single variant file"
+cat > single.vcf << EOF
+##fileformat=VCFv4.2
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	S1
+1	100	.	A	G	100	PASS	.	GT	0/1
+EOF
+
+cat > expected_single.txt << EOF
+CHROM	POS	ID	REF	ALT	Dosages
+1	100	.	A	G	1
+EOF
+
+$DOSAGE_TOOL -i single.vcf > output_single.txt 2>/dev/null
+
+if diff -q output_single.txt expected_single.txt > /dev/null; then
+    echo "✓ Test 15 passed"
+else
+    echo "❌ Test 15 failed"
+    echo "Expected:"
+    cat expected_single.txt
+    echo "Actual:"
+    cat output_single.txt
+    exit 1
+fi
+
+# Test 16: Very long sample list (stress test for buffering)
+echo "Test 16: Very long sample list (100 samples)"
+> wide.vcf
+echo "##fileformat=VCFv4.2" >> wide.vcf
+echo -n "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT" >> wide.vcf
+for i in {1..100}; do
+    echo -n "	S$i" >> wide.vcf
+done
+echo "" >> wide.vcf
+
+# Add one variant with 100 samples
+echo -n "1	100	rs1	A	G	100	PASS	.	GT" >> wide.vcf
+for i in {1..100}; do
+    echo -n "	0/1" >> wide.vcf
+done
+echo "" >> wide.vcf
+
+# Run in file mode
+$DOSAGE_TOOL -i wide.vcf > output_wide.txt 2>/dev/null
+
+# Check that we have 100 dosage values
+dosages=$(tail -1 output_wide.txt | cut -f6)
+count=$(echo "$dosages" | tr ',' '\n' | wc -l)
+if [ "$count" -eq 100 ]; then
+    echo "✓ Test 16 passed"
+else
+    echo "❌ Test 16 failed"
+    echo "Expected 100 dosage values, got $count"
+    exit 1
+fi
+
+# Test 17: File mode with missing genotypes
+echo "Test 17: File mode with missing genotypes"
+$DOSAGE_TOOL -i missing.vcf > output_file_missing.txt 2>/dev/null
+
+if diff -q output_missing.txt output_file_missing.txt > /dev/null; then
+    echo "✓ Test 17 passed"
+else
+    echo "❌ Test 17 failed"
+    echo "File mode differs for missing genotypes"
+    exit 1
+fi
+
+# Test 18: Non-existent file
+echo "Test 18: Non-existent file"
+set +e
+$DOSAGE_TOOL -i nonexistent_file.vcf 2> nonexistent_err.txt
+exit_code=$?
+set -e
+
+if [ $exit_code -ne 0 ]; then
+    echo "✓ Test 18 passed"
+else
+    echo "❌ Test 18 failed"
+    echo "Expected non-zero exit code for non-existent file"
+    exit 1
+fi
+
+# Test 19: Large file mode performance comparison
+echo "Test 19: Large file mode performance (mmap vs stdin)"
+# Use the large.vcf created in test 9
+
+# File mode
+time_start=$(date +%s%N)
+$DOSAGE_TOOL -i large.vcf > output_large_file.txt 2>/dev/null
+time_end=$(date +%s%N)
+file_time=$(( (time_end - time_start) / 1000000 ))
+
+# Stdin mode
+time_start=$(date +%s%N)
+$DOSAGE_TOOL < large.vcf > output_large_stdin.txt 2>/dev/null
+time_end=$(date +%s%N)
+stdin_time=$(( (time_end - time_start) / 1000000 ))
+
+echo "  File mode: ${file_time}ms"
+echo "  Stdin mode: ${stdin_time}ms"
+
+if diff -q output_large_file.txt output_large_stdin.txt > /dev/null; then
+    echo "✓ Test 19 passed (outputs match)"
+else
+    echo "❌ Test 19 failed"
+    echo "File mode and stdin mode produced different outputs"
+    exit 1
+fi
+
+# Test 20: Complex FORMAT field with GT not first
+echo "Test 20: GT field in different position in FORMAT"
+cat > gt_not_first.vcf << EOF
+##fileformat=VCFv4.2
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	S1	S2	S3
+1	100	.	A	G	100	PASS	.	DP:GT:GQ	10:0/0:30	15:0/1:40	20:1/1:50
+1	200	.	C	T	100	PASS	.	AD:DP:GT	5,5:10:0/1	8,7:15:1/1	10,0:10:0/0
+EOF
+
+cat > expected_gt_not_first.txt << EOF
+CHROM	POS	ID	REF	ALT	Dosages
+1	100	.	A	G	0,1,2
+1	200	.	C	T	1,2,0
+EOF
+
+$DOSAGE_TOOL -i gt_not_first.vcf > output_gt_not_first.txt 2>/dev/null
+
+if diff -q output_gt_not_first.txt expected_gt_not_first.txt > /dev/null; then
+    echo "✓ Test 20 passed"
+else
+    echo "❌ Test 20 failed"
+    echo "Expected:"
+    cat expected_gt_not_first.txt
+    echo "Actual:"
+    cat output_gt_not_first.txt
+    exit 1
+fi
+
+echo "All tests for VCFX_dosage_calculator passed!"

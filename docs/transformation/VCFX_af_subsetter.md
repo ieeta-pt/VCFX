@@ -5,15 +5,24 @@
 
 ## Usage
 ```bash
+# Standard mode (stdin)
 VCFX_af_subsetter --af-filter "MIN-MAX" < input.vcf > filtered.vcf
+
+# File mode (optimized for large files)
+VCFX_af_subsetter -i input.vcf --af-filter "MIN-MAX" > filtered.vcf
+
+# Positional argument mode
+VCFX_af_subsetter input.vcf --af-filter "MIN-MAX" > filtered.vcf
 ```
 
 ## Options
 | Option | Description |
 |--------|-------------|
-| `-a`, `--af-filter <MIN-MAX>` | Required. Allele frequency range for filtering (e.g., `0.01-0.05`) |
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-a`, `--af-filter <MIN-MAX>` | Allele frequency range for filtering (e.g., `0.01-0.05`) |
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapped I/O for best performance) |
+| `-q`, `--quiet` | Suppress warning messages |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 `VCFX_af_subsetter` processes VCF files line by line and filters variants based on their allele frequency (AF) values from the INFO field. The tool:
@@ -110,11 +119,29 @@ The tool handles several edge cases:
 - Inverted ranges: Reports an error if MIN > MAX
 - Non-numeric AF values: Skips variants where AF cannot be parsed as a number
 
-## Performance Considerations
-- Processes VCF files line by line for memory efficiency
-- No preprocessing or indexing required
+## Performance
+
+The tool offers two execution modes with different performance characteristics:
+
+### File Mode (-i/--input)
+When using the `-i` option, the tool uses memory-mapped I/O (mmap) for optimal performance on large files. This mode provides approximately **20x speedup** compared to stdin mode.
+
+| File Size | Variants | Stdin Mode | File Mode | Speedup |
+|-----------|----------|------------|-----------|---------|
+| 4 GB      | 427K     | ~2m 44s    | ~8s       | ~20x    |
+
+### Stdin Mode (default)
+For smaller files or pipeline usage, the stdin mode processes input line by line with minimal memory requirements.
+
+### Recommendations
+- For files > 100MB, use `-i input.vcf` for best performance
+- For pipelines or compressed input, use stdin mode with `zcat file.vcf.gz | VCFX_af_subsetter`
+
+## Performance Characteristics
 - Linear time complexity with respect to input file size
-- Minimal CPU and memory usage
+- Memory-mapped I/O for efficient large file processing
+- 1MB output buffer for optimized write performance
+- No preprocessing or indexing required
 
 ## Limitations
 - Requires AF field to be present in the INFO column

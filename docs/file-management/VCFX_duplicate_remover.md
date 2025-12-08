@@ -7,21 +7,30 @@ VCFX_duplicate_remover identifies and removes duplicate variant records from a V
 ## Usage
 
 ```bash
+# Standard mode (stdin)
 VCFX_duplicate_remover [OPTIONS] < input.vcf > deduplicated.vcf
+
+# File mode (optimized for large files)
+VCFX_duplicate_remover -i input.vcf > deduplicated.vcf
+
+# Positional argument mode
+VCFX_duplicate_remover input.vcf > deduplicated.vcf
 ```
 
 ## Options
 
 | Option | Description |
 |--------|-------------|
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapped I/O for best performance) |
+| `-q`, `--quiet` | Suppress warning messages |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 
 VCFX_duplicate_remover processes a VCF file to detect and remove duplicate variant records. The tool:
 
-1. Reads a VCF file from standard input line by line
+1. Reads a VCF file from standard input or file
 2. Passes header lines (beginning with '#') through unchanged
 3. For each data line, creates a normalized variant key consisting of:
    - Chromosome name (CHROM)
@@ -44,11 +53,25 @@ The output is a valid VCF file with the same format as the input, but with dupli
 
 ## Examples
 
-### Basic Usage
+### Basic Usage (stdin)
 
 ```bash
 # Remove duplicate variants from a VCF file
 ./VCFX_duplicate_remover < input.vcf > deduplicated.vcf
+```
+
+### File Mode (recommended for large files)
+
+```bash
+# Use file mode for faster processing of large files
+./VCFX_duplicate_remover -i input.vcf > deduplicated.vcf
+```
+
+### Quiet Mode
+
+```bash
+# Suppress warnings about malformed lines
+./VCFX_duplicate_remover -q -i input.vcf > deduplicated.vcf
 ```
 
 ### In a Pipeline
@@ -89,7 +112,7 @@ The tool implements several strategies for handling edge cases:
 
 1. **Multi-allelic variants**: Normalizes ALT fields by sorting to handle different orderings
 2. **Empty lines**: Skipped without affecting output
-3. **Malformed lines**: Lines that can't be parsed are skipped with a warning
+3. **Malformed lines**: Lines that can't be parsed are skipped with a warning (use `-q` to suppress)
 4. **Position parsing errors**: If a POS field can't be parsed as an integer, it's set to 0
 5. **Header lines**: All header lines are preserved in the output
 6. **Empty files**: Properly handles empty input files, producing empty output
@@ -98,13 +121,30 @@ The tool implements several strategies for handling edge cases:
 
 ## Performance
 
-VCFX_duplicate_remover is designed for efficiency:
+The tool offers two execution modes with different performance characteristics:
+
+### File Mode (-i/--input)
+When using the `-i` option, the tool uses memory-mapped I/O (mmap) for optimal performance on large files. This mode provides approximately **15x speedup** compared to stdin mode.
+
+| File Size | Variants | Stdin Mode | File Mode | Speedup |
+|-----------|----------|------------|-----------|---------|
+| 4 GB      | 427K     | ~2m 36s    | ~10s      | ~15x    |
+
+### Stdin Mode (default)
+For smaller files or pipeline usage, the stdin mode processes input line by line with minimal memory requirements.
+
+### Recommendations
+- For files > 100MB, use `-i input.vcf` for best performance
+- For pipelines or compressed input, use stdin mode with `zcat file.vcf.gz | VCFX_duplicate_remover`
+
+### Performance Characteristics
 
 1. Single-pass processing with O(n) time complexity where n is the number of variants
 2. Uses an optimized hash-based data structure for fast variant lookups
-3. Minimal memory overhead, proportional to the number of unique variants
-4. Handles large VCF files with millions of variants efficiently
-5. String processing optimized for performance with minimal copying
+3. Memory-mapped I/O for efficient large file processing
+4. 1MB output buffer for optimized write performance
+5. Pre-allocated hash set for reduced allocations
+6. Minimal memory overhead, proportional to the number of unique variants
 
 ## Limitations
 
@@ -114,4 +154,4 @@ VCFX_duplicate_remover is designed for efficiency:
 4. Limited to exact matching; doesn't detect overlapping variants that might represent the same event
 5. Doesn't consider INFO fields in uniqueness determination
 6. Cannot handle duplicates based on sample-specific criteria
-7. No option to only report duplicate variants without removing them 
+7. No option to only report duplicate variants without removing them
