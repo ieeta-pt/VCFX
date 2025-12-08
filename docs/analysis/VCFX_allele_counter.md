@@ -5,20 +5,23 @@
 
 ## Usage
 ```bash
-VCFX_allele_counter [OPTIONS] < input.vcf > allele_counts.tsv
+VCFX_allele_counter [OPTIONS] [FILE]
 ```
 
 ## Options
 | Option | Description |
 |--------|-------------|
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapping for best performance) |
+| `-t`, `--threads N` | Number of threads for parallel processing (default: auto-detect CPU cores) |
 | `-s`, `--samples "Sample1 Sample2..."` | Optional. Specify sample names to calculate allele counts for (space-separated). If omitted, all samples are processed. |
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-q`, `--quiet` | Suppress informational messages |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 `VCFX_allele_counter` processes a VCF file and counts reference and alternate alleles for each variant in each specified sample. The tool:
 
-1. Reads a VCF file from standard input
+1. Reads a VCF file from standard input or file
 2. Identifies sample columns from the VCF header
 3. For each variant and each sample:
    - Extracts the genotype information
@@ -48,7 +51,15 @@ The tool produces a tab-separated values (TSV) file with the following columns:
 
 ## Examples
 
-### Basic Usage (All Samples)
+### File Input Mode (Recommended)
+Use memory-mapped file I/O for best performance with multi-threaded processing:
+```bash
+VCFX_allele_counter -i input.vcf > allele_counts.tsv
+VCFX_allele_counter -t 8 -i input.vcf > allele_counts.tsv  # Use 8 threads
+VCFX_allele_counter input.vcf > allele_counts.tsv
+```
+
+### Basic Usage (Stdin)
 Count alleles for all samples in a VCF file:
 ```bash
 VCFX_allele_counter < input.vcf > allele_counts_all.tsv
@@ -57,13 +68,13 @@ VCFX_allele_counter < input.vcf > allele_counts_all.tsv
 ### Specific Samples
 Count alleles for specific samples:
 ```bash
-VCFX_allele_counter --samples "SAMPLE1 SAMPLE2" < input.vcf > allele_counts_subset.tsv
+VCFX_allele_counter --samples "SAMPLE1 SAMPLE2" -i input.vcf > allele_counts_subset.tsv
 ```
 
 ### Using with Other Tools
 Process the output for further analysis:
 ```bash
-VCFX_allele_counter < input.vcf | awk -F'\t' '$8 > 0' > samples_with_alt_alleles.tsv
+VCFX_allele_counter -i input.vcf | awk -F'\t' '$8 > 0' > samples_with_alt_alleles.tsv
 ```
 
 ## Allele Counting Method
@@ -105,10 +116,49 @@ The tool counts an allele as an alternate allele when it has any non-zero numeri
 - Non-numeric allele values are skipped
 - Empty genotype fields are skipped
 
-## Performance Considerations
-- Processes VCF files line by line, with minimal memory requirements
-- Scales linearly with input file size and number of samples
-- For very large VCF files with many samples, specifying a subset of samples can improve performance
+## Performance Characteristics
+
+The tool uses several optimizations for high performance:
+
+- **Multi-threading**: Parallel processing using multiple CPU cores
+- **Memory-mapped I/O**: Uses `mmap()` for file input to minimize syscall overhead
+- **SIMD acceleration**: Uses NEON/SSE2/AVX2 instructions for fast line/tab scanning
+- **Batch processing**: Pre-computes all sample positions per line for O(1) access
+- **Zero-copy parsing**: Parses VCF fields without creating intermediate strings
+- **Buffered output**: Uses 16MB per-thread output buffers with direct `write()` syscalls
+- **Optimized integer formatting**: Fast integer-to-string conversion
+
+### Benchmark Results (4GB VCF, chr21, 427K variants)
+
+| Samples | Output Lines | Time |
+|---------|--------------|------|
+| 1 | 427K | 1.8s |
+| 10 | 4.27M | 1.7s |
+| 100 | 42.7M | 3.3s |
+| 500 | 213.5M | 13s |
+
+### Output Volume
+
+This tool generates one output line per variant × sample combination. For large population-scale VCFs, this can result in massive output:
+
+| Input Size | Samples | Variants | Output Lines |
+|------------|---------|----------|--------------|
+| 50 MB | 10 | 100K | 1 million |
+| 1 GB | 100 | 500K | 50 million |
+| 4 GB | 2504 | 427K | 1.07 billion |
+
+For very large datasets, consider:
+- Using `--samples` to limit output to specific samples of interest
+- Processing in batches by chromosome or region
+- Piping output directly to downstream tools
+- Writing output to fast SSD storage
+
+### Throughput
+
+On typical hardware with multi-threading:
+- **VCF parsing**: ~1.5 GB/s with mmap
+- **Output generation**: ~10-15M lines/sec (with 100+ samples)
+- **Scaling**: Near-linear scaling up to ~4-6 cores
 
 ## Limitations
 - Does not distinguish between different alternate alleles (e.g., "1" vs "2")
@@ -116,4 +166,4 @@ The tool counts an allele as an alternate allele when it has any non-zero numeri
 - Cannot account for genotype quality or read depth
 - Limited to processing standard VCF genotype fields
 - Does not produce summary statistics or aggregate counts
-- No direct integration with population genetics metrics 
+- No direct integration with population genetics metrics
