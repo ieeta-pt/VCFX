@@ -7,6 +7,7 @@ VCFX_inbreeding_calculator computes the inbreeding coefficient (F) for each samp
 ## Usage
 
 ```bash
+VCFX_inbreeding_calculator [OPTIONS] [input.vcf]
 VCFX_inbreeding_calculator [OPTIONS] < input.vcf > output.txt
 ```
 
@@ -14,11 +15,13 @@ VCFX_inbreeding_calculator [OPTIONS] < input.vcf > output.txt
 
 | Option | Description |
 |--------|-------------|
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapping for best performance) |
+| `-q`, `--quiet` | Suppress informational messages |
 | `--freq-mode` MODE | How to calculate allele frequencies: 'excludeSample' (default) or 'global' |
 | `--skip-boundary` | Skip sites with boundary frequencies (p=0 or p=1) |
 | `--count-boundary-as-used` | Count boundary sites in usedCount even when skipping them |
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 
@@ -60,45 +63,53 @@ Where:
 
 ## Examples
 
-### Basic Usage (Default Settings)
+### File Input Mode (Recommended)
+
+Use memory-mapped file I/O for best performance:
 
 ```bash
-./VCFX_inbreeding_calculator < input.vcf > inbreeding_coefficients.txt
+VCFX_inbreeding_calculator -i input.vcf > inbreeding_coefficients.txt
+VCFX_inbreeding_calculator input.vcf > inbreeding_coefficients.txt
+```
+
+### Basic Usage (Stdin)
+
+```bash
+VCFX_inbreeding_calculator < input.vcf > inbreeding_coefficients.txt
 ```
 
 ### Using Global Frequency Mode
 
 ```bash
-./VCFX_inbreeding_calculator --freq-mode global < input.vcf > global_inbreeding.txt
+VCFX_inbreeding_calculator --freq-mode global -i input.vcf > global_inbreeding.txt
 ```
 
 ### Skip Boundary Frequencies
 
 ```bash
-./VCFX_inbreeding_calculator --skip-boundary < input.vcf > non_boundary_inbreeding.txt
+VCFX_inbreeding_calculator --skip-boundary -i input.vcf > non_boundary_inbreeding.txt
 ```
 
 ### Custom Boundary Handling
 
 ```bash
-./VCFX_inbreeding_calculator --skip-boundary --count-boundary-as-used < input.vcf > custom_boundary.txt
+VCFX_inbreeding_calculator --skip-boundary --count-boundary-as-used -i input.vcf > custom_boundary.txt
 ```
 
 ## Formula and Calculation
 
 The inbreeding coefficient is calculated as:
 
-F = (O - E) / (T - E)
+F = 1 - (observed heterozygosity / expected heterozygosity)
 
 Where:
-- O = Observed homozygosity (count of 0/0 and 1/1 genotypes)
-- E = Expected homozygosity under HWE (∑(p²+q²) across sites)
-- T = Total number of sites (after filtering)
+- Observed heterozygosity = count of heterozygous genotypes
+- Expected heterozygosity = Σ 2p(1-p) across sites
 
 In boundary cases:
 - If total sites used = 0, F = NA
+- If expected heterozygosity = 0 but usedCount > 0, F = 1
 - If expected = observed, F = 0
-- If expected = total, F = 1
 
 ## Handling Special Cases
 
@@ -110,11 +121,23 @@ In boundary cases:
 - **Zero usable sites**: Returns "NA" for the sample
 - **Small sample sizes**: May produce unreliable estimates
 
-## Performance
+## Performance Characteristics
 
-The tool performs a single pass through the VCF file, giving it linear complexity with respect to file size. Memory usage scales with:
-- Number of samples in the VCF
-- Number of biallelic variants
+The tool uses several optimizations for high performance:
+
+- **Memory-mapped I/O**: Uses `mmap()` for file input to minimize syscall overhead
+- **SIMD acceleration**: Uses NEON/SSE2/AVX2 instructions for fast line/tab scanning
+- **Zero-copy parsing**: Parses VCF fields without creating intermediate strings
+- **Buffered output**: Uses 1MB output buffer with direct `write()` syscalls
+
+### Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)
+
+| Mode | Time |
+|------|------|
+| mmap (-i) | ~17s |
+| stdin | ~6 min |
+
+**Speedup: ~21x** with memory-mapped I/O
 
 ## Limitations
 
@@ -123,4 +146,4 @@ The tool performs a single pass through the VCF file, giving it linear complexit
 - May produce unexpected results with very small sample sizes
 - No built-in filtering for variant quality or other metrics
 - No chromosome or region-specific analysis
-- Cannot handle populations with substructure (assumes random mating) 
+- Cannot handle populations with substructure (assumes random mating)
