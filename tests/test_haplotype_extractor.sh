@@ -161,6 +161,127 @@ else
     ((failures++))
 fi
 
+# Test 12: File input mode with -i flag
+echo "Test 12: File input mode with -i flag"
+$EXEC -i "data/haplotype_extractor/basic.vcf" > "out/haplotype_extractor/test12.tsv" 2> "out/haplotype_extractor/test12.err"
+if diff -q "expected/haplotype_extractor/basic_out.tsv" "out/haplotype_extractor/test12.tsv" > /dev/null; then
+    echo "  Test 12 passed: -i file input works correctly"
+else
+    echo "  Test 12 failed: -i file input output mismatch"
+    echo "  Expected:"
+    cat "expected/haplotype_extractor/basic_out.tsv"
+    echo "  Actual:"
+    cat "out/haplotype_extractor/test12.tsv"
+    ((failures++))
+fi
+
+# Test 13: Positional file argument
+echo "Test 13: Positional file argument"
+$EXEC "data/haplotype_extractor/basic.vcf" > "out/haplotype_extractor/test13.tsv" 2> "out/haplotype_extractor/test13.err"
+if diff -q "expected/haplotype_extractor/basic_out.tsv" "out/haplotype_extractor/test13.tsv" > /dev/null; then
+    echo "  Test 13 passed: positional file argument works correctly"
+else
+    echo "  Test 13 failed: positional file argument output mismatch"
+    ((failures++))
+fi
+
+# Test 14: Quiet mode suppresses warnings
+echo "Test 14: Quiet mode suppresses warnings"
+$EXEC -q < "data/haplotype_extractor/mixed_phasing.vcf" > "out/haplotype_extractor/test14.tsv" 2> "out/haplotype_extractor/test14.err"
+if [ ! -s "out/haplotype_extractor/test14.err" ]; then
+    echo "  Test 14 passed: quiet mode suppresses warnings"
+else
+    echo "  Test 14 failed: quiet mode did not suppress warnings"
+    echo "  Stderr content:"
+    cat "out/haplotype_extractor/test14.err"
+    ((failures++))
+fi
+
+# Test 15: Output equivalence - stdin vs mmap
+echo "Test 15: Output equivalence - stdin vs mmap"
+$EXEC < "data/haplotype_extractor/large_distance.vcf" > "out/haplotype_extractor/test15_stdin.tsv" 2>/dev/null
+$EXEC -i "data/haplotype_extractor/large_distance.vcf" > "out/haplotype_extractor/test15_mmap.tsv" 2>/dev/null
+if diff -q "out/haplotype_extractor/test15_stdin.tsv" "out/haplotype_extractor/test15_mmap.tsv" > /dev/null; then
+    echo "  Test 15 passed: mmap output matches stdin output"
+else
+    echo "  Test 15 failed: mmap output differs from stdin"
+    diff "out/haplotype_extractor/test15_stdin.tsv" "out/haplotype_extractor/test15_mmap.tsv"
+    ((failures++))
+fi
+
+# Test 16: Streaming mode with mmap file input
+echo "Test 16: Streaming mode with mmap file input"
+$EXEC --streaming -i "data/haplotype_extractor/basic.vcf" > "out/haplotype_extractor/test16.tsv" 2>/dev/null
+if diff -q "expected/haplotype_extractor/basic_out.tsv" "out/haplotype_extractor/test16.tsv" > /dev/null; then
+    echo "  Test 16 passed: streaming with mmap works correctly"
+else
+    echo "  Test 16 failed: streaming with mmap output mismatch"
+    ((failures++))
+fi
+
+# Test 17: File input with --input long option
+echo "Test 17: File input with --input long option"
+$EXEC --input "data/haplotype_extractor/basic.vcf" > "out/haplotype_extractor/test17.tsv" 2>/dev/null
+if diff -q "expected/haplotype_extractor/basic_out.tsv" "out/haplotype_extractor/test17.tsv" > /dev/null; then
+    echo "  Test 17 passed: --input long option works correctly"
+else
+    echo "  Test 17 failed: --input long option output mismatch"
+    ((failures++))
+fi
+
+# Test 18: Combined options - streaming + file + block-size
+echo "Test 18: Combined options - streaming + file + block-size"
+$EXEC --streaming -i "data/haplotype_extractor/large_distance.vcf" --block-size 50000 > "out/haplotype_extractor/test18.tsv" 2>/dev/null
+if diff -q "expected/haplotype_extractor/small_block_out.tsv" "out/haplotype_extractor/test18.tsv" > /dev/null; then
+    echo "  Test 18 passed: combined streaming + file + block-size works"
+else
+    echo "  Test 18 failed: combined options output mismatch"
+    ((failures++))
+fi
+
+# Test 19: Quiet mode with file input
+echo "Test 19: Quiet mode with file input"
+$EXEC -q -i "data/haplotype_extractor/mixed_phasing.vcf" > "out/haplotype_extractor/test19.tsv" 2> "out/haplotype_extractor/test19.err"
+if [ ! -s "out/haplotype_extractor/test19.err" ]; then
+    echo "  Test 19 passed: quiet mode with file input suppresses warnings"
+else
+    echo "  Test 19 failed: quiet mode with file input did not suppress warnings"
+    ((failures++))
+fi
+
+# Test 20: Help shows new options (-i, -q)
+echo "Test 20: Help shows new options"
+$EXEC --help > "out/haplotype_extractor/test20.out" 2>&1
+if grep -q "\-i" "out/haplotype_extractor/test20.out" && grep -q "\-q" "out/haplotype_extractor/test20.out"; then
+    echo "  Test 20 passed: help shows -i and -q options"
+else
+    echo "  Test 20 failed: help does not show new options"
+    echo "  Help output:"
+    cat "out/haplotype_extractor/test20.out"
+    ((failures++))
+fi
+
+# Test 21: Phase consistency check with mmap
+echo "Test 21: Phase consistency check with mmap"
+$EXEC --check-phase-consistency -i "data/haplotype_extractor/phase_inconsistent.vcf" > "out/haplotype_extractor/test21.tsv" 2>/dev/null
+if diff -q "expected/haplotype_extractor/consistency_check_out.tsv" "out/haplotype_extractor/test21.tsv" > /dev/null; then
+    echo "  Test 21 passed: phase consistency with mmap works correctly"
+else
+    echo "  Test 21 failed: phase consistency with mmap output mismatch"
+    ((failures++))
+fi
+
+# Test 22: Nonexistent file error handling
+echo "Test 22: Nonexistent file error handling"
+$EXEC -i "data/haplotype_extractor/nonexistent.vcf" > "out/haplotype_extractor/test22.tsv" 2> "out/haplotype_extractor/test22.err"
+exit_code=$?
+if [ $exit_code -ne 0 ]; then
+    echo "  Test 22 passed: nonexistent file causes error exit"
+else
+    echo "  Test 22 failed: nonexistent file did not cause error"
+    ((failures++))
+fi
+
 # Report results
 if [ $failures -eq 0 ]; then
     echo "All VCFX_haplotype_extractor tests passed!"

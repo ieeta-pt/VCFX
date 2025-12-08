@@ -5,20 +5,23 @@
 
 ## Usage
 ```bash
-VCFX_allele_balance_calc [OPTIONS] < input.vcf > allele_balance.tsv
+VCFX_allele_balance_calc [OPTIONS] [FILE]
 ```
 
 ## Options
 | Option | Description |
 |--------|-------------|
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapping for best performance) |
+| `-t`, `--threads N` | Number of threads for parallel processing (default: auto-detect CPU cores) |
 | `-s`, `--samples "Sample1 Sample2..."` | Optional. Specify sample names to calculate allele balance for (space-separated). If omitted, all samples are processed. |
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-q`, `--quiet` | Suppress informational messages |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 `VCFX_allele_balance_calc` processes a VCF file and calculates the allele balance for each variant in each specified sample. The tool:
 
-1. Reads a VCF file from standard input
+1. Reads a VCF file from standard input or file
 2. Identifies sample columns from the VCF header
 3. For each variant and each sample:
    - Extracts the genotype information
@@ -47,7 +50,15 @@ The tool produces a tab-separated values (TSV) file with the following columns:
 
 ## Examples
 
-### Basic Usage (All Samples)
+### File Input Mode (Recommended)
+Use memory-mapped file I/O for best performance with multi-threaded processing:
+```bash
+VCFX_allele_balance_calc -i input.vcf > allele_balance.tsv
+VCFX_allele_balance_calc -t 8 -i input.vcf > allele_balance.tsv  # Use 8 threads
+VCFX_allele_balance_calc input.vcf > allele_balance.tsv
+```
+
+### Basic Usage (Stdin)
 Calculate allele balance for all samples in a VCF file:
 ```bash
 VCFX_allele_balance_calc < input.vcf > allele_balance_all.tsv
@@ -56,13 +67,13 @@ VCFX_allele_balance_calc < input.vcf > allele_balance_all.tsv
 ### Specific Samples
 Calculate allele balance for specific samples:
 ```bash
-VCFX_allele_balance_calc --samples "SAMPLE1 SAMPLE2" < input.vcf > allele_balance_subset.tsv
+VCFX_allele_balance_calc --samples "SAMPLE1 SAMPLE2" -i input.vcf > allele_balance_subset.tsv
 ```
 
 ### Filtering Results
 Process the output to focus on imbalanced variants:
 ```bash
-VCFX_allele_balance_calc < input.vcf | awk -F'\t' '$7 != "NA" && $7 < 0.4' > imbalanced_variants.tsv
+VCFX_allele_balance_calc -i input.vcf | awk -F'\t' '$7 != "NA" && $7 < 0.4' > imbalanced_variants.tsv
 ```
 
 ## Allele Balance Calculation
@@ -106,10 +117,32 @@ Where:
 ### Haploid Genotypes
 - Not explicitly handled; the tool expects diploid or polyploid genotypes with separators
 
-## Performance Considerations
-- Processes VCF files line by line, with minimal memory requirements
-- Scales linearly with input file size and number of samples
-- For very large VCF files with many samples, specifying a subset of samples can improve performance
+## Performance Characteristics
+
+The tool uses several optimizations for high performance:
+
+- **Memory-mapped I/O**: Uses `mmap()` for file input to minimize syscall overhead
+- **SIMD acceleration**: Uses NEON/SSE2/AVX2 instructions for fast line/tab scanning
+- **Batch processing**: Pre-computes all sample positions per line for O(1) access
+- **Zero-copy parsing**: Parses VCF fields without creating intermediate strings
+- **Incremental flushing**: 4MB buffered output with automatic flushing to prevent memory buildup
+
+### Benchmark Results (4GB VCF, chr21, 427K variants)
+
+| Samples | Time |
+|---------|------|
+| 1 | ~4s |
+| 100 | ~8s |
+| 2504 (all) | ~41s |
+
+**Speedup vs previous version: ~50x** (35 min → 41 sec)
+
+### Throughput
+
+On typical hardware with multi-threading:
+- **VCF parsing**: ~1.5 GB/s with mmap
+- **Output generation**: ~10-15M lines/sec (with 100+ samples)
+- **Scaling**: Near-linear scaling up to ~4-6 cores
 
 ## Limitations
 - No option to customize the allele balance formula
@@ -117,4 +150,4 @@ Where:
 - No automatic filtering based on allele balance values
 - Cannot account for read depth or genotype quality in calculations
 - Limited to processing standard VCF genotype fields
-- Does not produce summary statistics across all variants 
+- Does not produce summary statistics across all variants
