@@ -1,8 +1,13 @@
-VCFX_duplicate_remover
-Usage: VCFX_duplicate_remover [OPTIONS]
+VCFX_duplicate_remover: Remove duplicate variants from VCF files.
+
+Usage:
+  VCFX_duplicate_remover [options] [input.vcf]
+  VCFX_duplicate_remover [options] < input.vcf > output.vcf
 
 Options:
-  --help, -h               Display this help message and exit.
+  -i, --input FILE    Input VCF file (uses mmap for best performance)
+  -q, --quiet         Suppress warning messages
+  -h, --help          Display this help message and exit
 
 Description:
   Removes duplicate variants from a VCF file based on the combination of
@@ -10,5 +15,10 @@ Description:
   ALT field is normalized by sorting the comma-separated alleles so that the
   ordering does not affect duplicate detection.
 
+Performance:
+  When using -i/--input, the tool uses memory-mapped I/O for
+  ~10-20x faster processing of large files.
+
 Example:
-  ./VCFX_duplicate_remover < input.vcf > unique_variants.vcf
+  VCFX_duplicate_remover -i input.vcf > unique_variants.vcf
+  VCFX_duplicate_remover < input.vcf > unique_variants.vcf

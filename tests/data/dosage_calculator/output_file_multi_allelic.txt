@@ -1,0 +1,3 @@
+CHROM	POS	ID	REF	ALT	Dosages
+1	100	rs1	A	G,T	1,1,2
+1	200	rs2	C	T,G,A	1,2,2

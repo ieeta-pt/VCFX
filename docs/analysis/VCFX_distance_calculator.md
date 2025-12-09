@@ -7,15 +7,24 @@ VCFX_distance_calculator analyzes a VCF file and calculates the distance (in bas
 ## Usage
 
 ```bash
+# Standard mode (stdin)
 VCFX_distance_calculator [OPTIONS] < input.vcf > variant_distances.tsv
+
+# File mode (optimized for large files)
+VCFX_distance_calculator -i input.vcf > variant_distances.tsv
+
+# Positional argument mode
+VCFX_distance_calculator input.vcf > variant_distances.tsv
 ```
 
 ## Options
 
 | Option | Description |
 |--------|-------------|
-| `-h`, `--help` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapped I/O for best performance) |
+| `-q`, `--quiet` | Suppress summary statistics to stderr |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 
@@ -107,10 +116,27 @@ This provides a quick overview of variant distribution patterns for each chromos
 
 ## Performance
 
-The tool is optimized for efficiency:
-- Processes VCF files line-by-line with minimal memory overhead
+The tool offers two execution modes with different performance characteristics:
+
+### File Mode (-i/--input)
+When using the `-i` option, the tool uses memory-mapped I/O (mmap) for optimal performance on large files. This mode provides approximately **16x speedup** compared to stdin mode.
+
+| File Size | Variants | Stdin Mode | File Mode | Speedup |
+|-----------|----------|------------|-----------|---------|
+| 4 GB      | 427K     | ~2m 19s    | ~8.7s     | ~16x    |
+
+### Stdin Mode (default)
+For smaller files or pipeline usage, the stdin mode processes input line by line with minimal memory requirements.
+
+### Recommendations
+- For files > 100MB, use `-i input.vcf` for best performance
+- For pipelines or compressed input, use stdin mode with `zcat file.vcf.gz | VCFX_distance_calculator`
+
+### Performance Characteristics
 - Uses hash maps for O(1) lookups of previous positions
-- Can handle very large VCF files (tested with millions of variants)
+- Memory-mapped I/O for efficient large file processing
+- 1MB output buffer for optimized write performance
+- Zero-copy field extraction with memchr
 - Memory usage scales with the number of distinct chromosomes, not with file size
 
 ## Limitations

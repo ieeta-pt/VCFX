@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -29,6 +30,35 @@ struct VCFVariant {
     std::string info;
     std::string formatStr;
     std::vector<std::string> samples; // one element per sample
+};
+
+/* Optimized multiallelic splitter class */
+class VCFXMultiallelicSplitter {
+public:
+    int run(int argc, char *argv[]);
+
+private:
+    bool quietMode = false;
+
+    void displayHelp();
+
+    // Original stdin-based processing
+    bool splitMultiAllelicVariants(std::istream &in, std::ostream &out);
+
+    // Optimized mmap-based processing
+    bool processFileMmap(const char* filename, std::ostream &out);
+
+    // Header parsing
+    void parseHeaderLine(const char* line, size_t len, VCFHeaderInfo &hdr);
+
+    // Optimized recoding functions
+    void recodeInfoField(const char* info, size_t infoLen, int altIdx, int nAlts,
+                         const VCFHeaderInfo& hdr, std::string& out);
+
+    void recodeSample(const char* sample, size_t sampleLen,
+                      const std::vector<std::string_view>& fmtKeys,
+                      int altIdx, int nAlts, const VCFHeaderInfo& hdr,
+                      std::string& out);
 };
 
 /* Print minimal help/usage. */

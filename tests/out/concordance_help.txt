@@ -2,17 +2,23 @@ VCFX_cross_sample_concordance: Check variant concordance across multiple samples
 
 Usage:
   VCFX_cross_sample_concordance [options] < input.vcf > concordance_results.txt
+  VCFX_cross_sample_concordance -i input.vcf > concordance_results.txt
 
 Options:
-  -h, --help              Display this help message and exit
+  -i, --input FILE        Input VCF file (uses mmap for best performance)
   -s, --samples LIST      Comma-separated list of samples to check
+  -t, --threads N         Number of processing threads (default: auto)
+  -q, --quiet             Suppress summary statistics to stderr
+  -h, --help              Display this help message and exit
 
 Description:
-  Reads a multi-sample VCF from stdin, normalizes each sample's genotype
+  Reads a multi-sample VCF, normalizes each sample's genotype
   (including multi-allelic variants), and determines if all samples that
-  have a parseable genotype are in complete agreement. Prints one row per
-  variant to stdout and a final summary to stderr.
+  have a parseable genotype are in complete agreement.
+
+Performance:
+  Uses multi-threaded parallel processing with memory-mapped I/O
+  and early-termination optimization for extreme performance.
 
 Example:
-  VCFX_cross_sample_concordance < input.vcf > results.tsv
-
+  VCFX_cross_sample_concordance -i input.vcf -t 8 > results.tsv

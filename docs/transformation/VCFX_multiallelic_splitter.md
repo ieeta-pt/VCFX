@@ -7,15 +7,24 @@ VCFX_multiallelic_splitter takes a VCF file with multi-allelic variants (variant
 ## Usage
 
 ```bash
+# Standard mode (stdin)
 VCFX_multiallelic_splitter [OPTIONS] < input.vcf > biallelic_output.vcf
+
+# File mode (optimized for large files)
+VCFX_multiallelic_splitter -i input.vcf > biallelic_output.vcf
+
+# Positional argument mode
+VCFX_multiallelic_splitter input.vcf > biallelic_output.vcf
 ```
 
 ## Options
 
 | Option | Description |
 |--------|-------------|
-| `--help`, `-h` | Display help message and exit (handled by `vcfx::handle_common_flags`) |
-| `-v`, `--version` | Show program version and exit (handled by `vcfx::handle_common_flags`) |
+| `-i`, `--input FILE` | Input VCF file (uses memory-mapped I/O for best performance) |
+| `-q`, `--quiet` | Suppress warning messages |
+| `-h`, `--help` | Display help message and exit |
+| `-v`, `--version` | Show program version and exit |
 
 ## Description
 
@@ -39,10 +48,16 @@ The output is a standard VCF file containing:
 
 ## Examples
 
-### Basic Usage
+### Basic Usage (stdin)
 
 ```bash
 ./VCFX_multiallelic_splitter < multi_allelic.vcf > biallelic.vcf
+```
+
+### File Mode (recommended for large files)
+
+```bash
+./VCFX_multiallelic_splitter -i multi_allelic.vcf > biallelic.vcf
 ```
 
 ### Integration with Other Tools
@@ -88,12 +103,29 @@ cat input.vcf | \
 
 ## Performance
 
-The tool processes VCF files line by line with minimal memory requirements, with performance primarily dependent on:
-- Number of samples in the VCF
-- Number of multi-allelic sites
-- Complexity of INFO and FORMAT fields
+The tool offers two execution modes with different performance characteristics:
 
-For very large VCF files with many samples, processing time scales linearly with file size.
+### File Mode (-i/--input)
+When using the `-i` option, the tool uses memory-mapped I/O (mmap) for optimal performance on large files. This mode provides approximately **7x speedup** compared to stdin mode.
+
+| File Size | Variants | Samples | Stdin Mode | File Mode | Speedup |
+|-----------|----------|---------|------------|-----------|---------|
+| 4 GB      | 427K     | 2504    | ~2m 22s    | ~20s      | ~7x     |
+
+### Stdin Mode (default)
+For smaller files or pipeline usage, the stdin mode processes input line by line with minimal memory requirements.
+
+### Recommendations
+- For files > 100MB, use `-i input.vcf` for best performance
+- For pipelines or compressed input, use stdin mode with `zcat file.vcf.gz | VCFX_multiallelic_splitter`
+
+### Performance Characteristics
+
+1. Single-pass processing with O(n) time complexity where n is the number of variants
+2. Uses zero-copy parsing with string_view for reduced memory allocations
+3. Memory-mapped I/O for efficient large file processing
+4. 1MB output buffer for optimized write performance
+5. Minimal memory overhead, proportional to the number of samples per line
 
 ## Limitations
 

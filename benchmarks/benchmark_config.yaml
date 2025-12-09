@@ -1,0 +1,317 @@
+# VCFX Benchmark Configuration v1.0
+# See BENCHMARK_SPECIFICATION.md for methodology details
+
+benchmark:
+  version: "1.0"
+  runs_per_operation: 5
+  warmup_runs: 1
+  cooldown_seconds: 1
+  timeout_seconds: 600  # 10 minutes max per operation
+
+# Paths (relative to repository root)
+paths:
+  vcfx_build: "build/src"
+  data_dir: "benchmarks/data"
+  results_dir: "benchmarks/results"
+
+# Test data files
+data:
+  large:
+    file: "chr21.1kg.phase3.v5a.vcf"
+    variants: 427409
+    samples: 2504
+    size_mb: 4000
+    description: "1000 Genomes Phase 3 chr21"
+  medium:
+    file: "chr21_medium.vcf"
+    variants: 50000
+    samples: 2504
+    size_mb: 500
+    description: "First 50K variants from chr21"
+  small:
+    file: "chr21_small.vcf"
+    variants: 5000
+    samples: 2504
+    size_mb: 50
+    description: "First 5K variants from chr21"
+
+# External tools for comparison
+external_tools:
+  bcftools:
+    command: "bcftools"
+    min_version: "1.19"
+    required: true
+  vcftools:
+    command: "vcftools"
+    min_version: "0.1.16"
+    required: false
+
+# Benchmark operations
+# Each operation defines equivalent commands across toolkits
+operations:
+  # Tier 1: Core operations with direct equivalents
+  count_variants:
+    description: "Count total variants in VCF file"
+    category: "basic_io"
+    tier: 1
+    vcfx:
+      tool: "VCFX_variant_counter"
+      command: "{tool} < {input}"
+      output_type: "count"
+    bcftools:
+      command: "bcftools view -H {input} | wc -l"
+      output_type: "count"
+    vcftools:
+      command: "vcftools --vcf {input} --freq --stdout 2>/dev/null | tail -n +2 | wc -l"
+      output_type: "count"
+    validation:
+      type: "exact_match"
+      field: "count"
+
+  allele_frequency:
+    description: "Calculate allele frequencies"
+    category: "analysis"
+    tier: 1
+    vcfx:
+      tool: "VCFX_allele_freq_calc"
+      command: "{tool} < {input}"
+      output_type: "tsv"
+    bcftools:
+      command: "bcftools +fill-tags {input} -- -t AF | bcftools query -f '%CHROM\\t%POS\\t%AF\\n'"
+      output_type: "tsv"
+    vcftools:
+      command: "vcftools --vcf {input} --freq --stdout 2>/dev/null"
+      output_type: "tsv"
+    validation:
+      type: "numeric_tolerance"
+      tolerance: 0.0001
+
+  quality_filter:
+    description: "Filter variants by QUAL >= 30"
+    category: "filtering"
+    tier: 1
+    vcfx:
+      tool: "VCFX_phred_filter"
+      command: "{tool} -p 30 < {input}"
+      output_type: "vcf"
+    bcftools:
+      command: "bcftools view -i 'QUAL>=30' {input}"
+      output_type: "vcf"
+    vcftools:
+      command: "vcftools --vcf {input} --minQ 30 --recode --stdout 2>/dev/null"
+      output_type: "vcf"
+    validation:
+      type: "variant_count"
+
+  extract_samples:
+    description: "Extract 3 specific samples"
+    category: "extraction"
+    tier: 1
+    samples: ["HG00096", "HG00097", "HG00099"]
+    vcfx:
+      tool: "VCFX_sample_extractor"
+      command: "{tool} --samples HG00096,HG00097,HG00099 < {input}"
+      output_type: "vcf"
+    bcftools:
+      command: "bcftools view -s HG00096,HG00097,HG00099 {input}"
+      output_type: "vcf"
+    vcftools:
+      command: "vcftools --vcf {input} --indv HG00096 --indv HG00097 --indv HG00099 --recode --stdout 2>/dev/null"
+      output_type: "vcf"
+    validation:
+      type: "sample_count"
+      expected: 3
+
+  missing_data:
+    description: "Detect missing genotypes"
+    category: "qc"
+    tier: 1
+    vcfx:
+      tool: "VCFX_missing_detector"
+      command: "{tool} < {input}"
+      output_type: "tsv"
+    bcftools:
+      command: "bcftools stats {input} | grep 'number of missing'"
+      output_type: "stats"
+    vcftools:
+      command: "vcftools --vcf {input} --missing-indv --stdout 2>/dev/null"
+      output_type: "tsv"
+    validation:
+      type: "pattern_match"
+
+  # Tier 2: Extended operations (VCFX vs bcftools)
+  split_multiallelic:
+    description: "Split multi-allelic variants"
+    category: "transformation"
+    tier: 2
+    vcfx:
+      tool: "VCFX_multiallelic_splitter"
+      command: "{tool} < {input}"
+      output_type: "vcf"
+    bcftools:
+      command: "bcftools norm -m -any {input}"
+      output_type: "vcf"
+    validation:
+      type: "variant_count"
+
+  normalize_indels:
+    description: "Normalize indel representation"
+    category: "transformation"
+    tier: 2
+    vcfx:
+      tool: "VCFX_indel_normalizer"
+      command: "{tool} < {input}"
+      output_type: "vcf"
+    bcftools:
+      command: "bcftools norm {input}"
+      output_type: "vcf"
+    validation:
+      type: "variant_count"
+
+  sort_variants:
+    description: "Sort variants by position"
+    category: "transformation"
+    tier: 2
+    vcfx:
+      tool: "VCFX_sorter"
+      command: "{tool} < {input}"
+      output_type: "vcf"
+    bcftools:
+      command: "bcftools sort {input}"
+      output_type: "vcf"
+    validation:
+      type: "order_check"
+
+  validate_vcf:
+    description: "Validate VCF format"
+    category: "basic_io"
+    tier: 2
+    vcfx:
+      tool: "VCFX_validator"
+      command: "{tool} < {input}"
+      output_type: "report"
+    bcftools:
+      command: "bcftools view {input} > /dev/null"
+      output_type: "exit_code"
+    validation:
+      type: "success"
+
+  # Tier 3: VCFX-only operations (no direct comparison)
+  hwe_test:
+    description: "Hardy-Weinberg equilibrium test"
+    category: "analysis"
+    tier: 3
+    vcfx:
+      tool: "VCFX_hwe_tester"
+      command: "{tool} < {input}"
+      output_type: "tsv"
+    validation:
+      type: "output_exists"
+
+  inbreeding_coefficient:
+    description: "Calculate inbreeding coefficients"
+    category: "analysis"
+    tier: 3
+    vcfx:
+      tool: "VCFX_inbreeding_calculator"
+      command: "{tool} < {input}"
+      output_type: "tsv"
+    validation:
+      type: "output_exists"
+
+  dosage_calculation:
+    description: "Calculate genotype dosages"
+    category: "analysis"
+    tier: 3
+    vcfx:
+      tool: "VCFX_dosage_calculator"
+      command: "{tool} < {input}"
+      output_type: "tsv"
+    validation:
+      type: "output_exists"
+
+  variant_classification:
+    description: "Classify variant types"
+    category: "analysis"
+    tier: 3
+    vcfx:
+      tool: "VCFX_variant_classifier"
+      command: "{tool} < {input}"
+      output_type: "tsv"
+    validation:
+      type: "output_exists"
+
+  allele_balance:
+    description: "Calculate allele balance"
+    category: "analysis"
+    tier: 3
+    vcfx:
+      tool: "VCFX_allele_balance_calc"
+      command: "{tool} < {input}"
+      output_type: "tsv"
+    validation:
+      type: "output_exists"
+
+  duplicate_removal:
+    description: "Remove duplicate variants"
+    category: "transformation"
+    tier: 3
+    vcfx:
+      tool: "VCFX_duplicate_remover"
+      command: "{tool} < {input}"
+      output_type: "vcf"
+    validation:
+      type: "output_exists"
+
+  field_extraction:
+    description: "Extract CHROM, POS, REF, ALT fields"
+    category: "extraction"
+    tier: 3
+    vcfx:
+      tool: "VCFX_field_extractor"
+      command: "{tool} --fields CHROM,POS,REF,ALT < {input}"
+      output_type: "tsv"
+    validation:
+      type: "output_exists"
+
+  info_parsing:
+    description: "Parse INFO field"
+    category: "annotation"
+    tier: 3
+    vcfx:
+      tool: "VCFX_info_parser"
+      command: "{tool} < {input}"
+      output_type: "tsv"
+    validation:
+      type: "output_exists"
+
+  phase_checking:
+    description: "Check phasing status"
+    category: "qc"
+    tier: 3
+    vcfx:
+      tool: "VCFX_phase_checker"
+      command: "{tool} < {input}"
+      output_type: "report"
+    validation:
+      type: "output_exists"
+
+  header_parsing:
+    description: "Parse VCF header"
+    category: "basic_io"
+    tier: 3
+    vcfx:
+      tool: "VCFX_header_parser"
+      command: "{tool} < {input}"
+      output_type: "report"
+    validation:
+      type: "output_exists"
+
+# Report configuration
+report:
+  formats: ["csv", "json", "markdown"]
+  include_raw_data: true
+  include_statistics: true
+  include_speedup_ratios: true
+  include_throughput: true
+  include_memory: true

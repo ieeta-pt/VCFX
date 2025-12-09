@@ -1,0 +1,2 @@
+CHROM	POS	ID	REF	ALT	Dosages
+1	100	.	A	G	1

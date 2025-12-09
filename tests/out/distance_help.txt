@@ -2,7 +2,9 @@ VCFX_distance_calculator
 Usage: VCFX_distance_calculator [OPTIONS]
 
 Options:
-  --help, -h               Display this help message and exit.
+  -i, --input FILE     Input VCF file (uses mmap for best performance)
+  -q, --quiet          Suppress summary statistics
+  --help, -h           Display this help message and exit.
 
 Description:
   Calculates the distance between consecutive variants along each chromosome
@@ -12,4 +14,5 @@ Output (tab-delimited):
   CHROM   POS   PREV_POS   DISTANCE
 
 Example:
+  ./VCFX_distance_calculator -i input.vcf > variant_distances.tsv
   ./VCFX_distance_calculator < input.vcf > variant_distances.tsv

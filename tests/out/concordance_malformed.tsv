@@ -2,5 +2,5 @@ CHROM	POS	ID	REF	ALT	Num_Samples	Unique_Normalized_Genotypes	Concordance_Status
 chr1	10000	rs123	A	G	3	1	CONCORDANT
 not_a_chromosome	20000	rs456	C	T	3	1	CONCORDANT
 chr1	not_a_position	rs789	G	A	3	1	CONCORDANT
-chr1	30000	rs789	G	A	2	1	CONCORDANT
+chr1	30000	rs789	G	A	3	2	DISCORDANT
 chr1	40000	rs789	G	A	2	1	CONCORDANT

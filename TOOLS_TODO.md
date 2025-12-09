@@ -1,16 +1,16 @@
 # VCFX Tools Optimization TODO
 
-**Last Updated:** December 8, 2025
+**Last Updated:** December 9, 2025
 
 ## Summary
 
-- **23 tools optimized** with mmap + SIMD acceleration
-- **8 tools need optimization** (identified as slow on 4GB file)
+- **31 tools optimized** with mmap + SIMD acceleration
+- **0 tools need optimization** (all slow tools have been optimized)
 - **30 tools already fast** (<1 second on 4GB file)
 
 ---
 
-## Optimized Tools (23 total)
+## Optimized Tools (31 total)
 
 | Tool | Optimization | Speedup | Status |
 |------|-------------|---------|--------|
@@ -36,23 +36,14 @@
 | **VCFX_hwe_tester** | mmap + SIMD | ~18x | ✅ Complete |
 | **VCFX_allele_freq_calc** | mmap + SIMD | ~20x | ✅ Complete |
 | **VCFX_ld_calculator** | mmap + SIMD r² + MT matrix + distance pruning | 5-60x | ✅ Complete |
-
----
-
-## Needs Optimization (8 tools, >60s on 4GB file)
-
-These tools were identified as slow when processing large files:
-
-| Tool | Status | Notes |
-|------|--------|-------|
-| **VCFX_af_subsetter** | Needs mmap | >60s on 4GB file |
-| **VCFX_cross_sample_concordance** | Needs mmap | >60s on 4GB file |
-| **VCFX_distance_calculator** | Needs mmap | >60s on 4GB file |
-| **VCFX_dosage_calculator** | Needs mmap | >60s on 4GB file |
-| **VCFX_duplicate_remover** | Needs mmap | >60s on 4GB file |
-| **VCFX_metadata_summarizer** | Needs mmap | >60s on 4GB file |
-| **VCFX_multiallelic_splitter** | Needs mmap | >60s on 4GB file |
-| **VCFX_variant_classifier** | Needs mmap | >60s on 4GB file |
+| **VCFX_af_subsetter** | mmap + zero-copy | ~15x | ✅ Complete |
+| **VCFX_dosage_calculator** | mmap + zero-copy | ~15x | ✅ Complete |
+| **VCFX_duplicate_remover** | mmap + zero-copy | ~15x | ✅ Complete |
+| **VCFX_multiallelic_splitter** | mmap + zero-copy + PL recoding | ~7x | ✅ Complete |
+| **VCFX_distance_calculator** | mmap + zero-copy | ~16x | ✅ Complete |
+| **VCFX_cross_sample_concordance** | mmap + MT + reusable buffers | ~16x | ✅ Complete |
+| **VCFX_variant_classifier** | mmap + zero-copy | ~12x | ✅ Complete |
+| **VCFX_metadata_summarizer** | mmap + zero-copy | ~12x | ✅ Complete |
 
 ---
 
