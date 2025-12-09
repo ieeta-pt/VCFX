@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -2233,10 +2234,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#basic-usage-file-argument-fastest" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        Basic Usage (File Argument - Fastest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-input-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Input Mode
       
     </span>
   </a>
@@ -3034,6 +3046,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3051,6 +3145,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3230,10 +3332,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#basic-usage-file-argument-fastest" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        Basic Usage (File Argument - Fastest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-input-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Input Mode
       
     </span>
   </a>
@@ -3361,9 +3474,10 @@
 
 <h1 id="vcfx_indexer">VCFX_indexer<a class="headerlink" href="#vcfx_indexer" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p><code>VCFX_indexer</code> is a utility tool for creating a byte-offset index of a VCF file. It generates a simple tab-delimited index file that maps chromosome and position to the exact byte offset in the original file, enabling efficient random access to variants without scanning the entire file. The index uses 64-bit integers for both the position and the byte offset so very large coordinates are fully supported.</p>
+<p><code>VCFX_indexer</code> is a high-performance utility tool for creating a byte-offset index of a VCF file. It generates a simple tab-delimited index file that maps chromosome and position to the exact byte offset in the original file, enabling efficient random access to variants without scanning the entire file. The index uses 64-bit integers for both the position and the byte offset so very large coordinates are fully supported.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_indexer<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>index.tsv
+<div class="highlight"><pre><span></span><code>VCFX_indexer<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>input.vcf<span class="o">]</span><span class="w"> </span>&gt;<span class="w"> </span>index.tsv
+VCFX_indexer<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>index.tsv
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3387,7 +3501,7 @@
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_indexer</code> processes a VCF file to create a position-based index by:</p>
 <ol>
-<li>Reading the VCF file from standard input as a raw byte stream</li>
+<li>Reading the VCF file from a file argument (fastest, uses mmap) or standard input</li>
 <li>Locating the #CHROM header line to determine the start of data lines</li>
 <li>For each variant line:</li>
 <li>Extracting the chromosome (CHROM) and position (POS) values</li>
@@ -3399,7 +3513,7 @@
 </ul>
 </li>
 </ol>
-<p>This index enables efficient random access to specific variants in large VCF files by allowing tools to seek directly to a byte offset rather than scanning the entire file. It's particularly useful for building tools that need to query specific regions of a VCF file.</p>
+<p>This index enables efficient random access to specific variants in large VCF files by allowing tools to seek directly to a byte offset rather than scanning the entire file. It's particularly useful for building tools that need to query specific regions of a VCF file. When a file path is provided as an argument, memory-mapped I/O is used for optimal performance on large files.</p>
 <h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
 <p>The index file is a tab-delimited text file with the following format:</p>
 <div class="highlight"><pre><span></span><code>CHROM   POS    FILE_OFFSET
@@ -3414,8 +3528,12 @@
 <li><code>FILE_OFFSET</code> is the byte offset from the start of the VCF file (64-bit integer)</li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<p>Create an index for a VCF file:
+<h3 id="basic-usage-file-argument-fastest">Basic Usage (File Argument - Fastest)<a class="headerlink" href="#basic-usage-file-argument-fastest" title="Permanent link">&para;</a></h3>
+<p>Create an index for a VCF file using memory-mapped I/O:
+<div class="highlight"><pre><span></span><code>VCFX_indexer<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>input.vcf.idx
+</code></pre></div></p>
+<h3 id="standard-input-mode">Standard Input Mode<a class="headerlink" href="#standard-input-mode" title="Permanent link">&para;</a></h3>
+<p>Create an index from standard input:
 <div class="highlight"><pre><span></span><code>VCFX_indexer<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>input.vcf.idx
 </code></pre></div></p>
 <h3 id="using-with-other-tools">Using with Other Tools<a class="headerlink" href="#using-with-other-tools" title="Permanent link">&para;</a></h3>
@@ -3449,9 +3567,12 @@ tail<span class="w"> </span>-c<span class="w"> </span>+23456<span class="w"> </s
 </ul>
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
 <ul>
+<li><strong>File argument mode</strong> uses memory-mapped I/O with SIMD-optimized parsing for maximum throughput</li>
+<li>Indexes 427,000 variants (4.3GB VCF) in ~6-9 seconds on modern hardware</li>
+<li>Uses zero-copy parsing with pointer arithmetic (no string allocations per line)</li>
+<li>1MB output buffering reduces syscall overhead</li>
+<li>Memory usage is minimal: O(1) for file mode, O(line_length) for stdin mode</li>
 <li>The tool processes the VCF file in a single pass</li>
-<li>Memory usage is minimal as the file is processed line-by-line</li>
-<li>Large files can be indexed efficiently as the tool uses a buffered reading approach</li>
 <li>For very large files, the index itself will be much smaller than the original VCF</li>
 <li>The index file size scales with the number of variants, not the file size</li>
 </ul>

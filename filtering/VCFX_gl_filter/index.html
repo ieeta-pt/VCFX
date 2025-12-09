@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -1516,6 +1517,45 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optimized-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimized Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complexity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3117,6 +3157,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3134,6 +3256,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3492,6 +3622,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optimized-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimized Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complexity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3645,12 +3814,36 @@ Where:
 <li>For data lines before the header (#CHROM) line, the tool produces a warning and skips the line</li>
 </ul>
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="optimized-implementation">Optimized Implementation<a class="headerlink" href="#optimized-implementation" title="Permanent link">&para;</a></h3>
+<p>The tool uses several performance optimizations for fast processing of large VCF files with many samples:</p>
+<ol>
+<li>
+<p><strong>Zero-allocation parsing</strong>: Sample genotype fields are parsed using raw pointer arithmetic instead of creating intermediate string objects, eliminating millions of heap allocations on large files.</p>
+</li>
+<li>
+<p><strong>Streaming sample processing</strong>: Samples are processed one-by-one without storing positions, allowing the tool to handle files with thousands of samples efficiently.</p>
+</li>
+<li>
+<p><strong>Fast numeric parsing</strong>: A custom inline parser replaces <code>std::stod</code> to avoid exception handling overhead and unnecessary string conversions.</p>
+</li>
+<li>
+<p><strong>Output buffering</strong>: A 1MB output buffer reduces system call overhead for writing filtered records.</p>
+</li>
+<li>
+<p><strong>Pre-computed operator type</strong>: The comparison operator is converted to an enum at startup, enabling fast switch-based comparison in the hot loop.</p>
+</li>
+</ol>
+<h3 id="complexity">Complexity<a class="headerlink" href="#complexity" title="Permanent link">&para;</a></h3>
 <ul>
-<li>The tool processes VCF files line by line, requiring minimal memory</li>
-<li>Regex pattern matching is used for efficient parsing of filter conditions</li>
+<li>Linear time complexity with respect to file size: O(variants × samples)</li>
+<li>Constant memory usage regardless of sample count</li>
 <li>No preprocessing or indexing of the VCF file is required</li>
-<li>Linear time complexity with respect to file size</li>
 </ul>
+<h3 id="scalability">Scalability<a class="headerlink" href="#scalability" title="Permanent link">&para;</a></h3>
+<p>The streaming architecture allows processing of VCF files with:
+- Unlimited number of samples (tested with 5000+ samples)
+- Large file sizes (multi-GB files)
+- Minimal memory footprint</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Only works with numeric fields in the FORMAT column</li>

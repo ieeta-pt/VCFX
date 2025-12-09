@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -2375,6 +2376,84 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-mode-in-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Mode (In-Memory)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-mode-assume-sorted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Mode (--assume-sorted)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Improvements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaming-k-way-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming K-way Merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-streaming-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Streaming Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2412,10 +2491,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#basic-usage-default-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        Basic Usage (Default Mode)
       
     </span>
   </a>
@@ -2427,6 +2506,50 @@
     <span class="md-ellipsis">
       
         Multiple Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-merge-for-large-pre-sorted-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Merge for Large Pre-Sorted Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-merge-with-natural-chromosome-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Merge with Natural Chromosome Ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipeline-with-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline with Sorting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merging-many-large-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merging Many Large Files
       
     </span>
   </a>
@@ -2469,6 +2592,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-mode-assume-sorted_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Mode (--assume-sorted)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2498,6 +2660,17 @@
     <span class="md-ellipsis">
       
         Best Practices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backward-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Compatibility
       
     </span>
   </a>
@@ -3028,6 +3201,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3045,6 +3300,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3198,6 +3461,84 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-mode-in-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Mode (In-Memory)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-mode-assume-sorted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Mode (--assume-sorted)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Improvements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaming-k-way-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming K-way Merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-streaming-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Streaming Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3235,10 +3576,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#basic-usage-default-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        Basic Usage (Default Mode)
       
     </span>
   </a>
@@ -3250,6 +3591,50 @@
     <span class="md-ellipsis">
       
         Multiple Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-merge-for-large-pre-sorted-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Merge for Large Pre-Sorted Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-merge-with-natural-chromosome-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Merge with Natural Chromosome Ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipeline-with-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline with Sorting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merging-many-large-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merging Many Large Files
       
     </span>
   </a>
@@ -3292,6 +3677,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-mode-assume-sorted_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Mode (--assume-sorted)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3327,6 +3751,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#backward-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3350,6 +3785,7 @@
 <h1 id="vcfx_merger">VCFX_merger<a class="headerlink" href="#vcfx_merger" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_merger</code> is a tool for merging multiple VCF files by variant position. It combines multiple VCF files while maintaining proper sorting by chromosome and position, and preserves the VCF header information from the first input file.</p>
+<p><strong>New in v1.1</strong>: The tool now supports <strong>streaming K-way merge</strong> for handling pre-sorted files with O(num_files) memory usage, enabling merging of 50GB+ files without loading them entirely into memory.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>file1.vcf,file2.vcf,...<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&gt;<span class="w"> </span>merged.vcf
 </code></pre></div>
@@ -3365,6 +3801,14 @@
 <tr>
 <td><code>-m, --merge</code></td>
 <td>Comma-separated list of VCF files to merge</td>
+</tr>
+<tr>
+<td><code>-s, --assume-sorted</code></td>
+<td>Assume input files are already sorted by (CHROM, POS). Enables streaming K-way merge with O(num_files) memory for large files.</td>
+</tr>
+<tr>
+<td><code>-n, --natural-chr</code></td>
+<td>Use natural chromosome ordering (chr1 &lt; chr2 &lt; chr10) instead of lexicographic ordering</td>
 </tr>
 <tr>
 <td><code>-h, --help</code></td>
@@ -3384,13 +3828,67 @@
 <li>Maintaining the original VCF format and field structure</li>
 <li>Handling multiple input files efficiently</li>
 </ol>
-<p>The tool processes the input files sequentially and merges all variants while ensuring proper sorting. It is particularly useful when you need to combine multiple VCF files from different sources or samples into a single, properly sorted VCF file.</p>
+<p>The tool offers two merge strategies:</p>
+<h3 id="default-mode-in-memory">Default Mode (In-Memory)<a class="headerlink" href="#default-mode-in-memory" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Loads all variants from all files into memory</li>
+<li>Sorts the combined variants</li>
+<li>Suitable for small to medium files</li>
+<li>Works with unsorted input files</li>
+</ul>
+<h3 id="streaming-mode-assume-sorted">Streaming Mode (<code>--assume-sorted</code>)<a class="headerlink" href="#streaming-mode-assume-sorted" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Performs K-way merge using a min-heap priority queue</li>
+<li>Only keeps one line per input file in memory</li>
+<li>Memory usage: O(num_files) regardless of file sizes</li>
+<li><strong>Requires pre-sorted input files</strong> for correct results</li>
+<li>Enables merging files larger than available RAM</li>
+</ul>
+<h2 id="performance-improvements">Performance Improvements<a class="headerlink" href="#performance-improvements" title="Permanent link">&para;</a></h2>
+<h3 id="streaming-k-way-merge">Streaming K-way Merge<a class="headerlink" href="#streaming-k-way-merge" title="Permanent link">&para;</a></h3>
+<p>When using <code>--assume-sorted</code>, the tool implements an efficient streaming merge:</p>
+<ol>
+<li><strong>One line per file</strong>: Only the current line from each input file is held in memory</li>
+<li><strong>Min-heap comparison</strong>: Uses a priority queue to always output the smallest variant</li>
+<li><strong>Linear I/O</strong>: Each line is read and written exactly once</li>
+<li><strong>Constant memory</strong>: Memory usage is O(num_files), typically ~100KB for 10 files</li>
+</ol>
+<h3 id="performance-characteristics">Performance Characteristics<a class="headerlink" href="#performance-characteristics" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Memory Usage</th>
+<th>Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>O(total_variants)</td>
+<td>None - handles unsorted input</td>
+</tr>
+<tr>
+<td><code>--assume-sorted</code></td>
+<td>O(num_files)</td>
+<td>Input files must be sorted</td>
+</tr>
+</tbody>
+</table>
+<h3 id="when-to-use-streaming-mode">When to Use Streaming Mode<a class="headerlink" href="#when-to-use-streaming-mode" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Input files are already sorted (e.g., output from bcftools, VCFX_sorter)</li>
+<li>Working with very large files (&gt;1GB each)</li>
+<li>Limited available memory</li>
+<li>Merging many files simultaneously</li>
+</ul>
 <h2 id="input-requirements">Input Requirements<a class="headerlink" href="#input-requirements" title="Permanent link">&para;</a></h2>
 <ul>
 <li>All input files must be in valid VCF format</li>
 <li>Files should have consistent header structures</li>
 <li>The first file's header information will be used in the output</li>
 <li>Files can contain any number of variants</li>
+<li><strong>For streaming mode</strong>: All input files <strong>MUST</strong> be sorted by (CHROM, POS)</li>
 </ul>
 <h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
 <p>The output is a standard VCF file with:
@@ -3399,17 +3897,39 @@
 - Original VCF format preserved
 - Tab-delimited fields maintained</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<p>Merge two VCF files:</p>
+<h3 id="basic-usage-default-mode">Basic Usage (Default Mode)<a class="headerlink" href="#basic-usage-default-mode" title="Permanent link">&para;</a></h3>
+<p>Merge two VCF files (unsorted input allowed):</p>
 <div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>sample1.vcf,sample2.vcf<span class="w"> </span>&gt;<span class="w"> </span>merged.vcf
 </code></pre></div>
 <h3 id="multiple-files">Multiple Files<a class="headerlink" href="#multiple-files" title="Permanent link">&para;</a></h3>
 <p>Merge three or more VCF files:</p>
 <div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>file1.vcf,file2.vcf,file3.vcf<span class="w"> </span>&gt;<span class="w"> </span>combined.vcf
 </code></pre></div>
+<h3 id="streaming-merge-for-large-pre-sorted-files">Streaming Merge for Large Pre-Sorted Files<a class="headerlink" href="#streaming-merge-for-large-pre-sorted-files" title="Permanent link">&para;</a></h3>
+<p>Merge large pre-sorted files with minimal memory usage:</p>
+<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>sorted1.vcf,sorted2.vcf<span class="w"> </span>--assume-sorted<span class="w"> </span>&gt;<span class="w"> </span>merged.vcf
+</code></pre></div>
+<h3 id="streaming-merge-with-natural-chromosome-ordering">Streaming Merge with Natural Chromosome Ordering<a class="headerlink" href="#streaming-merge-with-natural-chromosome-ordering" title="Permanent link">&para;</a></h3>
+<p>Merge pre-sorted files using natural chromosome order:</p>
+<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>file1.vcf,file2.vcf<span class="w"> </span>--assume-sorted<span class="w"> </span>--natural-chr<span class="w"> </span>&gt;<span class="w"> </span>merged.vcf
+</code></pre></div>
+<h3 id="pipeline-with-sorting">Pipeline with Sorting<a class="headerlink" href="#pipeline-with-sorting" title="Permanent link">&para;</a></h3>
+<p>Pre-sort files then merge for optimal performance:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Sort individual files first</span>
+VCFX_sorter<span class="w"> </span>&lt;<span class="w"> </span>sample1.vcf<span class="w"> </span>&gt;<span class="w"> </span>sample1_sorted.vcf
+VCFX_sorter<span class="w"> </span>&lt;<span class="w"> </span>sample2.vcf<span class="w"> </span>&gt;<span class="w"> </span>sample2_sorted.vcf
+
+<span class="c1"># Then merge with streaming mode</span>
+VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>sample1_sorted.vcf,sample2_sorted.vcf<span class="w"> </span>--assume-sorted<span class="w"> </span>&gt;<span class="w"> </span>merged.vcf
+</code></pre></div>
+<h3 id="merging-many-large-files">Merging Many Large Files<a class="headerlink" href="#merging-many-large-files" title="Permanent link">&para;</a></h3>
+<p>Efficiently merge 10+ large files:</p>
+<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>chr1.vcf,chr2.vcf,chr3.vcf,chr4.vcf,chr5.vcf,<span class="se">\</span>
+chr6.vcf,chr7.vcf,chr8.vcf,chr9.vcf,chr10.vcf<span class="w"> </span>--assume-sorted<span class="w"> </span>&gt;<span class="w"> </span>combined.vcf
+</code></pre></div>
 <h3 id="integration-with-other-tools">Integration with Other Tools<a class="headerlink" href="#integration-with-other-tools" title="Permanent link">&para;</a></h3>
-<p>Merge files and then process the result:</p>
-<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>sample1.vcf,sample2.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_sorter<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_validator<span class="w"> </span>&gt;<span class="w"> </span>final.vcf
+<p>Merge files and then validate the result:</p>
+<div class="highlight"><pre><span></span><code>VCFX_merger<span class="w"> </span>--merge<span class="w"> </span>sample1.vcf,sample2.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_validator<span class="w"> </span>&gt;<span class="w"> </span>final.vcf
 </code></pre></div>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <p>The tool handles various error conditions:</p>
@@ -3418,20 +3938,57 @@
 <li>Invalid VCF format: Preserves the original format but does not validate it</li>
 <li>Empty files: Handles empty input files gracefully</li>
 <li>Missing --merge argument: Displays help message</li>
+<li>Malformed lines: Lines with unparseable CHROM/POS are skipped with a warning</li>
 </ul>
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="default-mode">Default Mode<a class="headerlink" href="#default-mode" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Memory usage scales with the number of variants across all input files</li>
 <li>Processing time depends on the total number of variants and the number of input files</li>
-<li>Files are processed sequentially to minimize memory usage</li>
+<li>Files are processed sequentially to collect variants</li>
 <li>Sorting is performed in memory after all variants are collected</li>
 </ul>
+<h3 id="streaming-mode-assume-sorted_1">Streaming Mode (<code>--assume-sorted</code>)<a class="headerlink" href="#streaming-mode-assume-sorted_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Memory usage is constant: O(num_files)</li>
+<li>Processing time is O(n log k) where n is total variants and k is number of files</li>
+<li>Each file is streamed from disk without full loading</li>
+<li>Optimal for merging large pre-sorted files</li>
+</ul>
+<h3 id="recommended-usage">Recommended Usage<a class="headerlink" href="#recommended-usage" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommended Mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small files, unsorted</td>
+<td>Default mode</td>
+</tr>
+<tr>
+<td>Large files, pre-sorted</td>
+<td><code>--assume-sorted</code></td>
+</tr>
+<tr>
+<td>Limited memory</td>
+<td><code>--assume-sorted</code> (pre-sort if needed)</td>
+</tr>
+<tr>
+<td>Many files (&gt;10)</td>
+<td><code>--assume-sorted</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Only supports standard VCF format files</li>
 <li>Does not perform VCF validation (use VCFX_validator for validation)</li>
 <li>Preserves only the header information from the first input file</li>
 <li>Requires all input files to have consistent field structures</li>
+<li><strong>Streaming mode requires pre-sorted input</strong> - incorrect results if inputs are not sorted</li>
 </ul>
 <h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
 <ol>
@@ -3439,15 +3996,23 @@
 <li>Merging region-specific VCF files</li>
 <li>Combining results from different variant callers</li>
 <li>Creating a unified VCF file from multiple analysis runs</li>
+<li><strong>Merging chromosome-split VCF files from large-scale projects</strong></li>
+<li><strong>Combining VCF outputs from parallel processing pipelines</strong></li>
 </ol>
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Validate input files before merging</li>
 <li>Use consistent VCF versions across input files</li>
-<li>Consider file sizes and available memory when merging many files</li>
+<li>For large files, pre-sort with <code>VCFX_sorter</code> then use <code>--assume-sorted</code></li>
 <li>Verify the output with VCFX_validator after merging</li>
-<li>Use VCFX_sorter if additional sorting is needed </li>
+<li>Use streaming mode when merging files larger than available RAM</li>
+<li>Consider using natural chromosome ordering (<code>-n</code>) for human genome data</li>
 </ol>
+<h2 id="backward-compatibility">Backward Compatibility<a class="headerlink" href="#backward-compatibility" title="Permanent link">&para;</a></h2>
+<p>The tool is fully backward compatible:
+- Default behavior (without <code>--assume-sorted</code>) works exactly as before
+- Existing scripts and pipelines continue to function unchanged
+- The <code>--assume-sorted</code> option is purely opt-in for performance optimization</p>
 
 
 

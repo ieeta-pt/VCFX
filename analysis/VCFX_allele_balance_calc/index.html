@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -1049,10 +1050,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage-all-samples" class="md-nav__link">
+  <a href="#file-input-mode-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage (All Samples)
+        File Input Mode (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage-stdin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage (Stdin)
       
     </span>
   </a>
@@ -1198,13 +1210,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance-considerations" class="md-nav__link">
+  <a href="#performance-characteristics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance Considerations
+        Performance Characteristics
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results-4gb-vcf-chr21-427k-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results (4GB VCF, chr21, 427K variants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#throughput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Throughput
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3095,6 +3135,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3112,6 +3234,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3291,10 +3421,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage-all-samples" class="md-nav__link">
+  <a href="#file-input-mode-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage (All Samples)
+        File Input Mode (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage-stdin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage (Stdin)
       
     </span>
   </a>
@@ -3440,13 +3581,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance-considerations" class="md-nav__link">
+  <a href="#performance-characteristics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance Considerations
+        Performance Characteristics
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results-4gb-vcf-chr21-427k-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results (4GB VCF, chr21, 427K variants)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#throughput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Throughput
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3485,7 +3654,7 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_allele_balance_calc</code> calculates the allele balance for each sample in a VCF file, which is the ratio of reference alleles to alternate alleles in heterozygous genotypes. This metric is useful for assessing potential allelic bias in sequencing data.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_allele_balance_calc<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_balance.tsv
+<div class="highlight"><pre><span></span><code>VCFX_allele_balance_calc<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>FILE<span class="o">]</span>
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3497,23 +3666,35 @@
 </thead>
 <tbody>
 <tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file (uses memory-mapping for best performance)</td>
+</tr>
+<tr>
+<td><code>-t</code>, <code>--threads N</code></td>
+<td>Number of threads for parallel processing (default: auto-detect CPU cores)</td>
+</tr>
+<tr>
 <td><code>-s</code>, <code>--samples "Sample1 Sample2..."</code></td>
 <td>Optional. Specify sample names to calculate allele balance for (space-separated). If omitted, all samples are processed.</td>
 </tr>
 <tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress informational messages</td>
+</tr>
+<tr>
 <td><code>-h</code>, <code>--help</code></td>
-<td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Display help message and exit</td>
 </tr>
 <tr>
 <td><code>-v</code>, <code>--version</code></td>
-<td>Show program version and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Show program version and exit</td>
 </tr>
 </tbody>
 </table>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_allele_balance_calc</code> processes a VCF file and calculates the allele balance for each variant in each specified sample. The tool:</p>
 <ol>
-<li>Reads a VCF file from standard input</li>
+<li>Reads a VCF file from standard input or file</li>
 <li>Identifies sample columns from the VCF header</li>
 <li>For each variant and each sample:</li>
 <li>Extracts the genotype information</li>
@@ -3567,17 +3748,23 @@
 </tbody>
 </table>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage-all-samples">Basic Usage (All Samples)<a class="headerlink" href="#basic-usage-all-samples" title="Permanent link">&para;</a></h3>
+<h3 id="file-input-mode-recommended">File Input Mode (Recommended)<a class="headerlink" href="#file-input-mode-recommended" title="Permanent link">&para;</a></h3>
+<p>Use memory-mapped file I/O for best performance with multi-threaded processing:
+<div class="highlight"><pre><span></span><code>VCFX_allele_balance_calc<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_balance.tsv
+VCFX_allele_balance_calc<span class="w"> </span>-t<span class="w"> </span><span class="m">8</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_balance.tsv<span class="w">  </span><span class="c1"># Use 8 threads</span>
+VCFX_allele_balance_calc<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_balance.tsv
+</code></pre></div></p>
+<h3 id="basic-usage-stdin">Basic Usage (Stdin)<a class="headerlink" href="#basic-usage-stdin" title="Permanent link">&para;</a></h3>
 <p>Calculate allele balance for all samples in a VCF file:
 <div class="highlight"><pre><span></span><code>VCFX_allele_balance_calc<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_balance_all.tsv
 </code></pre></div></p>
 <h3 id="specific-samples">Specific Samples<a class="headerlink" href="#specific-samples" title="Permanent link">&para;</a></h3>
 <p>Calculate allele balance for specific samples:
-<div class="highlight"><pre><span></span><code>VCFX_allele_balance_calc<span class="w"> </span>--samples<span class="w"> </span><span class="s2">&quot;SAMPLE1 SAMPLE2&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_balance_subset.tsv
+<div class="highlight"><pre><span></span><code>VCFX_allele_balance_calc<span class="w"> </span>--samples<span class="w"> </span><span class="s2">&quot;SAMPLE1 SAMPLE2&quot;</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_balance_subset.tsv
 </code></pre></div></p>
 <h3 id="filtering-results">Filtering Results<a class="headerlink" href="#filtering-results" title="Permanent link">&para;</a></h3>
 <p>Process the output to focus on imbalanced variants:
-<div class="highlight"><pre><span></span><code>VCFX_allele_balance_calc<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39;$7 != &quot;NA&quot; &amp;&amp; $7 &lt; 0.4&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>imbalanced_variants.tsv
+<div class="highlight"><pre><span></span><code>VCFX_allele_balance_calc<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39;$7 != &quot;NA&quot; &amp;&amp; $7 &lt; 0.4&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>imbalanced_variants.tsv
 </code></pre></div></p>
 <h2 id="allele-balance-calculation">Allele Balance Calculation<a class="headerlink" href="#allele-balance-calculation" title="Permanent link">&para;</a></h2>
 <h3 id="formula">Formula<a class="headerlink" href="#formula" title="Permanent link">&para;</a></h3>
@@ -3621,12 +3808,44 @@
 <ul>
 <li>Not explicitly handled; the tool expects diploid or polyploid genotypes with separators</li>
 </ul>
-<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h2 id="performance-characteristics">Performance Characteristics<a class="headerlink" href="#performance-characteristics" title="Permanent link">&para;</a></h2>
+<p>The tool uses several optimizations for high performance:</p>
 <ul>
-<li>Processes VCF files line by line, with minimal memory requirements</li>
-<li>Scales linearly with input file size and number of samples</li>
-<li>For very large VCF files with many samples, specifying a subset of samples can improve performance</li>
+<li><strong>Memory-mapped I/O</strong>: Uses <code>mmap()</code> for file input to minimize syscall overhead</li>
+<li><strong>SIMD acceleration</strong>: Uses NEON/SSE2/AVX2 instructions for fast line/tab scanning</li>
+<li><strong>Batch processing</strong>: Pre-computes all sample positions per line for O(1) access</li>
+<li><strong>Zero-copy parsing</strong>: Parses VCF fields without creating intermediate strings</li>
+<li><strong>Incremental flushing</strong>: 4MB buffered output with automatic flushing to prevent memory buildup</li>
 </ul>
+<h3 id="benchmark-results-4gb-vcf-chr21-427k-variants">Benchmark Results (4GB VCF, chr21, 427K variants)<a class="headerlink" href="#benchmark-results-4gb-vcf-chr21-427k-variants" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Samples</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>~4s</td>
+</tr>
+<tr>
+<td>100</td>
+<td>~8s</td>
+</tr>
+<tr>
+<td>2504 (all)</td>
+<td>~41s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Speedup vs previous version: ~50x</strong> (35 min → 41 sec)</p>
+<h3 id="throughput">Throughput<a class="headerlink" href="#throughput" title="Permanent link">&para;</a></h3>
+<p>On typical hardware with multi-threading:
+- <strong>VCF parsing</strong>: ~1.5 GB/s with mmap
+- <strong>Output generation</strong>: ~10-15M lines/sec (with 100+ samples)
+- <strong>Scaling</strong>: Near-linear scaling up to ~4-6 cores</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>No option to customize the allele balance formula</li>
@@ -3634,7 +3853,7 @@
 <li>No automatic filtering based on allele balance values</li>
 <li>Cannot account for read depth or genotype quality in calculations</li>
 <li>Limited to processing standard VCF genotype fields</li>
-<li>Does not produce summary statistics across all variants </li>
+<li>Does not produce summary statistics across all variants</li>
 </ul>
 
 

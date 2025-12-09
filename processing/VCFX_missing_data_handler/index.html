@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -2855,6 +2856,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#multi-threaded-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-threaded Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#in-a-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2900,6 +2912,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3028,6 +3057,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3045,6 +3156,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3268,6 +3387,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#multi-threaded-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-threaded Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#in-a-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3313,6 +3443,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3371,6 +3518,10 @@
 <td>Specify the default genotype for imputation (default: "./.")</td>
 </tr>
 <tr>
+<td><code>--threads</code>, <code>-t</code> <NUM></td>
+<td>Number of threads for parallel processing (default: auto-detect CPU cores)</td>
+</tr>
+<tr>
 <td><code>--help</code>, <code>-h</code></td>
 <td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
 </tr>
@@ -3414,6 +3565,13 @@ VCFX_missing_data_handler<span class="w"> </span>--fill-missing<span class="w"> 
 <div class="highlight"><pre><span></span><code><span class="c1"># Process multiple files at once:</span>
 VCFX_missing_data_handler<span class="w"> </span>--fill-missing<span class="w"> </span>file1.vcf<span class="w"> </span>file2.vcf<span class="w"> </span>&gt;<span class="w"> </span>combined_output.vcf
 </code></pre></div>
+<h3 id="multi-threaded-processing">Multi-threaded Processing<a class="headerlink" href="#multi-threaded-processing" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Use 8 threads for processing large files:</span>
+VCFX_missing_data_handler<span class="w"> </span>--fill-missing<span class="w"> </span>--threads<span class="w"> </span><span class="m">8</span><span class="w"> </span>&lt;<span class="w"> </span>large_file.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
+
+<span class="c1"># Use single-threaded mode (disables parallelism):</span>
+VCFX_missing_data_handler<span class="w"> </span>--fill-missing<span class="w"> </span>--threads<span class="w"> </span><span class="m">1</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
+</code></pre></div>
 <h3 id="in-a-pipeline">In a Pipeline<a class="headerlink" href="#in-a-pipeline" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Filter a VCF file and then handle missing data:</span>
 grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;^#&quot;</span><span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;PASS&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
@@ -3438,13 +3596,19 @@ VCFX_missing_data_handler<span class="w"> </span>--fill-missing<span class="w"> 
 <li><strong>Data before header</strong>: Able to handle invalid VCF files where data appears before the header (with a warning)</li>
 </ul>
 <h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
-<p>The tool is designed for efficiency:</p>
+<p>The tool uses advanced optimization techniques for maximum throughput:</p>
 <ol>
-<li>Line-by-line processing allows handling of arbitrarily large files</li>
-<li>No need to load the entire file into memory</li>
-<li>Efficient string splitting and joining operations</li>
-<li>Handles multiple files in a single run</li>
+<li><strong>Memory-mapped I/O</strong>: Uses <code>mmap</code> with <code>MADV_SEQUENTIAL</code> hints for optimal file reading</li>
+<li><strong>Multi-threading</strong>: Parallel processing across all available CPU cores (configurable with <code>--threads</code>)</li>
+<li><strong>Zero-copy pass-through</strong>: Lines without missing genotypes are written directly without parsing</li>
+<li><strong>Fast pattern scanning</strong>: Uses <code>memchr</code> for efficient detection of potential missing genotype markers</li>
+<li><strong>Chunk-based processing</strong>: Data is divided into chunks for parallel processing with proper line boundary handling</li>
 </ol>
+<h3 id="benchmark-results">Benchmark Results<a class="headerlink" href="#benchmark-results" title="Permanent link">&para;</a></h3>
+<p>On a test file with 427K variants and 2,504 samples:
+- <strong>Original implementation</strong>: ~455 seconds
+- <strong>Optimized implementation</strong>: ~9 seconds
+- <strong>Improvement</strong>: ~50x faster</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ol>
 <li>No option to specify which samples should have their missing data imputed</li>

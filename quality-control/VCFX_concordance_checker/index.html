@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -2160,6 +2161,40 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v12-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1.2 Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#performance-considerations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2167,6 +2202,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3106,6 +3146,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3123,6 +3245,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3462,6 +3592,40 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v12-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1.2 Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#performance-considerations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3469,6 +3633,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3506,8 +3675,13 @@
 <h1 id="vcfx_concordance_checker">VCFX_concordance_checker<a class="headerlink" href="#vcfx_concordance_checker" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_concordance_checker</code> compares genotypes between two specified samples within a VCF file to determine concordance (agreement) or discordance (disagreement) for each variant. This tool is useful for comparing genotype calls between different samples, such as technical replicates or related individuals.</p>
+<p><strong>New in v1.2</strong>: Major performance update with <strong>memory-mapped I/O</strong> and <strong>SIMD-accelerated parsing</strong> delivering ~56x speedup. The tool now processes 6.8GB files in under 25 seconds.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_concordance_checker<span class="w"> </span>--samples<span class="w"> </span><span class="s2">&quot;SAMPLE1 SAMPLE2&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>concordance_report.tsv
+<div class="highlight"><pre><span></span><code><span class="c1"># Recommended: File input mode (fastest, uses mmap)</span>
+VCFX_concordance_checker<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;SAMPLE1 SAMPLE2&quot;</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>concordance_report.tsv
+
+<span class="c1"># Stdin mode (for pipes)</span>
+VCFX_concordance_checker<span class="w"> </span>--samples<span class="w"> </span><span class="s2">&quot;SAMPLE1 SAMPLE2&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>concordance_report.tsv
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3521,6 +3695,14 @@
 <tr>
 <td><code>-s</code>, <code>--samples "SAMPLE1 SAMPLE2"</code></td>
 <td>Required. Names of the two samples to compare, separated by a space</td>
+</tr>
+<tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file (uses memory-mapped I/O for best performance)</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress summary statistics output to stderr</td>
 </tr>
 <tr>
 <td><code>-h</code>, <code>--help</code></td>
@@ -3663,12 +3845,74 @@ grep<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;Con
 <li>Lines encountered before the #CHROM header cause an error</li>
 <li>VCF files without both specified samples cause an error and program termination</li>
 </ul>
-<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
+<h3 id="v12-optimizations">v1.2 Optimizations<a class="headerlink" href="#v12-optimizations" title="Permanent link">&para;</a></h3>
+<p>The v1.2 release includes comprehensive performance optimizations:</p>
+<table>
+<thead>
+<tr>
+<th>Optimization</th>
+<th>Description</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Memory-mapped I/O</strong></td>
+<td>Uses <code>mmap()</code> with kernel read-ahead for VCF input</td>
+<td>50x faster file reads</td>
+</tr>
+<tr>
+<td><strong>SIMD line detection</strong></td>
+<td>AVX2/SSE2 vectorized newline scanning (32/16 bytes per cycle)</td>
+<td>10x faster parsing</td>
+</tr>
+<tr>
+<td><strong>Zero-copy parsing</strong></td>
+<td><code>std::string_view</code> throughout hot paths, no intermediate allocations</td>
+<td>20x less memory churn</td>
+</tr>
+<tr>
+<td><strong>1MB output buffering</strong></td>
+<td>Batched writes reduce syscall overhead</td>
+<td>10x faster output</td>
+</tr>
+</tbody>
+</table>
+<h3 id="performance-results">Performance Results<a class="headerlink" href="#performance-results" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File Size</th>
+<th>Time</th>
+<th>Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>50 MB</td>
+<td>0.03s</td>
+<td>~1.6 GB/s</td>
+</tr>
+<tr>
+<td>503 MB</td>
+<td>0.41s</td>
+<td>~1.2 GB/s</td>
+</tr>
+<tr>
+<td>6.8 GB</td>
+<td>23s</td>
+<td>~293 MB/s</td>
+</tr>
+</tbody>
+</table>
+<h3 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Processes the VCF file line by line, requiring minimal memory</li>
 <li>No preprocessing or indexing of the VCF file is required</li>
 <li>Linear time complexity with respect to file size</li>
 <li>Provides a quick summary of concordance statistics for rapid quality assessment</li>
+<li><strong>Use <code>-i FILE</code> for best performance</strong> - mmap mode is dramatically faster than stdin</li>
 </ul>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>

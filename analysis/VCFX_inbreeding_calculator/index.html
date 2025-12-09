@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -937,10 +938,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage-default-settings" class="md-nav__link">
+  <a href="#file-input-mode-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage (Default Settings)
+        File Input Mode (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage-stdin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage (Stdin)
       
     </span>
   </a>
@@ -1008,13 +1020,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#performance-characteristics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance
+        Performance Characteristics
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results-4gb-vcf-chr21-427k-variants-2504-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3045,6 +3074,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3062,6 +3173,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3269,10 +3388,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage-default-settings" class="md-nav__link">
+  <a href="#file-input-mode-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage (Default Settings)
+        File Input Mode (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage-stdin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage (Stdin)
       
     </span>
   </a>
@@ -3340,13 +3470,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#performance-characteristics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance
+        Performance Characteristics
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results-4gb-vcf-chr21-427k-variants-2504-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3385,7 +3532,8 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>VCFX_inbreeding_calculator computes the inbreeding coefficient (F) for each sample in a VCF file, providing a measure of homozygosity relative to Hardy-Weinberg equilibrium expectations.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_inbreeding_calculator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+<div class="highlight"><pre><span></span><code>VCFX_inbreeding_calculator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>input.vcf<span class="o">]</span>
+VCFX_inbreeding_calculator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.txt
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3396,6 +3544,14 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file (uses memory-mapping for best performance)</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress informational messages</td>
+</tr>
 <tr>
 <td><code>--freq-mode</code> MODE</td>
 <td>How to calculate allele frequencies: 'excludeSample' (default) or 'global'</td>
@@ -3410,11 +3566,11 @@
 </tr>
 <tr>
 <td><code>-h</code>, <code>--help</code></td>
-<td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Display help message and exit</td>
 </tr>
 <tr>
 <td><code>-v</code>, <code>--version</code></td>
-<td>Show program version and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Show program version and exit</td>
 </tr>
 </tbody>
 </table>
@@ -3447,29 +3603,33 @@
 - Sample is the sample name from the VCF file
 - InbreedingCoefficient is the calculated F value, or "NA" if no usable sites were found</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage-default-settings">Basic Usage (Default Settings)<a class="headerlink" href="#basic-usage-default-settings" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>./VCFX_inbreeding_calculator<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>inbreeding_coefficients.txt
+<h3 id="file-input-mode-recommended">File Input Mode (Recommended)<a class="headerlink" href="#file-input-mode-recommended" title="Permanent link">&para;</a></h3>
+<p>Use memory-mapped file I/O for best performance:</p>
+<div class="highlight"><pre><span></span><code>VCFX_inbreeding_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>inbreeding_coefficients.txt
+VCFX_inbreeding_calculator<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>inbreeding_coefficients.txt
+</code></pre></div>
+<h3 id="basic-usage-stdin">Basic Usage (Stdin)<a class="headerlink" href="#basic-usage-stdin" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>VCFX_inbreeding_calculator<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>inbreeding_coefficients.txt
 </code></pre></div>
 <h3 id="using-global-frequency-mode">Using Global Frequency Mode<a class="headerlink" href="#using-global-frequency-mode" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>./VCFX_inbreeding_calculator<span class="w"> </span>--freq-mode<span class="w"> </span>global<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>global_inbreeding.txt
+<div class="highlight"><pre><span></span><code>VCFX_inbreeding_calculator<span class="w"> </span>--freq-mode<span class="w"> </span>global<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>global_inbreeding.txt
 </code></pre></div>
 <h3 id="skip-boundary-frequencies">Skip Boundary Frequencies<a class="headerlink" href="#skip-boundary-frequencies" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>./VCFX_inbreeding_calculator<span class="w"> </span>--skip-boundary<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>non_boundary_inbreeding.txt
+<div class="highlight"><pre><span></span><code>VCFX_inbreeding_calculator<span class="w"> </span>--skip-boundary<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>non_boundary_inbreeding.txt
 </code></pre></div>
 <h3 id="custom-boundary-handling">Custom Boundary Handling<a class="headerlink" href="#custom-boundary-handling" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>./VCFX_inbreeding_calculator<span class="w"> </span>--skip-boundary<span class="w"> </span>--count-boundary-as-used<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>custom_boundary.txt
+<div class="highlight"><pre><span></span><code>VCFX_inbreeding_calculator<span class="w"> </span>--skip-boundary<span class="w"> </span>--count-boundary-as-used<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>custom_boundary.txt
 </code></pre></div>
 <h2 id="formula-and-calculation">Formula and Calculation<a class="headerlink" href="#formula-and-calculation" title="Permanent link">&para;</a></h2>
 <p>The inbreeding coefficient is calculated as:</p>
-<p>F = (O - E) / (T - E)</p>
+<p>F = 1 - (observed heterozygosity / expected heterozygosity)</p>
 <p>Where:
-- O = Observed homozygosity (count of 0/0 and 1/1 genotypes)
-- E = Expected homozygosity under HWE (∑(p²+q²) across sites)
-- T = Total number of sites (after filtering)</p>
+- Observed heterozygosity = count of heterozygous genotypes
+- Expected heterozygosity = Σ 2p(1-p) across sites</p>
 <p>In boundary cases:
 - If total sites used = 0, F = NA
-- If expected = observed, F = 0
-- If expected = total, F = 1</p>
+- If expected heterozygosity = 0 but usedCount &gt; 0, F = 1
+- If expected = observed, F = 0</p>
 <h2 id="handling-special-cases">Handling Special Cases<a class="headerlink" href="#handling-special-cases" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Single-sample VCFs</strong>: Always produces "NA" as inbreeding requires population context</li>
@@ -3480,10 +3640,34 @@
 <li><strong>Zero usable sites</strong>: Returns "NA" for the sample</li>
 <li><strong>Small sample sizes</strong>: May produce unreliable estimates</li>
 </ul>
-<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
-<p>The tool performs a single pass through the VCF file, giving it linear complexity with respect to file size. Memory usage scales with:
-- Number of samples in the VCF
-- Number of biallelic variants</p>
+<h2 id="performance-characteristics">Performance Characteristics<a class="headerlink" href="#performance-characteristics" title="Permanent link">&para;</a></h2>
+<p>The tool uses several optimizations for high performance:</p>
+<ul>
+<li><strong>Memory-mapped I/O</strong>: Uses <code>mmap()</code> for file input to minimize syscall overhead</li>
+<li><strong>SIMD acceleration</strong>: Uses NEON/SSE2/AVX2 instructions for fast line/tab scanning</li>
+<li><strong>Zero-copy parsing</strong>: Parses VCF fields without creating intermediate strings</li>
+<li><strong>Buffered output</strong>: Uses 1MB output buffer with direct <code>write()</code> syscalls</li>
+</ul>
+<h3 id="benchmark-results-4gb-vcf-chr21-427k-variants-2504-samples">Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)<a class="headerlink" href="#benchmark-results-4gb-vcf-chr21-427k-variants-2504-samples" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mmap (-i)</td>
+<td>~17s</td>
+</tr>
+<tr>
+<td>stdin</td>
+<td>~6 min</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Speedup: ~21x</strong> with memory-mapped I/O</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Only works with biallelic variants (multiallelic sites are skipped)</li>
@@ -3491,7 +3675,7 @@
 <li>May produce unexpected results with very small sample sizes</li>
 <li>No built-in filtering for variant quality or other metrics</li>
 <li>No chromosome or region-specific analysis</li>
-<li>Cannot handle populations with substructure (assumes random mating) </li>
+<li>Cannot handle populations with substructure (assumes random mating)</li>
 </ul>
 
 

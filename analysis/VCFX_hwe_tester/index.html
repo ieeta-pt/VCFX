@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -965,10 +966,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#file-input-mode-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        File Input Mode (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage-stdin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage (Stdin)
       
     </span>
   </a>
@@ -1025,13 +1037,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#performance-characteristics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance
+        Performance Characteristics
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results-4gb-vcf-chr21-427k-variants-2504-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3006,6 +3035,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3023,6 +3134,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3202,10 +3321,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#file-input-mode-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        File Input Mode (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage-stdin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage (Stdin)
       
     </span>
   </a>
@@ -3262,13 +3392,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#performance-characteristics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance
+        Performance Characteristics
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results-4gb-vcf-chr21-427k-variants-2504-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3305,9 +3452,10 @@
 
 <h1 id="vcfx_hwe_tester">VCFX_hwe_tester<a class="headerlink" href="#vcfx_hwe_tester" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>VCFX_hwe_tester performs Hardy-Weinberg Equilibrium (HWE) testing on biallelic variants in a VCF file, calculating and reporting exact p-values that measure the degree of deviation from expected genotype frequencies.</p>
+<p>VCFX_hwe_tester performs Hardy-Weinberg Equilibrium (HWE) testing on biallelic variants in a VCF file, calculating and reporting p-values that measure the degree of deviation from expected genotype frequencies.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_hwe_tester<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>hwe_results.txt
+<div class="highlight"><pre><span></span><code>VCFX_hwe_tester<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>input.vcf<span class="o">]</span>
+VCFX_hwe_tester<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>hwe_results.txt
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3319,12 +3467,20 @@
 </thead>
 <tbody>
 <tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file (uses memory-mapping for best performance)</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress informational messages</td>
+</tr>
+<tr>
 <td><code>-h</code>, <code>--help</code></td>
-<td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Display help message and exit</td>
 </tr>
 <tr>
 <td><code>-v</code>, <code>--version</code></td>
-<td>Show program version and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Show program version and exit</td>
 </tr>
 </tbody>
 </table>
@@ -3334,10 +3490,10 @@
 <li>Reads the VCF file line by line</li>
 <li>Filters for biallelic variants (skips sites with multiple ALT alleles)</li>
 <li>Counts homozygous reference (0/0), heterozygous (0/1), and homozygous alternate (1/1) genotypes</li>
-<li>Calculates an exact p-value for Hardy-Weinberg Equilibrium</li>
+<li>Calculates a p-value for Hardy-Weinberg Equilibrium using chi-square test with Yates' correction</li>
 <li>Reports results in a simple tab-delimited format</li>
 </ol>
-<p>The exact test uses a full enumeration of the probability distribution to obtain an accurate p-value, rather than relying on chi-square approximations. A low p-value indicates significant deviation from Hardy-Weinberg Equilibrium, which might suggest:
+<p>A low p-value indicates significant deviation from Hardy-Weinberg Equilibrium, which might suggest:
 - Population stratification
 - Selection pressure
 - Non-random mating
@@ -3350,19 +3506,24 @@
 - CHROM, POS, ID, REF, ALT are copied from the input VCF
 - HWE_pvalue is the calculated p-value for Hardy-Weinberg Equilibrium</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>./VCFX_hwe_tester<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>hwe_results.txt
+<h3 id="file-input-mode-recommended">File Input Mode (Recommended)<a class="headerlink" href="#file-input-mode-recommended" title="Permanent link">&para;</a></h3>
+<p>Use memory-mapped file I/O for best performance:</p>
+<div class="highlight"><pre><span></span><code>VCFX_hwe_tester<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>hwe_results.txt
+VCFX_hwe_tester<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>hwe_results.txt
+</code></pre></div>
+<h3 id="basic-usage-stdin">Basic Usage (Stdin)<a class="headerlink" href="#basic-usage-stdin" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>VCFX_hwe_tester<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>hwe_results.txt
 </code></pre></div>
 <h3 id="filter-by-hwe-p-value">Filter by HWE p-value<a class="headerlink" href="#filter-by-hwe-p-value" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Extract variants with significant HWE deviation (p &lt; 0.05)</span>
-./VCFX_hwe_tester<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39;{if(NR==1 || ($6!=&quot;HWE_pvalue&quot; &amp;&amp; $6&lt;0.05)) print}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>hwe_significant.txt
+VCFX_hwe_tester<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39;{if(NR==1 || $6&lt;0.05) print}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>hwe_significant.txt
 </code></pre></div>
 <h3 id="check-for-genotyping-errors">Check for Genotyping Errors<a class="headerlink" href="#check-for-genotyping-errors" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Find potential genotyping errors (extremely low HWE p-values)</span>
-./VCFX_hwe_tester<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39;{if(NR==1 || ($6!=&quot;HWE_pvalue&quot; &amp;&amp; $6&lt;0.0001)) print}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>potential_errors.txt
+VCFX_hwe_tester<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39;{if(NR==1 || $6&lt;0.0001) print}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>potential_errors.txt
 </code></pre></div>
 <h2 id="mathematical-details">Mathematical Details<a class="headerlink" href="#mathematical-details" title="Permanent link">&para;</a></h2>
-<p>The tool uses an exact test based on the multinomial distribution of genotypes. For each variant:</p>
+<p>The tool uses a chi-square test with Yates' continuity correction. For each variant:</p>
 <ol>
 <li>The observed counts of genotypes (homRef, het, homAlt) are calculated</li>
 <li>The expected frequencies under HWE are computed as:</li>
@@ -3372,9 +3533,10 @@
 </ol>
 <p>where p = (2×homRef + het)/(2×N), q = 1-p, and N = total number of individuals</p>
 <ol>
-<li>The p-value is calculated by summing the probabilities of all possible genotype configurations that are equally or less likely than the observed configuration</li>
+<li>Chi-square statistic is computed with Yates' correction for continuity</li>
+<li>P-value is calculated using the chi-square distribution (1 degree of freedom)</li>
 </ol>
-<p>This approach provides accurate p-values even for low minor allele frequencies or small sample sizes.</p>
+<p>This approach provides fast and accurate p-values for large sample sizes.</p>
 <h2 id="handling-special-cases">Handling Special Cases<a class="headerlink" href="#handling-special-cases" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Multi-allelic variants</strong>: Skipped entirely (only biallelic variants are considered)</li>
@@ -3383,13 +3545,36 @@
 <li><strong>Non-standard genotypes</strong>: Any genotype other than 0/0, 0/1, or 1/1 is excluded</li>
 <li><strong>No valid genotypes</strong>: If no valid genotypes are found, the p-value is reported as 1.0</li>
 <li><strong>Perfect equilibrium</strong>: For variants with genotype frequencies perfectly matching HWE expectations, the p-value is 1.0</li>
+<li><strong>No GT field</strong>: Lines without GT in FORMAT field are skipped</li>
 </ul>
-<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
-<p>The tool is optimized for efficiency:
-- Processes one variant at a time, keeping memory usage low
-- Caches logarithmic factorial values to speed up calculations
-- Uses numerical optimizations to handle large sample sizes
-- Scales linearly with the number of variants in the VCF file</p>
+<h2 id="performance-characteristics">Performance Characteristics<a class="headerlink" href="#performance-characteristics" title="Permanent link">&para;</a></h2>
+<p>The tool uses several optimizations for high performance:</p>
+<ul>
+<li><strong>Memory-mapped I/O</strong>: Uses <code>mmap()</code> for file input to minimize syscall overhead</li>
+<li><strong>SIMD acceleration</strong>: Uses NEON/SSE2/AVX2 instructions for fast line/tab scanning</li>
+<li><strong>Zero-copy parsing</strong>: Parses VCF fields without creating intermediate strings</li>
+<li><strong>Buffered output</strong>: Uses 4MB output buffer with incremental flushing</li>
+</ul>
+<h3 id="benchmark-results-4gb-vcf-chr21-427k-variants-2504-samples">Benchmark Results (4GB VCF, chr21, 427K variants, 2504 samples)<a class="headerlink" href="#benchmark-results-4gb-vcf-chr21-427k-variants-2504-samples" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mmap (-i)</td>
+<td>~17s</td>
+</tr>
+<tr>
+<td>stdin</td>
+<td>~5 min</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Speedup: ~18x</strong> with memory-mapped I/O</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Only works with biallelic variants</li>
@@ -3397,7 +3582,7 @@
 <li>No stratification by population or other groupings</li>
 <li>No correction for multiple testing</li>
 <li>May be less accurate for extremely rare variants with very few non-reference genotypes</li>
-<li>No built-in filtering for variant quality or missing data threshold </li>
+<li>No built-in filtering for variant quality or missing data threshold</li>
 </ul>
 
 

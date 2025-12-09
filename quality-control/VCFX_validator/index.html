@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -2351,6 +2352,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#performance-tips" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3162,6 +3185,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3179,6 +3284,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3569,6 +3682,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#performance-tips" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3647,6 +3782,14 @@ VCFX_validator<span class="w"> </span><span class="o">[</span>OPTIONS<span class
 <tr>
 <td><code>-d</code>, <code>--report-dups</code></td>
 <td>Report duplicate records to stderr</td>
+</tr>
+<tr>
+<td><code>-n</code>, <code>--no-dup-check</code></td>
+<td>Skip duplicate detection entirely (faster validation)</td>
+</tr>
+<tr>
+<td><code>-b</code>, <code>--bloom-size N</code></td>
+<td>Bloom filter size in MB for duplicate detection (default: 128)</td>
 </tr>
 <tr>
 <td><code>-i</code>, <code>--input FILE</code></td>
@@ -3762,26 +3905,41 @@ messages such as <code>VCF file is valid.</code> are printed to standard error.<
 <li>Leading and trailing whitespace is trimmed from field values before validation</li>
 </ul>
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="optimizations">Optimizations<a class="headerlink" href="#optimizations" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Memory-mapped I/O</strong>: When using <code>-i</code>/<code>--input</code>, the tool uses memory-mapped file access with <code>MADV_SEQUENTIAL</code> hints for optimal read-ahead, significantly improving performance on large files</li>
+<li><strong>Memory-mapped I/O</strong>: When using file path argument, the tool uses memory-mapped file access with <code>MADV_SEQUENTIAL</code> hints for optimal read-ahead</li>
+<li><strong>SIMD-optimized parsing</strong>: Uses AVX2/SSE2 vectorized operations on x86_64 for newline finding and character counting</li>
+<li><strong>Bloom filter</strong>: Memory-efficient duplicate detection using a configurable bloom filter (default 128MB)</li>
+<li><strong>DNA lookup table</strong>: Fast base validation using a 256-byte lookup table instead of conditional checks</li>
 <li><strong>FORMAT caching</strong>: The FORMAT field is cached to avoid redundant parsing when consecutive lines use the same format</li>
 <li><strong>Zero-copy parsing</strong>: Uses <code>string_view</code> for efficient parsing without unnecessary string copies</li>
 <li><strong>Stdin support</strong>: For stdin input, the tool supports both plain text and gzip/BGZF compressed streams</li>
-<li>Performance scales linearly with the size of the input file</li>
-<li>No external dependencies or reference files are required</li>
+</ul>
+<h3 id="benchmarks">Benchmarks<a class="headerlink" href="#benchmarks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Validates 427K variants with 2504 samples in ~20-25 seconds</li>
+<li>With <code>--no-dup-check</code>: ~20 seconds (skips bloom filter operations)</li>
+<li>Memory usage: ~128MB for bloom filter + minimal overhead</li>
 </ul>
 <h3 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h3>
 <p>For best performance with large files (multi-GB):
-<div class="highlight"><pre><span></span><code><span class="c1"># Use file input instead of stdin for memory-mapped I/O</span>
-VCFX_validator<span class="w"> </span>-i<span class="w"> </span>large_file.vcf<span class="w"> </span>&gt;<span class="w"> </span>validated.vcf
+<div class="highlight"><pre><span></span><code><span class="c1"># Use file path argument for memory-mapped I/O (fastest)</span>
+VCFX_validator<span class="w"> </span>large_file.vcf
+
+<span class="c1"># Skip duplicate checking if data is known to be clean</span>
+VCFX_validator<span class="w"> </span>--no-dup-check<span class="w"> </span>large_file.vcf
+
+<span class="c1"># Reduce memory usage with smaller bloom filter</span>
+VCFX_validator<span class="w"> </span>--bloom-size<span class="w"> </span><span class="m">64</span><span class="w"> </span>large_file.vcf
 
 <span class="c1"># For compressed files, decompress and pipe (stdin mode)</span>
-zcat<span class="w"> </span>large_file.vcf.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_validator<span class="w"> </span>&gt;<span class="w"> </span>validated.vcf
+zcat<span class="w"> </span>large_file.vcf.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_validator
 </code></pre></div></p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Does not validate VCF version compatibility</li>
 <li>No validation of the content of meta-information lines beyond the '##' prefix</li>
+<li>Bloom filter may report false positive duplicates (rare, &lt;1% at 100M variants with 128MB filter)</li>
 <li>Threading (<code>-t</code>) is reserved for future implementation</li>
 </ul>
 

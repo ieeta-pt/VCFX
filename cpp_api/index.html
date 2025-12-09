@@ -12,13 +12,13 @@
         <meta name="author" content="VCFX Team">
       
       
-        <link rel="canonical" href="https://ieeta-pt.github.io/VCFX/installation/">
+        <link rel="canonical" href="https://ieeta-pt.github.io/VCFX/cpp_api/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../processing/VCFX_haplotype_extractor/">
       
       
-        <link rel="next" href="../quickstart/">
+        <link rel="next" href="../python_api/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Installation - VCFX Documentation</title>
+        <title>C++ API - VCFX Documentation</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installation-guide" class="md-skip">
+        <a href="#c-api" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation
+              C++ API
             
           </span>
         </div>
@@ -246,13 +246,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../installation/" class="md-tabs__link">
           
   
   
@@ -288,11 +286,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../cpp_api/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -437,31 +437,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
   
@@ -479,7 +476,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -494,37 +491,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -540,225 +510,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation-methods" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installation Methods
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation Methods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#method-1-using-pypi-python-package-index" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 1: Using PyPI (Python Package Index)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-2-using-bioconda" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 2: Using Bioconda
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-3-using-docker" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 3: Using Docker
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-4-building-from-source" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 4: Building from Source
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-5-building-with-python-bindings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 5: Building with Python Bindings
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-6-building-individual-tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 6: Building Individual Tools
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-7-building-your-own-docker-image" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 7: Building Your Own Docker Image
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verifying-installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verifying Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-vcfx-to-your-path" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adding VCFX to Your PATH
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#missing-dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Missing Dependencies
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#compilation-errors" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compilation Errors
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#path-issues" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Path Issues
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-help" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting Help
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Next Steps
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3034,28 +2785,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -3073,7 +2827,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -3088,10 +2842,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../cpp_api/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -3107,6 +2888,287 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Header
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Namespace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#string-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String Utilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="String Utilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trim
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        split
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Reading
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Reading">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#read_maybe_compressed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        read_maybe_compressed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read_file_maybe_compressed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        read_file_maybe_compressed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#streaming-decompression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Decompression
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Streaming Decompression">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaminggzipreader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StreamingGzipReader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make_streaming_reader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        make_streaming_reader
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-Line Helpers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command-Line Helpers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flag_present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        flag_present
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handle_common_flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        handle_common_flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#print_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        print_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#print_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        print_version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compression-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compression Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread Safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linking
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3255,10 +3317,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#header" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prerequisites
+        Header
       
     </span>
   </a>
@@ -3266,22 +3328,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation-methods" class="md-nav__link">
+  <a href="#namespace" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installation Methods
+        Namespace
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Installation Methods">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#string-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String Utilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="String Utilities">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#method-1-using-pypi-python-package-index" class="md-nav__link">
+  <a href="#trim" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Method 1: Using PyPI (Python Package Index)
+        trim
       
     </span>
   </a>
@@ -3289,65 +3362,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-2-using-bioconda" class="md-nav__link">
+  <a href="#split" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Method 2: Using Bioconda
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-3-using-docker" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 3: Using Docker
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-4-building-from-source" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 4: Building from Source
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-5-building-with-python-bindings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 5: Building with Python Bindings
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-6-building-individual-tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 6: Building Individual Tools
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#method-7-building-your-own-docker-image" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Method 7: Building Your Own Docker Image
+        split
       
     </span>
   </a>
@@ -3360,44 +3378,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#verifying-installation" class="md-nav__link">
+  <a href="#file-reading" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verifying Installation
+        File Reading
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-vcfx-to-your-path" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adding VCFX to Your PATH
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
+    <nav class="md-nav" aria-label="File Reading">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#missing-dependencies" class="md-nav__link">
+  <a href="#read_maybe_compressed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Missing Dependencies
+        read_maybe_compressed
       
     </span>
   </a>
@@ -3405,21 +3401,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#compilation-errors" class="md-nav__link">
+  <a href="#read_file_maybe_compressed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compilation Errors
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#path-issues" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Path Issues
+        read_file_maybe_compressed
       
     </span>
   </a>
@@ -3432,10 +3417,138 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-help" class="md-nav__link">
+  <a href="#streaming-decompression" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Getting Help
+        Streaming Decompression
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Streaming Decompression">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaminggzipreader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StreamingGzipReader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make_streaming_reader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        make_streaming_reader
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-Line Helpers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command-Line Helpers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flag_present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        flag_present
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handle_common_flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        handle_common_flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#print_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        print_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#print_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        print_version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compression-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compression Support
       
     </span>
   </a>
@@ -3443,10 +3556,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#thread-safety" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next Steps
+        Thread Safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linking
       
     </span>
   </a>
@@ -3473,165 +3597,215 @@
   
 
 
-<h1 id="installation-guide">Installation Guide<a class="headerlink" href="#installation-guide" title="Permanent link">&para;</a></h1>
-<p>This guide explains how to install the VCFX toolkit on your system.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p>Before installing VCFX, ensure you have the following prerequisites:</p>
+<h1 id="c-api">C++ API<a class="headerlink" href="#c-api" title="Permanent link">&para;</a></h1>
+<p>VCFX provides a core C++ library (<code>vcfx_core</code>) with utility functions and
+classes for VCF file processing. The library is designed for efficient
+handling of large VCF files with minimal memory usage.</p>
+<h2 id="header">Header<a class="headerlink" href="#header" title="Permanent link">&para;</a></h2>
+<p>Include the main header to access all functionality:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vcfx_core.h&quot;</span>
+</code></pre></div>
+<h2 id="namespace">Namespace<a class="headerlink" href="#namespace" title="Permanent link">&para;</a></h2>
+<p>All functions and classes are in the <code>vcfx</code> namespace.</p>
+<h2 id="string-utilities">String Utilities<a class="headerlink" href="#string-utilities" title="Permanent link">&para;</a></h2>
+<h3 id="trim">trim<a class="headerlink" href="#trim" title="Permanent link">&para;</a></h3>
+<p>Remove leading and trailing whitespace from a string.</p>
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">trim</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">str</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vcfx</span><span class="o">::</span><span class="n">trim</span><span class="p">(</span><span class="s">&quot;  hello world  &quot;</span><span class="p">);</span>
+<span class="c1">// s == &quot;hello world&quot;</span>
+</code></pre></div></p>
+<h3 id="split">split<a class="headerlink" href="#split" title="Permanent link">&para;</a></h3>
+<p>Split a string by a delimiter character.</p>
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">split</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">delimiter</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">auto</span><span class="w"> </span><span class="n">parts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vcfx</span><span class="o">::</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;chr1</span><span class="se">\t</span><span class="s">100</span><span class="se">\t</span><span class="s">A</span><span class="se">\t</span><span class="s">G&quot;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;\t&#39;</span><span class="p">);</span>
+<span class="c1">// parts == {&quot;chr1&quot;, &quot;100&quot;, &quot;A&quot;, &quot;G&quot;}</span>
+</code></pre></div></p>
+<h2 id="file-reading">File Reading<a class="headerlink" href="#file-reading" title="Permanent link">&para;</a></h2>
+<h3 id="read_maybe_compressed">read_maybe_compressed<a class="headerlink" href="#read_maybe_compressed" title="Permanent link">&para;</a></h3>
+<p>Read from an input stream, automatically decompressing if gzip/BGZF compressed.</p>
+<div class="highlight"><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">read_maybe_compressed</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">istream</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Parameters:</strong></p>
 <ul>
-<li>A Unix-like operating system (Linux, macOS)</li>
-<li>Python 3.10+ (for PyPI installation)</li>
-<li>C++ compiler (GCC 5.0+ or Clang 3.8+) - only for building from source</li>
-<li>CMake (version 3.10 or higher) - only for building from source</li>
+<li><code>in</code> - Input stream (should be opened in binary mode for compressed data)</li>
+<li><code>out</code> - String to store the decompressed/read content</li>
 </ul>
-<h2 id="installation-methods">Installation Methods<a class="headerlink" href="#installation-methods" title="Permanent link">&para;</a></h2>
-<h3 id="method-1-using-pypi-python-package-index">Method 1: Using PyPI (Python Package Index)<a class="headerlink" href="#method-1-using-pypi-python-package-index" title="Permanent link">&para;</a></h3>
-<p>The simplest way to install VCFX with Python bindings:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>vcfx
+<p><strong>Returns:</strong> <code>true</code> on success, <code>false</code> on error.</p>
+<p><strong>Note:</strong> This function loads the entire file into memory. For large files,
+use <code>StreamingGzipReader</code> instead.</p>
+<h3 id="read_file_maybe_compressed">read_file_maybe_compressed<a class="headerlink" href="#read_file_maybe_compressed" title="Permanent link">&para;</a></h3>
+<p>Read a file by path, automatically decompressing if needed.</p>
+<div class="highlight"><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">read_file_maybe_compressed</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">);</span>
 </code></pre></div>
-<p>This installs the Python package with bindings to the C++ library. To use the command-line tools, you'll also need to install them separately via one of the other methods below.</p>
-<p>For development or to install directly from the repository:
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ieeta-pt/VCFX.git
-<span class="nb">cd</span><span class="w"> </span>VCFX
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>./python
-</code></pre></div></p>
-<h3 id="method-2-using-bioconda">Method 2: Using Bioconda<a class="headerlink" href="#method-2-using-bioconda" title="Permanent link">&para;</a></h3>
-<p>VCFX is available in the Bioconda channel, providing both the command-line tools and Python bindings:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Set up Bioconda channels if you haven&#39;t already</span>
-conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>defaults
-conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>bioconda
-conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
-
-<span class="c1"># Install VCFX</span>
-conda<span class="w"> </span>install<span class="w"> </span>vcfx
-</code></pre></div>
-<p>This method automatically handles all dependencies and provides a ready-to-use installation of VCFX with all command-line tools.</p>
-<h3 id="method-3-using-docker">Method 3: Using Docker<a class="headerlink" href="#method-3-using-docker" title="Permanent link">&para;</a></h3>
-<p>The simplest way to use VCFX is with Docker, which requires no compilation:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Pull the VCFX Docker image (only needed once)</span>
-docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/jorgemfs/vcfx:latest
-
-<span class="c1"># Run a VCFX tool</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>ghcr.io/jorgemfs/vcfx:latest<span class="w"> </span>VCFX_tool_name<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-
-<span class="c1"># Process files by mounting a directory with your data</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>/path/to/your/data:/data<span class="w"> </span>ghcr.io/jorgemfs/vcfx:latest<span class="w"> </span><span class="s1">&#39;cat /data/input.vcf | VCFX_tool_name &gt; /data/output.tsv&#39;</span>
-</code></pre></div>
-<p>This method is ideal for:
-- Quick testing without installing anything locally
-- Running VCFX in any environment with Docker
-- Ensuring consistent tool behavior across different systems</p>
-<p>For more advanced Docker usage, see the <a href="../docker/">Docker Guide</a>.</p>
-<h3 id="method-4-building-from-source">Method 4: Building from Source<a class="headerlink" href="#method-4-building-from-source" title="Permanent link">&para;</a></h3>
-<p>This method ensures you have the latest version of VCFX.</p>
-<ol>
-<li>Clone the VCFX repository:</li>
-</ol>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ieeta-pt/VCFX.git
-<span class="nb">cd</span><span class="w"> </span>VCFX
-</code></pre></div>
-<ol>
-<li>Create a build directory and build the tools:</li>
-</ol>
-<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>build
-<span class="nb">cd</span><span class="w"> </span>build
-cmake<span class="w"> </span>..
-make
-</code></pre></div>
-<ol>
-<li>(Optional) Install the tools:
-   <div class="highlight"><pre><span></span><code>make<span class="w"> </span>install
-</code></pre></div></li>
-</ol>
-<p>By default the tools are installed into <code>~/.local</code>, so no administrator
-   privileges are required. You can change the destination with
-   <code>cmake -DCMAKE_INSTALL_PREFIX=/your/path ..</code> if desired.</p>
-<p>After installation, you should be able to run VCFX tools from your terminal.</p>
-<h3 id="method-5-building-with-python-bindings">Method 5: Building with Python Bindings<a class="headerlink" href="#method-5-building-with-python-bindings" title="Permanent link">&para;</a></h3>
-<p>To build VCFX with Python bindings from source:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ieeta-pt/VCFX.git
-<span class="nb">cd</span><span class="w"> </span>VCFX
-mkdir<span class="w"> </span>-p<span class="w"> </span>build
-<span class="nb">cd</span><span class="w"> </span>build
-cmake<span class="w"> </span>-DPYTHON_BINDINGS<span class="o">=</span>ON<span class="w"> </span>..
-make
-</code></pre></div>
-<p>Then install the Python package:
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>../python
-pip<span class="w"> </span>install<span class="w"> </span>.
-</code></pre></div></p>
-<p>This gives you both the command-line tools and the Python API.</p>
-<h3 id="method-6-building-individual-tools">Method 6: Building Individual Tools<a class="headerlink" href="#method-6-building-individual-tools" title="Permanent link">&para;</a></h3>
-<p>If you only need specific tools, you can build them individually:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>VCFX/build
-make<span class="w"> </span>VCFX_tool_name
-</code></pre></div>
-<p>Replace <code>VCFX_tool_name</code> with the actual tool name (e.g., <code>VCFX_allele_freq_calc</code>).</p>
-<h3 id="method-7-building-your-own-docker-image">Method 7: Building Your Own Docker Image<a class="headerlink" href="#method-7-building-your-own-docker-image" title="Permanent link">&para;</a></h3>
-<p>If you need to customize the Docker image, you can build it yourself:</p>
-<ol>
-<li>Clone the VCFX repository:</li>
-</ol>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ieeta-pt/VCFX.git
-<span class="nb">cd</span><span class="w"> </span>VCFX
-</code></pre></div>
-<ol>
-<li>Build the Docker image:</li>
-</ol>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>vcfx:local<span class="w"> </span>.
-</code></pre></div>
-<p>Or use docker-compose:</p>
-<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>build
-</code></pre></div>
-<ol>
-<li>Run a VCFX tool:</li>
-</ol>
-<div class="highlight"><pre><span></span><code><span class="c1"># Using docker directly</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/data:/data<span class="w"> </span>vcfx:local<span class="w"> </span>VCFX_tool_name<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-
-<span class="c1"># Using docker-compose</span>
-docker-compose<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>vcfx<span class="w"> </span>VCFX_tool_name<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-</code></pre></div>
-<h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Permanent link">&para;</a></h2>
-<p>To verify that VCFX tools are installed correctly, you can run:</p>
-<div class="highlight"><pre><span></span><code>VCFX_validator<span class="w"> </span>--help
-</code></pre></div>
-<p>You should see the help message for the VCFX_validator tool.</p>
-<h2 id="adding-vcfx-to-your-path">Adding VCFX to Your PATH<a class="headerlink" href="#adding-vcfx-to-your-path" title="Permanent link">&para;</a></h2>
-<p>If you didn't use <code>make install</code> or want to run tools directly from the build directory, you can add them to your PATH:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Add to ~/.bashrc or ~/.zshrc</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:/path/to/VCFX/build/src&quot;</span>
-</code></pre></div>
-<p>Replace <code>/path/to/VCFX</code> with the absolute path to your VCFX repository.</p>
-<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
-<h3 id="missing-dependencies">Missing Dependencies<a class="headerlink" href="#missing-dependencies" title="Permanent link">&para;</a></h3>
-<p>If CMake complains about missing dependencies, you may need to install additional libraries:</p>
-<p><strong>Ubuntu/Debian:</strong>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>cmake<span class="w"> </span>git
-</code></pre></div></p>
-<p><strong>macOS (with Homebrew):</strong>
-<div class="highlight"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>cmake
-</code></pre></div></p>
-<h3 id="compilation-errors">Compilation Errors<a class="headerlink" href="#compilation-errors" title="Permanent link">&para;</a></h3>
-<p>If you encounter compilation errors, ensure you're using a compatible compiler version and have all necessary dependencies installed.</p>
-<h3 id="path-issues">Path Issues<a class="headerlink" href="#path-issues" title="Permanent link">&para;</a></h3>
-<p>If you get "command not found" errors when trying to run VCFX tools, check that:</p>
-<ol>
-<li>The tools were built successfully</li>
-<li>The tools are in your PATH</li>
-<li>The executable files have execute permissions</li>
-</ol>
-<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
-<p>If you encounter any issues during installation, please:</p>
-<ol>
-<li>Check the <a href="https://github.com/ieeta-pt/VCFX/issues">GitHub Issues</a> to see if your problem has been reported</li>
-<li>Open a new issue if necessary, including details about your system and the exact error messages</li>
-</ol>
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<p>Now that you have VCFX installed, you can:</p>
+<p><strong>Parameters:</strong></p>
 <ul>
-<li>Follow the <a href="../quickstart/">Quick Start Guide</a> to learn how to use VCFX</li>
-<li>Explore the <a href="../tools_overview/">Tool Documentation</a> to learn about specific tools </li>
+<li><code>path</code> - Path to the file (compression detected by extension or magic bytes)</li>
+<li><code>out</code> - String to store the file contents</li>
 </ul>
+<p><strong>Returns:</strong> <code>true</code> on success, <code>false</code> on error.</p>
+<p><strong>Recognized extensions:</strong> <code>.gz</code>, <code>.bgz</code>, <code>.bgzf</code></p>
+<h2 id="streaming-decompression">Streaming Decompression<a class="headerlink" href="#streaming-decompression" title="Permanent link">&para;</a></h2>
+<h3 id="streaminggzipreader">StreamingGzipReader<a class="headerlink" href="#streaminggzipreader" title="Permanent link">&para;</a></h3>
+<p>A class for reading gzip/BGZF compressed files line-by-line with bounded
+memory usage. This is the recommended approach for processing large VCF files.</p>
+<p><strong>Memory usage:</strong> O(chunk_size + line_length) ~ 64KB typical</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StreamingGzipReader</span><span class="w"> </span><span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">StreamingGzipReader</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">istream</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">);</span>
+<span class="w">    </span><span class="o">~</span><span class="n">StreamingGzipReader</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Non-copyable, move-only</span>
+<span class="w">    </span><span class="n">StreamingGzipReader</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">StreamingGzipReader</span><span class="w"> </span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">    </span><span class="n">StreamingGzipReader</span><span class="w"> </span><span class="o">&amp;</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">StreamingGzipReader</span><span class="w"> </span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">    </span><span class="n">StreamingGzipReader</span><span class="p">(</span><span class="n">StreamingGzipReader</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+<span class="w">    </span><span class="n">StreamingGzipReader</span><span class="w"> </span><span class="o">&amp;</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">StreamingGzipReader</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">getline</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">line</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">error</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">eof</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">is_compressed</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+<p><strong>Methods:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getline(line)</code></td>
+<td>Read the next line (without newline). Returns <code>true</code> if a line was read.</td>
+</tr>
+<tr>
+<td><code>error()</code></td>
+<td>Returns <code>true</code> if an error occurred during reading.</td>
+</tr>
+<tr>
+<td><code>eof()</code></td>
+<td>Returns <code>true</code> if end of file has been reached.</td>
+</tr>
+<tr>
+<td><code>is_compressed()</code></td>
+<td>Returns <code>true</code> if the input was gzip/BGZF compressed.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vcfx_core.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fstream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="w"> </span><span class="n">file</span><span class="p">(</span><span class="s">&quot;data.vcf.gz&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ios</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
+<span class="w">    </span><span class="n">vcfx</span><span class="o">::</span><span class="n">StreamingGzipReader</span><span class="w"> </span><span class="n">reader</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">line</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">variant_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">reader</span><span class="p">.</span><span class="n">getline</span><span class="p">(</span><span class="n">line</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">line</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">&#39;#&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">variant_count</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">reader</span><span class="p">.</span><span class="n">error</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Error reading file</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Variants: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">variant_count</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="make_streaming_reader">make_streaming_reader<a class="headerlink" href="#make_streaming_reader" title="Permanent link">&para;</a></h3>
+<p>Factory functions for creating <code>StreamingGzipReader</code> instances.</p>
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">StreamingGzipReader</span><span class="o">&gt;</span><span class="w"> </span><span class="n">make_streaming_reader</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">istream</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">StreamingGzipReader</span><span class="o">&gt;</span><span class="w"> </span><span class="n">make_streaming_reader</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">path</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fileStream</span>
+<span class="p">);</span>
+</code></pre></div>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>in</code> - Input stream opened in binary mode</li>
+<li><code>path</code> - File path to open</li>
+<li><code>fileStream</code> - Reference to an ifstream that will be opened by the function</li>
+</ul>
+<p><strong>Returns:</strong> <code>unique_ptr</code> to the reader, or <code>nullptr</code> on error.</p>
+<p><strong>Example with file path:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="w"> </span><span class="n">fileStream</span><span class="p">;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vcfx</span><span class="o">::</span><span class="n">make_streaming_reader</span><span class="p">(</span><span class="s">&quot;large_file.vcf.gz&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fileStream</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">reader</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Failed to open file</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">line</span><span class="p">;</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">reader</span><span class="o">-&gt;</span><span class="n">getline</span><span class="p">(</span><span class="n">line</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// process line</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="command-line-helpers">Command-Line Helpers<a class="headerlink" href="#command-line-helpers" title="Permanent link">&para;</a></h2>
+<h3 id="flag_present">flag_present<a class="headerlink" href="#flag_present" title="Permanent link">&para;</a></h3>
+<p>Check if a command-line flag is present.</p>
+<div class="highlight"><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">flag_present</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[],</span>
+<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">long_flag</span><span class="p">,</span>
+<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">short_flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="handle_common_flags">handle_common_flags<a class="headerlink" href="#handle_common_flags" title="Permanent link">&para;</a></h3>
+<p>Handle <code>--help</code> and <code>--version</code> flags automatically.</p>
+<div class="highlight"><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">handle_common_flags</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[],</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tool</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">print_help</span><span class="p">)(),</span>
+<span class="w">                         </span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="w"> </span><span class="o">&amp;</span><span class="n">os</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Returns:</strong> <code>true</code> if a flag was handled (caller should exit).</p>
+<h3 id="get_version">get_version<a class="headerlink" href="#get_version" title="Permanent link">&para;</a></h3>
+<p>Get the VCFX version string.</p>
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">get_version</span><span class="p">();</span>
+</code></pre></div>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<h3 id="print_error">print_error<a class="headerlink" href="#print_error" title="Permanent link">&para;</a></h3>
+<p>Print an error message to a stream.</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">print_error</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="w"> </span><span class="o">&amp;</span><span class="n">os</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="print_version">print_version<a class="headerlink" href="#print_version" title="Permanent link">&para;</a></h3>
+<p>Print version information.</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">print_version</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tool</span><span class="p">,</span>
+<span class="w">                   </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">version</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="w"> </span><span class="o">&amp;</span><span class="n">os</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="compression-support">Compression Support<a class="headerlink" href="#compression-support" title="Permanent link">&para;</a></h2>
+<p>The library supports:</p>
+<ul>
+<li><strong>Gzip</strong> (.gz) - Standard gzip compression</li>
+<li><strong>BGZF</strong> (.bgz, .bgzf) - Block gzip format used by samtools/bcftools</li>
+<li><strong>Uncompressed</strong> - Plain text files</li>
+</ul>
+<p>Compression is auto-detected using magic bytes (<code>0x1f 0x8b</code> for gzip),
+so files don't need to have the correct extension.</p>
+<h2 id="thread-safety">Thread Safety<a class="headerlink" href="#thread-safety" title="Permanent link">&para;</a></h2>
+<ul>
+<li>String utilities (<code>trim</code>, <code>split</code>) are thread-safe</li>
+<li><code>StreamingGzipReader</code> instances are not thread-safe; use one per thread</li>
+<li>File reading functions are thread-safe if operating on different files</li>
+</ul>
+<h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
+<p>Link against <code>vcfx_core</code> and zlib:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">your_target</span><span class="w"> </span><span class="s">vcfx_core</span><span class="w"> </span><span class="s">z</span><span class="p">)</span>
+</code></pre></div>
+<p>Or with pkg-config:</p>
+<div class="highlight"><pre><span></span><code>g++<span class="w"> </span>-o<span class="w"> </span>myapp<span class="w"> </span>myapp.cpp<span class="w"> </span><span class="k">$(</span>pkg-config<span class="w"> </span>--libs<span class="w"> </span>vcfx<span class="k">)</span><span class="w"> </span>-lz
+</code></pre></div>
 
 
 

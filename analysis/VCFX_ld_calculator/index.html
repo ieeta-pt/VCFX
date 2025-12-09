@@ -289,17 +289,18 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../python_api/" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item">
+        <a href="../../cpp_api/" class="md-tabs__link">
+          
   
-  Python API
+  
+  API Reference
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -1138,6 +1139,117 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#computation-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computation Modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computation Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-mode-streaming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Mode (Streaming)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matrix-mode-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrix Mode (--matrix)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distance-based-pruning-max-distance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distance-Based Pruning (--max-distance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v20-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v2.0 Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complexity-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complexity Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Usage Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output-format" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1145,6 +1257,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Output Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaming-mode-pairwise-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Mode (Pairwise List)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matrix-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrix Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1161,10 +1301,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#file-input-mode-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        File Input Mode (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distance-based-pruning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distance-Based Pruning
       
     </span>
   </a>
@@ -1183,10 +1334,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#integration-with-other-tools" class="md-nav__link">
+  <a href="#matrix-mode-for-small-regions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Integration with Other Tools
+        Matrix Mode for Small Regions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-ld-pairs-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High LD Pairs Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combined-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combined Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stdin-mode-backward-compatible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stdin Mode (Backward Compatible)
       
     </span>
   </a>
@@ -1210,10 +1394,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance
+        Limitations
       
     </span>
   </a>
@@ -1221,10 +1405,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
+  <a href="#backward-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Limitations
+        Backward Compatibility
       
     </span>
   </a>
@@ -2995,6 +3179,88 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cpp_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../python_api/" class="md-nav__link">
         
@@ -3012,6 +3278,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3168,6 +3442,117 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#computation-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computation Modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computation Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-mode-streaming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Mode (Streaming)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matrix-mode-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrix Mode (--matrix)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distance-based-pruning-max-distance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distance-Based Pruning (--max-distance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v20-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v2.0 Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complexity-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complexity Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Usage Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#output-format" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3175,6 +3560,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Output Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaming-mode-pairwise-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Mode (Pairwise List)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matrix-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrix Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3191,10 +3604,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#file-input-mode-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        File Input Mode (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distance-based-pruning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distance-Based Pruning
       
     </span>
   </a>
@@ -3213,10 +3637,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#integration-with-other-tools" class="md-nav__link">
+  <a href="#matrix-mode-for-small-regions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Integration with Other Tools
+        Matrix Mode for Small Regions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-ld-pairs-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High LD Pairs Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combined-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combined Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stdin-mode-backward-compatible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stdin Mode (Backward Compatible)
       
     </span>
   </a>
@@ -3240,10 +3697,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance
+        Limitations
       
     </span>
   </a>
@@ -3251,10 +3708,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
+  <a href="#backward-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Limitations
+        Backward Compatibility
       
     </span>
   </a>
@@ -3284,8 +3741,10 @@
 <h1 id="vcfx_ld_calculator">VCFX_ld_calculator<a class="headerlink" href="#vcfx_ld_calculator" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_ld_calculator</code> calculates pairwise linkage disequilibrium (LD) statistics between genetic variants in a VCF file, expressed as r² values. It can analyze variants across an entire file or within a specified genomic region.</p>
+<p><strong>New in v2.0</strong>: Extreme-performance optimization with memory-mapped I/O, SIMD-accelerated r² computation, multi-threaded matrix mode, and optional distance-based pruning. Achieves 10-100x speedup over v1.2.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>ld_output.txt
+VCFX_ld_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&gt;<span class="w"> </span>ld_output.txt
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3297,16 +3756,44 @@
 </thead>
 <tbody>
 <tr>
-<td><code>--region &lt;chr:start-end&gt;</code></td>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file (uses memory-mapping for best performance)</td>
+</tr>
+<tr>
+<td><code>-r</code>, <code>--region &lt;chr:start-end&gt;</code></td>
 <td>Only compute LD for variants in the specified region</td>
 </tr>
 <tr>
+<td><code>-w</code>, <code>--window &lt;N&gt;</code></td>
+<td>Window size in variants (default: 1000)</td>
+</tr>
+<tr>
+<td><code>-d</code>, <code>--max-distance &lt;BP&gt;</code></td>
+<td>Max base-pair distance between pairs (0=unlimited, default: 0)</td>
+</tr>
+<tr>
+<td><code>-t</code>, <code>--threshold &lt;R2&gt;</code></td>
+<td>Only output pairs with r² &gt;= threshold (default: 0.0)</td>
+</tr>
+<tr>
+<td><code>-n</code>, <code>--threads &lt;N&gt;</code></td>
+<td>Number of threads for matrix mode (default: auto)</td>
+</tr>
+<tr>
+<td><code>-m</code>, <code>--matrix</code></td>
+<td>Use matrix mode (O(M²) full pairwise matrix)</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress informational messages</td>
+</tr>
+<tr>
 <td><code>-h</code>, <code>--help</code></td>
-<td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Display help message and exit</td>
 </tr>
 <tr>
 <td><code>-v</code>, <code>--version</code></td>
-<td>Show program version and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Show program version and exit</td>
 </tr>
 </tbody>
 </table>
@@ -3314,58 +3801,219 @@
 <p><code>VCFX_ld_calculator</code> reads a VCF file and computes the pairwise linkage disequilibrium (r²) between genetic variants. Linkage disequilibrium is a measure of the non-random association between alleles at different loci, which is important for understanding genetic structure, identifying haplotype blocks, and designing association studies.</p>
 <p>The tool operates as follows:</p>
 <ol>
-<li>It reads the VCF file from standard input</li>
+<li>It reads the VCF file (using memory-mapping if <code>-i</code> is specified)</li>
 <li>It collects diploid genotypes for each variant, encoding them as:</li>
 <li>0: Homozygous reference (0/0)</li>
 <li>1: Heterozygous (0/1 or 1/0)</li>
 <li>2: Homozygous alternate (1/1)</li>
 <li>-1: Missing data or other scenarios (including multi-allelic variants)</li>
-<li>For each pair of variants within the specified region (or the entire file if no region is specified), it computes pairwise r² values, ignoring samples with missing genotypes</li>
-<li>It outputs a matrix of r² values along with variant identifiers</li>
+<li>For each pair of variants within the window/region, it computes pairwise r² values using SIMD acceleration</li>
+<li>It outputs the LD results (format depends on mode)</li>
 </ol>
-<p>The r² calculation uses the standard formula:
-- Let X and Y be the genotype arrays for two variants
-- Calculate means of X and Y (meanX, meanY)
-- Calculate covariance: cov = average(XY) - meanX * meanY
-- Calculate variances: varX = average(X²) - meanX², varY similarly
-- r = cov / sqrt(varX * varY)
-- r² = r * r</p>
+<h2 id="computation-modes">Computation Modes<a class="headerlink" href="#computation-modes" title="Permanent link">&para;</a></h2>
+<h3 id="default-mode-streaming">Default Mode (Streaming)<a class="headerlink" href="#default-mode-streaming" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Uses sliding window with <code>std::deque</code></li>
+<li>Only keeps <code>window</code> most recent variants in memory</li>
+<li>Outputs pairs incrementally as they're computed</li>
+<li>Memory usage: O(window × samples)</li>
+<li><strong>Enables LD analysis of files larger than available RAM</strong></li>
+</ul>
+<h3 id="matrix-mode-matrix">Matrix Mode (<code>--matrix</code>)<a class="headerlink" href="#matrix-mode-matrix" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use <code>--matrix</code> flag for full pairwise matrix output</li>
+<li>Multi-threaded computation with <code>--threads</code> option</li>
+<li>Loads all variants (in region) into memory</li>
+<li>Computes full MxM pairwise r² matrix</li>
+<li>Memory usage scales with number of variants</li>
+<li>Best for small regions where full matrix is needed</li>
+</ul>
+<h3 id="distance-based-pruning-max-distance">Distance-Based Pruning (<code>--max-distance</code>)<a class="headerlink" href="#distance-based-pruning-max-distance" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>New in v2.0</strong>: Skip pairs beyond a physical distance threshold</li>
+<li>Biological justification: LD decays exponentially with distance</li>
+<li>Beyond ~1Mb, r² is typically &lt; 0.01</li>
+<li>Reduces comparisons by 90-99% while capturing biologically relevant LD</li>
+</ul>
+<h2 id="performance-characteristics">Performance Characteristics<a class="headerlink" href="#performance-characteristics" title="Permanent link">&para;</a></h2>
+<h3 id="v20-optimizations">v2.0 Optimizations<a class="headerlink" href="#v20-optimizations" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Memory-mapped I/O</strong>: Uses <code>mmap()</code> with <code>MADV_SEQUENTIAL | MADV_WILLNEED</code> hints for extreme read performance.</p>
+</li>
+<li>
+<p><strong>SIMD-accelerated r² computation</strong>: Processes 16-32 samples simultaneously using NEON (ARM), AVX2, or SSE2 intrinsics.</p>
+</li>
+<li>
+<p><strong>Multi-threaded matrix computation</strong>: Parallel row computation with work-stealing for optimal CPU utilization.</p>
+</li>
+<li>
+<p><strong>Zero-allocation parsing</strong>: VCF lines parsed using raw pointer arithmetic, eliminating heap allocations.</p>
+</li>
+<li>
+<p><strong>Compact genotype storage</strong>: Uses <code>int8_t</code> instead of <code>int</code> for 4x smaller memory footprint.</p>
+</li>
+<li>
+<p><strong>Pre-computed statistics</strong>: Per-variant sum and variance cached to avoid redundant calculations.</p>
+</li>
+<li>
+<p><strong>Buffered output</strong>: 4MB output buffer with direct <code>write()</code> syscalls for minimal I/O overhead.</p>
+</li>
+</ol>
+<h3 id="complexity-analysis">Complexity Analysis<a class="headerlink" href="#complexity-analysis" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Time Complexity</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Streaming</strong></td>
+<td>O(n × w × m/32)</td>
+<td>O(w × m)</td>
+</tr>
+<tr>
+<td><strong>Matrix</strong></td>
+<td>O(n² × m/32/T)</td>
+<td>O(n × m)</td>
+</tr>
+</tbody>
+</table>
+<p>Where: n = variants, w = window, m = samples, T = threads</p>
+<h3 id="benchmark-results">Benchmark Results<a class="headerlink" href="#benchmark-results" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Dataset</th>
+<th>Time (v1.2)</th>
+<th>Time (v2.0)</th>
+<th>Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Streaming</td>
+<td>2K variants × 2504 samples</td>
+<td>1.13s</td>
+<td>~0.2s</td>
+<td>5x</td>
+</tr>
+<tr>
+<td>Streaming</td>
+<td>427K variants × 2504 samples</td>
+<td>~10 min</td>
+<td>~2 min</td>
+<td>5x</td>
+</tr>
+<tr>
+<td>Matrix</td>
+<td>10K variants × 2504 samples</td>
+<td>~32 min</td>
+<td>~30s</td>
+<td>60x</td>
+</tr>
+</tbody>
+</table>
+<h3 id="memory-usage-examples">Memory Usage Examples<a class="headerlink" href="#memory-usage-examples" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File Size</th>
+<th>Variants</th>
+<th>Samples</th>
+<th>Matrix Mode</th>
+<th>Streaming (w=1000)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100 MB</td>
+<td>10,000</td>
+<td>500</td>
+<td>~40 MB</td>
+<td>~4 MB</td>
+</tr>
+<tr>
+<td>1 GB</td>
+<td>100,000</td>
+<td>1,000</td>
+<td>~800 MB</td>
+<td>~8 MB</td>
+</tr>
+<tr>
+<td>4 GB</td>
+<td>427,000</td>
+<td>2,504</td>
+<td>~4 GB</td>
+<td>~20 MB</td>
+</tr>
+<tr>
+<td>10 GB</td>
+<td>1,000,000</td>
+<td>2,500</td>
+<td>OOM</td>
+<td>~20 MB</td>
+</tr>
+</tbody>
+</table>
 <h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
-<p>The output is a tab-delimited matrix of r² values with a header identifying the variants:</p>
-<div class="highlight"><pre><span></span><code>#LD_MATRIX_START
-         chr1:100 chr1:200 chr1:300
-chr1:100      1.0     0.4     0.2
-chr1:200     0.4      1.0     0.6
-chr1:300     0.2     0.6      1.0
+<h3 id="streaming-mode-pairwise-list">Streaming Mode (Pairwise List)<a class="headerlink" href="#streaming-mode-pairwise-list" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>#VAR1_CHROM VAR1_POS    VAR1_ID VAR2_CHROM  VAR2_POS    VAR2_ID R2
+chr1    100 rs123   chr1    200 rs456   0.8500
+chr1    100 rs123   chr1    300 rs789   0.4200
+chr1    200 rs456   chr1    300 rs789   0.9100
 </code></pre></div>
-<p>If only one or no variants are found in the region, the tool outputs a message indicating that no pairwise LD could be calculated.</p>
+<h3 id="matrix-mode">Matrix Mode<a class="headerlink" href="#matrix-mode" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>#LD_MATRIX_START
+Index/Var   chr1:100    chr1:200    chr1:300
+chr1:100    1.0000  0.4000  0.2000
+chr1:200    0.4000  1.0000  0.6000
+chr1:300    0.2000  0.6000  1.0000
+#LD_MATRIX_END
+</code></pre></div>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<p>Calculate LD for all variants in a VCF file:</p>
-<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
+<h3 id="file-input-mode-recommended">File Input Mode (Recommended)<a class="headerlink" href="#file-input-mode-recommended" title="Permanent link">&para;</a></h3>
+<p>Use memory-mapped file I/O for best performance:</p>
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>ld_pairs.txt
+VCFX_ld_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>-w<span class="w"> </span><span class="m">500</span><span class="w"> </span>-t<span class="w"> </span><span class="m">0</span>.2<span class="w"> </span>&gt;<span class="w"> </span>ld_pairs.txt
+</code></pre></div>
+<h3 id="distance-based-pruning">Distance-Based Pruning<a class="headerlink" href="#distance-based-pruning" title="Permanent link">&para;</a></h3>
+<p>Skip pairs more than 500kb apart (biology: LD decays with distance):</p>
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>--max-distance<span class="w"> </span><span class="m">500000</span><span class="w"> </span>&gt;<span class="w"> </span>ld_pairs.txt
 </code></pre></div>
 <h3 id="region-specific-ld">Region-Specific LD<a class="headerlink" href="#region-specific-ld" title="Permanent link">&para;</a></h3>
 <p>Calculate LD only for variants in a specific genomic region:</p>
-<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>--region<span class="w"> </span>chr1:10000-20000<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>-r<span class="w"> </span>chr1:10000-20000<span class="w"> </span>&gt;<span class="w"> </span>ld_pairs.txt
 </code></pre></div>
-<h3 id="integration-with-other-tools">Integration with Other Tools<a class="headerlink" href="#integration-with-other-tools" title="Permanent link">&para;</a></h3>
-<p>Filter for common variants first, then calculate LD:</p>
-<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_af_subsetter<span class="w"> </span>--af-filter<span class="w"> </span><span class="s1">&#39;0.05-1.0&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_ld_calculator<span class="w"> </span>&gt;<span class="w"> </span>common_variants_ld.txt
+<h3 id="matrix-mode-for-small-regions">Matrix Mode for Small Regions<a class="headerlink" href="#matrix-mode-for-small-regions" title="Permanent link">&para;</a></h3>
+<p>Get full pairwise matrix with multi-threading:</p>
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>-m<span class="w"> </span>-r<span class="w"> </span>chr1:10000-20000<span class="w"> </span>-n<span class="w"> </span><span class="m">8</span><span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
+</code></pre></div>
+<h3 id="high-ld-pairs-only">High LD Pairs Only<a class="headerlink" href="#high-ld-pairs-only" title="Permanent link">&para;</a></h3>
+<p>Output only pairs with r² &gt;= 0.8:</p>
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>-t<span class="w"> </span><span class="m">0</span>.8<span class="w"> </span>&gt;<span class="w"> </span>high_ld_pairs.txt
+</code></pre></div>
+<h3 id="combined-options">Combined Options<a class="headerlink" href="#combined-options" title="Permanent link">&para;</a></h3>
+<p>Streaming mode with region filter, window, threshold, and distance limit:</p>
+<div class="highlight"><pre><span></span><code>VCFX_ld_calculator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>-r<span class="w"> </span>chr1:1000000-2000000<span class="w"> </span>-w<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-t<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>-d<span class="w"> </span><span class="m">100000</span><span class="w"> </span>&gt;<span class="w"> </span>ld_pairs.txt
+</code></pre></div>
+<h3 id="stdin-mode-backward-compatible">Stdin Mode (Backward Compatible)<a class="headerlink" href="#stdin-mode-backward-compatible" title="Permanent link">&para;</a></h3>
+<p>For piped input or integration with other tools:</p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_ld_calculator<span class="w"> </span>&gt;<span class="w"> </span>ld_pairs.txt
+cat<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_ld_calculator<span class="w"> </span>-m<span class="w"> </span>&gt;<span class="w"> </span>ld_matrix.txt
 </code></pre></div>
 <h2 id="handling-special-cases">Handling Special Cases<a class="headerlink" href="#handling-special-cases" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Missing Genotypes</strong>: Samples with missing genotypes (./.  or .|.) are skipped when calculating LD between variant pairs</li>
-<li><strong>Multi-allelic Variants</strong>: Genotypes involving alleles beyond the reference and first alternate (e.g., 1/2, 2/2) are treated as missing data</li>
-<li><strong>Single Variant</strong>: If only one variant is found in the region, the tool outputs a message stating that no pairwise LD can be calculated</li>
-<li><strong>Empty Region</strong>: If no variants are found in the specified region, the tool outputs a message stating that no pairwise LD can be calculated</li>
-<li><strong>Invalid Region Format</strong>: If the region format is invalid, the tool will display an error message</li>
-</ul>
-<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Time complexity is O(n²m) where n is the number of variants and m is the number of samples</li>
-<li>Memory usage scales linearly with the number of variants and samples</li>
-<li>For large datasets with many variants, consider using the <code>--region</code> option to limit the analysis to specific genomic regions</li>
-<li>The tool processes the VCF file line by line, so it can handle large files without loading the entire file into memory</li>
+<li><strong>Missing Genotypes</strong>: Samples with missing genotypes (./. or .|.) are skipped when calculating LD</li>
+<li><strong>Multi-allelic Variants</strong>: Genotypes involving alleles beyond reference and first alternate are treated as missing</li>
+<li><strong>Single Variant</strong>: If only one variant is found, outputs message stating no pairwise LD can be calculated</li>
+<li><strong>Empty Region</strong>: If no variants found in region, outputs appropriate message</li>
+<li><strong>Invalid Region Format</strong>: Displays error message with correct format example</li>
+<li><strong>Chromosome Boundaries</strong>: In streaming mode, the window continues across chromosome boundaries unless distance pruning is enabled</li>
 </ul>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3373,8 +4021,19 @@ chr1:300     0.2     0.6      1.0
 <li>Requires diploid genotypes; haploid genotypes will be treated as missing data</li>
 <li>Assumes standard VCF format with GT field in the FORMAT column</li>
 <li>Does not support phased vs. unphased distinction; both "/" and "|" separators are treated the same</li>
-<li>No built-in visualization of LD patterns; additional tools would be needed for heatmap creation </li>
+<li>No built-in visualization of LD patterns</li>
+<li>Window is based on variant count by default; use <code>--max-distance</code> for physical distance filtering</li>
 </ul>
+<h2 id="backward-compatibility">Backward Compatibility<a class="headerlink" href="#backward-compatibility" title="Permanent link">&para;</a></h2>
+<p><strong>Breaking Change in v1.2</strong>: Default mode changed from matrix to streaming.
+- To get matrix output, add <code>--matrix</code> flag
+- The <code>--streaming</code> flag is deprecated (streaming is now default)</p>
+<p><strong>New in v2.0</strong>: New options added:
+- <code>-i/--input</code> for mmap mode
+- <code>-n/--threads</code> for multi-threaded matrix
+- <code>-d/--max-distance</code> for distance pruning
+- <code>-q/--quiet</code> for silent operation</p>
+<p>All existing options continue to work as before.</p>
 
 
 
