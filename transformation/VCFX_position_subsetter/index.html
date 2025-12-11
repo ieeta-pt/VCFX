@@ -3576,7 +3576,11 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_position_subsetter</code> extracts variants from a VCF file that fall within a specified genomic region, allowing for targeted analysis of specific chromosomal segments.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_position_subsetter<span class="w"> </span>--region<span class="w"> </span><span class="s2">&quot;CHR:START-END&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>filtered.vcf
+<div class="highlight"><pre><span></span><code><span class="c1"># Using file input (recommended for large files - 10-20x faster)</span>
+VCFX_position_subsetter<span class="w"> </span>--region<span class="w"> </span><span class="s2">&quot;CHR:START-END&quot;</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>filtered.vcf
+
+<span class="c1"># Using stdin</span>
+VCFX_position_subsetter<span class="w"> </span>--region<span class="w"> </span><span class="s2">&quot;CHR:START-END&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>filtered.vcf
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3590,6 +3594,10 @@
 <tr>
 <td><code>-r</code>, <code>--region &lt;CHR:START-END&gt;</code></td>
 <td>Required. Genomic region to extract in the format "chromosome:start-end"</td>
+</tr>
+<tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file. Uses memory-mapped I/O for 10-20x faster processing</td>
 </tr>
 <tr>
 <td><code>-h</code>, <code>--help</code></td>
@@ -3664,12 +3672,14 @@
 <li>Data lines encountered before the #CHROM header are skipped with a warning</li>
 </ul>
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Processes the VCF file line by line, with minimal memory requirements</li>
-<li>No preprocessing or indexing is done</li>
-<li>Performance scales linearly with input file size</li>
-<li>More efficient for small regions in large files compared to manually parsing</li>
-</ul>
+<p>The tool is optimized for efficiency:
+- <strong>Memory-mapped I/O</strong>: When using <code>-i/--input</code>, files are memory-mapped for 10-20x faster processing
+- <strong>SIMD acceleration</strong>: Uses AVX2/SSE2/NEON instructions for fast newline scanning
+- <strong>Zero-copy parsing</strong>: Uses string_view for minimal memory allocation
+- <strong>1MB output buffering</strong>: Reduces system call overhead
+- No preprocessing or indexing is done
+- Performance scales linearly with input file size
+- More efficient for small regions in large files compared to manually parsing</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Can only extract one continuous region at a time</li>

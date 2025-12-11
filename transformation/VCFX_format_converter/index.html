@@ -3532,7 +3532,13 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_format_converter</code> is a tool for converting VCF (Variant Call Format) files to other common file formats. It currently supports conversion to BED (Browser Extensible Data) and CSV (Comma-Separated Values) formats.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_format_converter<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.file
+<div class="highlight"><pre><span></span><code><span class="c1"># Using file input (recommended for large files - 10-20x faster)</span>
+VCFX_format_converter<span class="w"> </span>--to-bed<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.bed
+VCFX_format_converter<span class="w"> </span>--to-csv<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.csv
+
+<span class="c1"># Using stdin</span>
+VCFX_format_converter<span class="w"> </span>--to-bed<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.bed
+VCFX_format_converter<span class="w"> </span>--to-csv<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.csv
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3552,7 +3558,11 @@
 <td>Convert the input VCF file to CSV format</td>
 </tr>
 <tr>
-<td><code>--help</code>, <code>-h</code></td>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file. Uses memory-mapped I/O for 10-20x faster processing</td>
+</tr>
+<tr>
+<td><code>-h</code>, <code>--help</code></td>
 <td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
 </tr>
 <tr>
@@ -3629,11 +3639,13 @@
 <li>A header row only for CSV output</li>
 </ul>
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
-<ul>
-<li>The tool processes VCF files line by line, with minimal memory requirements</li>
-<li>Performance scales linearly with input file size</li>
-<li>No indexing is performed, allowing efficient streaming processing</li>
-</ul>
+<p>The tool is optimized for efficiency:
+- <strong>Memory-mapped I/O</strong>: When using <code>-i/--input</code>, files are memory-mapped for 10-20x faster processing
+- <strong>SIMD acceleration</strong>: Uses AVX2/SSE2/NEON instructions for fast newline scanning
+- <strong>Zero-copy parsing</strong>: Uses string_view for minimal memory allocation
+- <strong>1MB output buffering</strong>: Reduces system call overhead
+- Performance scales linearly with input file size
+- No indexing is performed, allowing efficient streaming processing</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The BED conversion uses a simple interval representation based on REF allele length</li>

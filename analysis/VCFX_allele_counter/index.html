@@ -999,13 +999,63 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#output-format" class="md-nav__link">
+  <a href="#output-formats" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Output Format
+        Output Formats
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Output Formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-mode-per-sample-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Mode (Per-Sample Output)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate-mode-a-aggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate Mode (-a/--aggregate)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-mode-b-binary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Mode (-b/--binary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gzip-output-z-gzip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gzip Output (-z/--gzip)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1048,6 +1098,50 @@
     <span class="md-ellipsis">
       
         Specific Samples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate-mode-recommended-for-large-cohorts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate Mode (Recommended for Large Cohorts)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limit-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limit Samples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compressed-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compressed Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Output
       
     </span>
   </a>
@@ -3409,13 +3503,63 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#output-format" class="md-nav__link">
+  <a href="#output-formats" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Output Format
+        Output Formats
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Output Formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-mode-per-sample-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Mode (Per-Sample Output)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate-mode-a-aggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate Mode (-a/--aggregate)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-mode-b-binary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Mode (-b/--binary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gzip-output-z-gzip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gzip Output (-z/--gzip)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3458,6 +3602,50 @@
     <span class="md-ellipsis">
       
         Specific Samples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate-mode-recommended-for-large-cohorts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate Mode (Recommended for Large Cohorts)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limit-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limit Samples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compressed-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compressed Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Output
       
     </span>
   </a>
@@ -3700,6 +3888,22 @@
 <td>Optional. Specify sample names to calculate allele counts for (space-separated). If omitted, all samples are processed.</td>
 </tr>
 <tr>
+<td><code>-l</code>, <code>--limit-samples N</code></td>
+<td>Limit output to first N samples (useful for large cohorts)</td>
+</tr>
+<tr>
+<td><code>-a</code>, <code>--aggregate</code></td>
+<td>Output per-variant aggregate statistics instead of per-sample counts</td>
+</tr>
+<tr>
+<td><code>-z</code>, <code>--gzip</code></td>
+<td>Compress output with gzip</td>
+</tr>
+<tr>
+<td><code>-b</code>, <code>--binary</code></td>
+<td>Output in compact binary format (VCAC header)</td>
+</tr>
+<tr>
 <td><code>-q</code>, <code>--quiet</code></td>
 <td>Suppress informational messages</td>
 </tr>
@@ -3729,8 +3933,9 @@
 - Quantifying the presence of specific alleles
 - Preparing data for population genetics analyses
 - Validating genotype calls across samples</p>
-<h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
-<p>The tool produces a tab-separated values (TSV) file with the following columns:</p>
+<h2 id="output-formats">Output Formats<a class="headerlink" href="#output-formats" title="Permanent link">&para;</a></h2>
+<h3 id="default-mode-per-sample-output">Default Mode (Per-Sample Output)<a class="headerlink" href="#default-mode-per-sample-output" title="Permanent link">&para;</a></h3>
+<p>The default output is a tab-separated values (TSV) file with the following columns:</p>
 <table>
 <thead>
 <tr>
@@ -3773,6 +3978,57 @@
 </tr>
 </tbody>
 </table>
+<h3 id="aggregate-mode-a-aggregate">Aggregate Mode (<code>-a/--aggregate</code>)<a class="headerlink" href="#aggregate-mode-a-aggregate" title="Permanent link">&para;</a></h3>
+<p>Outputs per-variant summaries instead of per-sample counts, reducing output by ~2500x for large cohorts:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHROM</td>
+<td>Chromosome of the variant</td>
+</tr>
+<tr>
+<td>POS</td>
+<td>Position of the variant</td>
+</tr>
+<tr>
+<td>ID</td>
+<td>Variant identifier</td>
+</tr>
+<tr>
+<td>REF</td>
+<td>Reference allele</td>
+</tr>
+<tr>
+<td>ALT</td>
+<td>Alternate allele(s)</td>
+</tr>
+<tr>
+<td>Total_Ref</td>
+<td>Sum of reference allele counts across all samples</td>
+</tr>
+<tr>
+<td>Total_Alt</td>
+<td>Sum of alternate allele counts across all samples</td>
+</tr>
+<tr>
+<td>Sample_Count</td>
+<td>Number of samples with valid genotypes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="binary-mode-b-binary">Binary Mode (<code>-b/--binary</code>)<a class="headerlink" href="#binary-mode-b-binary" title="Permanent link">&para;</a></h3>
+<p>Compact binary format for machine consumption (~25x smaller than text):
+- 16-byte header: magic "VCAC", version (uint32), sample count (uint32), variant count (uint64)
+- Per variant: CHROM, POS, ID, REF, ALT as null-terminated strings
+- Per sample: 2 bytes (ref_count, alt_count as int8)</p>
+<h3 id="gzip-output-z-gzip">Gzip Output (<code>-z/--gzip</code>)<a class="headerlink" href="#gzip-output-z-gzip" title="Permanent link">&para;</a></h3>
+<p>Any output format can be compressed with gzip for ~10x size reduction.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <h3 id="file-input-mode-recommended">File Input Mode (Recommended)<a class="headerlink" href="#file-input-mode-recommended" title="Permanent link">&para;</a></h3>
 <p>Use memory-mapped file I/O for best performance with multi-threaded processing:
@@ -3787,6 +4043,25 @@ VCFX_allele_counter<span class="w"> </span>input.vcf<span class="w"> </span>&gt;
 <h3 id="specific-samples">Specific Samples<a class="headerlink" href="#specific-samples" title="Permanent link">&para;</a></h3>
 <p>Count alleles for specific samples:
 <div class="highlight"><pre><span></span><code>VCFX_allele_counter<span class="w"> </span>--samples<span class="w"> </span><span class="s2">&quot;SAMPLE1 SAMPLE2&quot;</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_counts_subset.tsv
+</code></pre></div></p>
+<h3 id="aggregate-mode-recommended-for-large-cohorts">Aggregate Mode (Recommended for Large Cohorts)<a class="headerlink" href="#aggregate-mode-recommended-for-large-cohorts" title="Permanent link">&para;</a></h3>
+<p>Get per-variant summaries instead of per-sample output:
+<div class="highlight"><pre><span></span><code>VCFX_allele_counter<span class="w"> </span>--aggregate<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_summary.tsv
+VCFX_allele_counter<span class="w"> </span>-a<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_summary.tsv<span class="w">  </span><span class="c1"># Short form</span>
+</code></pre></div></p>
+<h3 id="limit-samples">Limit Samples<a class="headerlink" href="#limit-samples" title="Permanent link">&para;</a></h3>
+<p>Process only the first N samples:
+<div class="highlight"><pre><span></span><code>VCFX_allele_counter<span class="w"> </span>--limit-samples<span class="w"> </span><span class="m">100</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>first_100_samples.tsv
+VCFX_allele_counter<span class="w"> </span>-l<span class="w"> </span><span class="m">50</span><span class="w"> </span>-a<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>aggregate_50_samples.tsv
+</code></pre></div></p>
+<h3 id="compressed-output">Compressed Output<a class="headerlink" href="#compressed-output" title="Permanent link">&para;</a></h3>
+<p>Gzip compress the output:
+<div class="highlight"><pre><span></span><code>VCFX_allele_counter<span class="w"> </span>--gzip<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_counts.tsv.gz
+VCFX_allele_counter<span class="w"> </span>-z<span class="w"> </span>-a<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>aggregate.tsv.gz
+</code></pre></div></p>
+<h3 id="binary-output">Binary Output<a class="headerlink" href="#binary-output" title="Permanent link">&para;</a></h3>
+<p>Compact binary format for downstream processing:
+<div class="highlight"><pre><span></span><code>VCFX_allele_counter<span class="w"> </span>--binary<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>allele_counts.bin
 </code></pre></div></p>
 <h3 id="using-with-other-tools">Using with Other Tools<a class="headerlink" href="#using-with-other-tools" title="Permanent link">&para;</a></h3>
 <p>Process the output for further analysis:
@@ -3907,11 +4182,12 @@ VCFX_allele_counter<span class="w"> </span>input.vcf<span class="w"> </span>&gt;
 </tr>
 </tbody>
 </table>
-<p>For very large datasets, consider:
-- Using <code>--samples</code> to limit output to specific samples of interest
-- Processing in batches by chromosome or region
-- Piping output directly to downstream tools
-- Writing output to fast SSD storage</p>
+<p>For very large datasets, use one of these output reduction strategies:
+- <strong><code>--aggregate</code></strong>: Reduce output by ~2500x (O(V×S) → O(V)) - one line per variant
+- <strong><code>--limit-samples N</code></strong>: Process only first N samples
+- <strong><code>--binary</code></strong>: ~25x smaller output (2 bytes vs ~50 bytes per sample)
+- <strong><code>--gzip</code></strong>: ~10x compression on any output format
+- <strong><code>--samples</code></strong>: Select specific samples of interest</p>
 <h3 id="throughput">Throughput<a class="headerlink" href="#throughput" title="Permanent link">&para;</a></h3>
 <p>On typical hardware with multi-threading:
 - <strong>VCF parsing</strong>: ~1.5 GB/s with mmap
@@ -3923,7 +4199,6 @@ VCFX_allele_counter<span class="w"> </span>input.vcf<span class="w"> </span>&gt;
 <li>No options for filtering by allele count thresholds</li>
 <li>Cannot account for genotype quality or read depth</li>
 <li>Limited to processing standard VCF genotype fields</li>
-<li>Does not produce summary statistics or aggregate counts</li>
 <li>No direct integration with population genetics metrics</li>
 </ul>
 

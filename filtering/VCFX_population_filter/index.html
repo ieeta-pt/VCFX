@@ -3532,7 +3532,11 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_population_filter</code> is a utility tool for subsetting VCF files to include only samples belonging to a specified population. It filters out samples that don't belong to the chosen population group while preserving the variant data and format information.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_population_filter<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
+<div class="highlight"><pre><span></span><code><span class="c1"># Using file input (recommended for large files - 10-20x faster)</span>
+VCFX_population_filter<span class="w"> </span>-p<span class="w"> </span>TAG<span class="w"> </span>-m<span class="w"> </span>population_map.txt<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
+
+<span class="c1"># Using stdin</span>
+VCFX_population_filter<span class="w"> </span>-p<span class="w"> </span>TAG<span class="w"> </span>-m<span class="w"> </span>population_map.txt<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3544,20 +3548,28 @@
 </thead>
 <tbody>
 <tr>
-<td><code>-h</code>, <code>--help</code></td>
-<td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
-</tr>
-<tr>
-<td><code>-v</code>, <code>--version</code></td>
-<td>Show program version and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
-</tr>
-<tr>
 <td><code>-p</code>, <code>--population &lt;TAG&gt;</code></td>
 <td><strong>Required</strong>: Population tag to keep (e.g., 'EUR', 'AFR', 'EAS')</td>
 </tr>
 <tr>
 <td><code>-m</code>, <code>--pop-map &lt;FILE&gt;</code></td>
 <td><strong>Required</strong>: Tab-delimited file mapping sample names to populations</td>
+</tr>
+<tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file. Uses memory-mapped I/O for 10-20x faster processing</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress warning messages</td>
+</tr>
+<tr>
+<td><code>-h</code>, <code>--help</code></td>
+<td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+</tr>
+<tr>
+<td><code>-v</code>, <code>--version</code></td>
+<td>Show program version and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -3634,12 +3646,14 @@ VCFX_population_filter<span class="w"> </span>--population<span class="w"> </spa
 <li>Lines in the population map that don't follow the expected format are skipped with a warning</li>
 </ul>
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
-<ul>
-<li>The tool processes the VCF file line by line, with minimal memory requirements</li>
-<li>Memory usage is primarily determined by the number of samples in the VCF file</li>
-<li>Performance scales linearly with the size of the input file</li>
-<li>No external dependencies or reference files are required beyond the population map</li>
-</ul>
+<p>The tool is optimized for efficiency:
+- <strong>Memory-mapped I/O</strong>: When using <code>-i/--input</code>, files are memory-mapped for 10-20x faster processing
+- <strong>SIMD acceleration</strong>: Uses AVX2/SSE2/NEON instructions for fast newline scanning
+- <strong>Zero-copy parsing</strong>: Uses string_view for minimal memory allocation
+- <strong>1MB output buffering</strong>: Reduces system call overhead
+- Memory usage is primarily determined by the number of samples in the VCF file
+- Performance scales linearly with the size of the input file
+- No external dependencies or reference files are required beyond the population map</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Cannot filter variants based on population-specific criteria</li>

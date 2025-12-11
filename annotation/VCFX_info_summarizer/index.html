@@ -3398,7 +3398,11 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>VCFX_info_summarizer analyzes numeric fields in the INFO column of a VCF file and calculates summary statistics (mean, median, and mode) for each specified field. This tool enables researchers to quickly understand the distribution and central tendencies of key metrics across variants.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_info_summarizer<span class="w"> </span>--info<span class="w"> </span><span class="s2">&quot;FIELD1,FIELD2,...&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>summary_stats.tsv
+<div class="highlight"><pre><span></span><code><span class="c1"># Using file input (recommended for large files - 10-20x faster)</span>
+VCFX_info_summarizer<span class="w"> </span>--info<span class="w"> </span><span class="s2">&quot;FIELD1,FIELD2,...&quot;</span><span class="w"> </span>-I<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>summary_stats.tsv
+
+<span class="c1"># Using stdin</span>
+VCFX_info_summarizer<span class="w"> </span>--info<span class="w"> </span><span class="s2">&quot;FIELD1,FIELD2,...&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>summary_stats.tsv
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3412,6 +3416,14 @@
 <tr>
 <td><code>-i</code>, <code>--info &lt;FIELDS&gt;</code></td>
 <td>Required. Comma-separated list of INFO fields to analyze (e.g., "DP,AF,MQ")</td>
+</tr>
+<tr>
+<td><code>-I</code>, <code>--input FILE</code></td>
+<td>Input VCF file. Uses memory-mapped I/O for 10-20x faster processing</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress warning messages</td>
 </tr>
 <tr>
 <td><code>-h</code>, <code>--help</code></td>
@@ -3484,6 +3496,10 @@ grep<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;^#&
 <h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
 <p>VCFX_info_summarizer is designed for efficiency with large VCF files:</p>
 <ol>
+<li><strong>Memory-mapped I/O</strong>: When using <code>-I/--input</code>, files are memory-mapped for 10-20x faster processing</li>
+<li><strong>SIMD acceleration</strong>: Uses AVX2/SSE2/NEON instructions for fast newline scanning</li>
+<li><strong>Zero-copy parsing</strong>: Uses string_view for minimal memory allocation</li>
+<li><strong>1MB output buffering</strong>: Reduces system call overhead</li>
 <li>Single-pass processing with O(n) time complexity where n is the number of variants</li>
 <li>O(m) memory usage where m is the number of numeric values for the specified fields</li>
 <li>Efficient string parsing using streams</li>

@@ -3376,14 +3376,43 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_info_aggregator</code> is a tool that reads a VCF file from standard input, outputs it unmodified, and appends a summary section containing aggregated statistics (sum and average) for specified numeric INFO fields. The summary section is formatted as VCF header-like comments to maintain compatibility with VCF parsers.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_info_aggregator [OPTIONS] &lt; input.vcf &gt; output.vcf
+<div class="highlight"><pre><span></span><code><span class="c1"># Using file input (recommended for large files - 10-20x faster)</span>
+VCFX_info_aggregator<span class="w"> </span>--aggregate-info<span class="w"> </span><span class="s2">&quot;DP,AF,...&quot;</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
+
+<span class="c1"># Using stdin</span>
+VCFX_info_aggregator<span class="w"> </span>--aggregate-info<span class="w"> </span><span class="s2">&quot;DP,AF,...&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>output.vcf
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>-a</code>, <code>--aggregate-info &lt;fields&gt;</code>: Comma-separated list of INFO fields to aggregate (required).</li>
-<li><code>-h</code>, <code>--help</code>: Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)
-| <code>-v</code>, <code>--version</code> | Show program version and exit (handled by <code>vcfx::handle_common_flags</code>) |</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-a</code>, <code>--aggregate-info &lt;fields&gt;</code></td>
+<td>Required. Comma-separated list of INFO fields to aggregate</td>
+</tr>
+<tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file. Uses memory-mapped I/O for 10-20x faster processing</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress warning messages</td>
+</tr>
+<tr>
+<td><code>-h</code>, <code>--help</code></td>
+<td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+</tr>
+<tr>
+<td><code>-v</code>, <code>--version</code></td>
+<td>Show program version and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+</tr>
+</tbody>
+</table>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_info_aggregator</code> processes a VCF file line by line, performing the following operations:</p>
 <ol>
@@ -3433,6 +3462,10 @@ FIELD2: Sum=&lt;total&gt;, Average=&lt;mean&gt;
 <h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_info_aggregator</code> is designed to be memory-efficient and performant:</p>
 <ol>
+<li><strong>Memory-mapped I/O</strong>: When using <code>-i/--input</code>, files are memory-mapped for 10-20x faster processing</li>
+<li><strong>SIMD acceleration</strong>: Uses AVX2/SSE2/NEON instructions for fast newline scanning</li>
+<li><strong>Zero-copy parsing</strong>: Uses string_view for minimal memory allocation</li>
+<li><strong>1MB output buffering</strong>: Reduces system call overhead</li>
 <li>It processes the VCF file in a single pass, with O(1) memory usage relative to the file size.</li>
 <li>Only the specified INFO fields are parsed and accumulated, minimizing unnecessary processing.</li>
 <li>The tool streams data directly from input to output, without storing the entire file in memory.</li>

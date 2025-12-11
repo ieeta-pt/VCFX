@@ -3698,7 +3698,11 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p><code>VCFX_gl_filter</code> filters VCF records based on numeric genotype-likelihood fields in the FORMAT column, such as genotype quality (GQ), read depth (DP), or phred-scaled likelihoods (PL). This tool helps focus analysis on variants with sufficient genotype quality or other sample-level metrics.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_gl_filter<span class="w"> </span>--filter<span class="w"> </span><span class="s2">&quot;&lt;CONDITION&gt;&quot;</span><span class="w"> </span><span class="o">[</span>--mode<span class="w"> </span>&lt;any<span class="p">|</span>all&gt;<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>filtered.vcf
+<div class="highlight"><pre><span></span><code><span class="c1"># Using file input (recommended for large files - 10-20x faster)</span>
+VCFX_gl_filter<span class="w"> </span>--filter<span class="w"> </span><span class="s2">&quot;&lt;CONDITION&gt;&quot;</span><span class="w"> </span><span class="o">[</span>--mode<span class="w"> </span>&lt;any<span class="p">|</span>all&gt;<span class="o">]</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>filtered.vcf
+
+<span class="c1"># Using stdin</span>
+VCFX_gl_filter<span class="w"> </span>--filter<span class="w"> </span><span class="s2">&quot;&lt;CONDITION&gt;&quot;</span><span class="w"> </span><span class="o">[</span>--mode<span class="w"> </span>&lt;any<span class="p">|</span>all&gt;<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>filtered.vcf
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3716,6 +3720,14 @@
 <tr>
 <td><code>-m</code>, <code>--mode &lt;any\|all&gt;</code></td>
 <td>Optional. Determines if all samples must pass the condition (<code>all</code>, default) or at least one sample must pass (<code>any</code>)</td>
+</tr>
+<tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file. Uses memory-mapped I/O for 10-20x faster processing</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress warning messages</td>
 </tr>
 <tr>
 <td><code>-h</code>, <code>--help</code></td>
@@ -3751,7 +3763,11 @@
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <h3 id="basic-usage-with-default-mode">Basic Usage with Default Mode<a class="headerlink" href="#basic-usage-with-default-mode" title="Permanent link">&para;</a></h3>
 <p>Filter variants where all samples have genotype quality (GQ) above 20:
-<div class="highlight"><pre><span></span><code>VCFX_gl_filter<span class="w"> </span>--filter<span class="w"> </span><span class="s2">&quot;GQ&gt;20&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>high_quality.vcf
+<div class="highlight"><pre><span></span><code><span class="c1"># Using file input (faster)</span>
+VCFX_gl_filter<span class="w"> </span>--filter<span class="w"> </span><span class="s2">&quot;GQ&gt;20&quot;</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>high_quality.vcf
+
+<span class="c1"># Using stdin</span>
+VCFX_gl_filter<span class="w"> </span>--filter<span class="w"> </span><span class="s2">&quot;GQ&gt;20&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>high_quality.vcf
 </code></pre></div></p>
 <h3 id="using-any-mode">Using 'Any' Mode<a class="headerlink" href="#using-any-mode" title="Permanent link">&para;</a></h3>
 <p>Filter variants where at least one sample has read depth (DP) of 30 or higher:
@@ -3817,6 +3833,12 @@ Where:
 <h3 id="optimized-implementation">Optimized Implementation<a class="headerlink" href="#optimized-implementation" title="Permanent link">&para;</a></h3>
 <p>The tool uses several performance optimizations for fast processing of large VCF files with many samples:</p>
 <ol>
+<li>
+<p><strong>Memory-mapped I/O</strong>: When using <code>-i/--input</code>, the file is memory-mapped for 10-20x faster processing compared to stdin. This eliminates read system call overhead and enables kernel read-ahead.</p>
+</li>
+<li>
+<p><strong>SIMD acceleration</strong>: Uses AVX2/SSE2/NEON instructions for fast newline scanning on supported architectures.</p>
+</li>
 <li>
 <p><strong>Zero-allocation parsing</strong>: Sample genotype fields are parsed using raw pointer arithmetic instead of creating intermediate string objects, eliminating millions of heap allocations on large files.</p>
 </li>

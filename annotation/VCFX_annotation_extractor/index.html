@@ -3454,7 +3454,11 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>VCFX_annotation_extractor extracts annotation fields from a VCF file's INFO column and converts them into a tabular format. The tool is particularly useful for extracting specific annotations (such as functional impact, gene name, or any custom annotation) from VCF files into a more analysis-friendly TSV format.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_annotation_extractor<span class="w"> </span>--annotation-extract<span class="w"> </span><span class="s2">&quot;FIELD1,FIELD2,...&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>extracted.tsv
+<div class="highlight"><pre><span></span><code><span class="c1"># Using file input (recommended for large files - 10-20x faster)</span>
+VCFX_annotation_extractor<span class="w"> </span>--annotation-extract<span class="w"> </span><span class="s2">&quot;FIELD1,FIELD2,...&quot;</span><span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>extracted.tsv
+
+<span class="c1"># Using stdin</span>
+VCFX_annotation_extractor<span class="w"> </span>--annotation-extract<span class="w"> </span><span class="s2">&quot;FIELD1,FIELD2,...&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>extracted.tsv
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <table>
@@ -3468,6 +3472,14 @@
 <tr>
 <td><code>-a</code>, <code>--annotation-extract &lt;FIELDS&gt;</code></td>
 <td>Required. Comma-separated list of INFO field annotations to extract (e.g., "ANN,Gene,Impact")</td>
+</tr>
+<tr>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file. Uses memory-mapped I/O for 10-20x faster processing</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>Suppress warning messages</td>
 </tr>
 <tr>
 <td><code>-h</code>, <code>--help</code></td>
@@ -3544,6 +3556,10 @@ grep<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;^#&
 <h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
 <p>VCFX_annotation_extractor is designed for efficiency:</p>
 <ol>
+<li><strong>Memory-mapped I/O</strong>: When using <code>-i/--input</code>, files are memory-mapped for 10-20x faster processing</li>
+<li><strong>SIMD acceleration</strong>: Uses AVX2/SSE2/NEON instructions for fast newline scanning</li>
+<li><strong>Zero-copy parsing</strong>: Uses string_view for minimal memory allocation</li>
+<li><strong>1MB output buffering</strong>: Reduces system call overhead</li>
 <li>Single-pass processing reads the VCF file line-by-line without loading the entire file into memory</li>
 <li>Efficient string parsing with optimized splitting functions</li>
 <li>Uses hash maps for quick annotation lookups</li>
