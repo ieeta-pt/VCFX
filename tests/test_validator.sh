@@ -574,8 +574,12 @@ run_test_success 28 "Many samples (100)" "data/many_samples.vcf"
 run_test_failure 29 "Empty file" "data/empty.vcf" "no #CHROM line found"
 [ $? -ne 0 ] && failures=$((failures + 1))
 
-# Test 30 - Header only (no data lines) - should be valid
-run_test_success 30 "Header only (no data)" "data/header_only.vcf"
+# Test 30 - Header only (no data lines) - should fail by default
+run_test_failure 30 "Header only (no data)" "data/header_only.vcf" "no variant records"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# Test 30b - Header only with --allow-empty flag - should pass
+run_test_success "30b" "Header only with --allow-empty" "data/header_only.vcf" "--allow-empty"
 [ $? -ne 0 ] && failures=$((failures + 1))
 
 # Test 31 - Windows line endings (CRLF)
@@ -636,15 +640,122 @@ else
 fi
 
 # ============================================================================
+# New tests for GATK-like validations (43+)
+# ============================================================================
+
+# Test 43 - Malformed header with swapped Type/Number (Type is empty)
+cat > data/malformed_type.vcf << EOF
+##fileformat=VCFv4.2
+##INFO=<ID=NODE,Number=.,Integer,Type=,Description="Bad header with swapped fields">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	A	T	60	PASS	NODE=1
+EOF
+run_test_failure 43 "Malformed header Type" "data/malformed_type.vcf" "Type"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# Test 43b - Header with unrecognized Type value
+cat > data/unrecognized_type.vcf << EOF
+##fileformat=VCFv4.2
+##INFO=<ID=DP,Number=1,Type=Integerr,Description="Typo in Type">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	A	T	60	PASS	DP=10
+EOF
+run_test_failure "43b" "Unrecognized header Type" "data/unrecognized_type.vcf" "invalid Type"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# Test 44 - Header with missing Type field
+cat > data/missing_type.vcf << EOF
+##fileformat=VCFv4.2
+##INFO=<ID=DP,Number=1,Description="Missing Type field">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	A	T	60	PASS	DP=10
+EOF
+run_test_failure 44 "Missing header Type" "data/missing_type.vcf" "missing Type"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# Test 45 - Header with invalid Number field
+cat > data/invalid_number.vcf << EOF
+##fileformat=VCFv4.2
+##INFO=<ID=DP,Number=invalid,Type=Integer,Description="Invalid Number">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	A	T	60	PASS	DP=10
+EOF
+run_test_failure 45 "Invalid header Number" "data/invalid_number.vcf" "invalid Number"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# Test 46 - ALT allele not observed in genotypes (strict mode)
+cat > data/alt_not_observed.vcf << EOF
+##fileformat=VCFv4.2
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1	SAMPLE2
+chr1	100	.	A	T,C	60	PASS	.	GT	0/0	0/0
+EOF
+run_test_failure 46 "ALT not observed (strict)" "data/alt_not_observed.vcf" "ALT allele" "--strict"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# Test 47 - ALT allele not observed produces warning (non-strict)
+echo -n "Test 47: ALT not observed warning... "
+output=$($EXEC < data/alt_not_observed.vcf 2>&1)
+exit_code=$?
+if [ $exit_code -eq 0 ] && echo "$output" | grep -q "Warning.*ALT allele"; then
+    echo "PASSED"
+else
+    echo "FAILED"
+    echo "Exit code: $exit_code"
+    echo "Output: $output"
+    failures=$((failures + 1))
+fi
+
+# Test 48 - ALT alleles all observed (should pass)
+cat > data/alt_observed.vcf << EOF
+##fileformat=VCFv4.2
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1	SAMPLE2
+chr1	100	.	A	T,C	60	PASS	.	GT	0/1	0/2
+chr1	200	.	G	A	80	PASS	.	GT	1/1	0/1
+EOF
+run_test_success 48 "ALT alleles observed" "data/alt_observed.vcf" "--strict"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# Test 49 - Valid header with all Type values
+cat > data/valid_types.vcf << EOF
+##fileformat=VCFv4.2
+##INFO=<ID=I1,Number=1,Type=Integer,Description="Integer type">
+##INFO=<ID=F1,Number=1,Type=Float,Description="Float type">
+##INFO=<ID=FL,Number=0,Type=Flag,Description="Flag type">
+##INFO=<ID=C1,Number=1,Type=Character,Description="Character type">
+##INFO=<ID=S1,Number=1,Type=String,Description="String type">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1
+chr1	100	.	A	T	60	PASS	I1=5;F1=0.5;FL;C1=X;S1=test	GT	0/1
+EOF
+run_test_success 49 "Valid header types" "data/valid_types.vcf"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# Test 50 - Valid Number values (A, R, G, .)
+cat > data/valid_numbers.vcf << EOF
+##fileformat=VCFv4.2
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count">
+##INFO=<ID=AF,Number=R,Type=Float,Description="Allele freq">
+##INFO=<ID=GP,Number=G,Type=Float,Description="Genotype prob">
+##INFO=<ID=DP,Number=.,Type=Integer,Description="Depth">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1
+chr1	100	.	A	T	60	PASS	AC=5;AF=0.1,0.9;GP=0.1,0.2,0.7;DP=10	GT	0/1
+EOF
+run_test_success 50 "Valid Number values" "data/valid_numbers.vcf"
+[ $? -ne 0 ] && failures=$((failures + 1))
+
+# ============================================================================
 # Summary
 # ============================================================================
 
 echo ""
 echo "============================================"
 if [ $failures -eq 0 ]; then
-    echo "All 42 tests for VCFX_validator passed!"
+    echo "All 51 tests for VCFX_validator passed!"
     exit 0
 else
-    echo "$failures test(s) failed out of 42."
+    echo "$failures test(s) failed out of 51."
     exit 1
 fi

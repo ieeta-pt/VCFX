@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 # Set version information
 set(VCFX_VERSION_MAJOR 1)
 set(VCFX_VERSION_MINOR 1)
-set(VCFX_VERSION_PATCH 3)
+set(VCFX_VERSION_PATCH 4)
 set(VCFX_VERSION "${VCFX_VERSION_MAJOR}.${VCFX_VERSION_MINOR}.${VCFX_VERSION_PATCH}")
 
 add_compile_definitions(VCFX_VERSION="${VCFX_VERSION}")

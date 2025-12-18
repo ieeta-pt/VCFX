@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.4] - 2025-12-18
+### Added
+- GATK-compatible validation checks for VCFX_validator:
+  - ALT allele observation check (ALLELES validation)
+  - Empty VCF detection with `--allow-empty` override
+  - Header Type/Number field validation
+  - Variant sorting check (disable with `-S`)
+  - AN/AC consistency check in strict mode (CHR_COUNTS)
+  - REF validation against FASTA reference (`-R`)
+  - dbSNP ID validation (`-D`)
+  - GVCF format validation (`-g`)
+- New `-i/--input` flag for validator mmap file input
+- Test cases for all new validation features
+
+### Changed
+- Updated VCFX_validator documentation with comprehensive feature list
+- Improved validation error messages with line numbers and context
+
+### Performance
+- Maintained ~110 MB/s throughput with all new validations enabled
+
 ## [1.0.3] - 2025-06-15
 ### Added
 - PyPI package publishing via GitHub Actions

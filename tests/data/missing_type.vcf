@@ -1,0 +1,4 @@
+##fileformat=VCFv4.2
+##INFO=<ID=DP,Number=1,Description="Missing Type field">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	100	.	A	T	60	PASS	DP=10

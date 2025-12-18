@@ -1,0 +1,9 @@
+##fileformat=VCFv4.2
+##INFO=<ID=I1,Number=1,Type=Integer,Description="Integer type">
+##INFO=<ID=F1,Number=1,Type=Float,Description="Float type">
+##INFO=<ID=FL,Number=0,Type=Flag,Description="Flag type">
+##INFO=<ID=C1,Number=1,Type=Character,Description="Character type">
+##INFO=<ID=S1,Number=1,Type=String,Description="String type">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1
+chr1	100	.	A	T	60	PASS	I1=5;F1=0.5;FL;C1=X;S1=test	GT	0/1
