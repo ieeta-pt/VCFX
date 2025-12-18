@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -33,7 +33,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -2104,36 +2104,14 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Description
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation-details" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation Details
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Validation Details">
+    <nav class="md-nav" aria-label="Options">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#meta-information-lines" class="md-nav__link">
+  <a href="#basic-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Meta-Information Lines
+        Basic Options
       
     </span>
   </a>
@@ -2141,10 +2119,38 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#chrom-header-line" class="md-nav__link">
+  <a href="#gatk-compatible-validation-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        #CHROM Header Line
+        GATK-Compatible Validation Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Checks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation Checks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-validations-always-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Validations (Always On)
       
     </span>
   </a>
@@ -2152,10 +2158,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#data-lines" class="md-nav__link">
+  <a href="#strict-mode-validations-strict" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Data Lines
+        Strict Mode Validations (--strict)
       
     </span>
   </a>
@@ -2163,10 +2169,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#strict-mode" class="md-nav__link">
+  <a href="#optional-validations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Strict Mode
+        Optional Validations
       
     </span>
   </a>
@@ -2202,10 +2208,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#using-file-input-recommended-for-large-files" class="md-nav__link">
+  <a href="#strict-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using File Input (Recommended for Large Files)
+        Strict Validation
       
     </span>
   </a>
@@ -2213,10 +2219,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#using-strict-mode" class="md-nav__link">
+  <a href="#gatk-compatible-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using Strict Mode
+        GATK-Compatible Validation
       
     </span>
   </a>
@@ -2224,10 +2230,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redirecting-error-messages" class="md-nav__link">
+  <a href="#pipeline-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Redirecting Error Messages
+        Pipeline Integration
       
     </span>
   </a>
@@ -2240,22 +2246,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-output" class="md-nav__link">
+  <a href="#output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example Output
+        Output
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Example Output">
+    <nav class="md-nav" aria-label="Output">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-valid-files" class="md-nav__link">
+  <a href="#validation-report" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For Valid Files
+        Validation Report
       
     </span>
   </a>
@@ -2263,10 +2269,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-invalid-files" class="md-nav__link">
+  <a href="#error-messages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For Invalid Files
+        Error Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exit-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exit Codes
       
     </span>
   </a>
@@ -2279,76 +2296,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#special-case-handling" class="md-nav__link">
+  <a href="#performance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Special Case Handling
+        Performance
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Special Case Handling">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#empty-lines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Empty Lines
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#malformed-header-lines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Malformed Header Lines
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#missing-chrom-line" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Missing #CHROM Line
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#whitespace" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Whitespace
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Considerations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Considerations">
+    <nav class="md-nav" aria-label="Performance">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2390,10 +2346,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#comparison-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with Other Tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
         Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
       
     </span>
   </a>
@@ -3434,36 +3412,14 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Description
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation-details" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation Details
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Validation Details">
+    <nav class="md-nav" aria-label="Options">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#meta-information-lines" class="md-nav__link">
+  <a href="#basic-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Meta-Information Lines
+        Basic Options
       
     </span>
   </a>
@@ -3471,10 +3427,38 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#chrom-header-line" class="md-nav__link">
+  <a href="#gatk-compatible-validation-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        #CHROM Header Line
+        GATK-Compatible Validation Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Checks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation Checks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-validations-always-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Validations (Always On)
       
     </span>
   </a>
@@ -3482,10 +3466,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#data-lines" class="md-nav__link">
+  <a href="#strict-mode-validations-strict" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Data Lines
+        Strict Mode Validations (--strict)
       
     </span>
   </a>
@@ -3493,10 +3477,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#strict-mode" class="md-nav__link">
+  <a href="#optional-validations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Strict Mode
+        Optional Validations
       
     </span>
   </a>
@@ -3532,10 +3516,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#using-file-input-recommended-for-large-files" class="md-nav__link">
+  <a href="#strict-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using File Input (Recommended for Large Files)
+        Strict Validation
       
     </span>
   </a>
@@ -3543,10 +3527,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#using-strict-mode" class="md-nav__link">
+  <a href="#gatk-compatible-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using Strict Mode
+        GATK-Compatible Validation
       
     </span>
   </a>
@@ -3554,10 +3538,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redirecting-error-messages" class="md-nav__link">
+  <a href="#pipeline-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Redirecting Error Messages
+        Pipeline Integration
       
     </span>
   </a>
@@ -3570,22 +3554,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-output" class="md-nav__link">
+  <a href="#output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example Output
+        Output
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Example Output">
+    <nav class="md-nav" aria-label="Output">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-valid-files" class="md-nav__link">
+  <a href="#validation-report" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For Valid Files
+        Validation Report
       
     </span>
   </a>
@@ -3593,10 +3577,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-invalid-files" class="md-nav__link">
+  <a href="#error-messages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For Invalid Files
+        Error Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exit-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exit Codes
       
     </span>
   </a>
@@ -3609,76 +3604,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#special-case-handling" class="md-nav__link">
+  <a href="#performance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Special Case Handling
+        Performance
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Special Case Handling">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#empty-lines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Empty Lines
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#malformed-header-lines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Malformed Header Lines
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#missing-chrom-line" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Missing #CHROM Line
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#whitespace" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Whitespace
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Considerations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Considerations">
+    <nav class="md-nav" aria-label="Performance">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3720,10 +3654,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#comparison-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with Other Tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
         Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
       
     </span>
   </a>
@@ -3752,13 +3708,14 @@
 
 <h1 id="vcfx_validator">VCFX_validator<a class="headerlink" href="#vcfx_validator" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p><code>VCFX_validator</code> is a high-performance utility tool for checking the validity of VCF files according to the basic VCF format specifications. It performs various checks on the file structure, header format, and data lines to ensure the file is properly formatted and contains valid data. The tool uses memory-mapped I/O for efficient processing of large files.</p>
+<p><code>VCFX_validator</code> is a high-performance, GATK-compatible VCF validation tool. It performs comprehensive checks on VCF file structure, header format, and data lines to ensure compliance with the VCF 4.x specification. The tool supports all major validation modes found in GATK's <code>ValidateVariants</code>, including reference validation, dbSNP ID checking, and GVCF format validation.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>VCFX_validator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf
+<div class="highlight"><pre><span></span><code>VCFX_validator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>input.vcf<span class="o">]</span>
 VCFX_validator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>-i<span class="w"> </span>input.vcf
-VCFX_validator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>--input<span class="w"> </span>input.vcf
+VCFX_validator<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf
 </code></pre></div>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
+<h3 id="basic-options">Basic Options<a class="headerlink" href="#basic-options" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -3769,15 +3726,15 @@ VCFX_validator<span class="w"> </span><span class="o">[</span>OPTIONS<span class
 <tbody>
 <tr>
 <td><code>-h</code>, <code>--help</code></td>
-<td>Display help message and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td>Display help message and exit</td>
 </tr>
 <tr>
-<td><code>-v</code>, <code>--version</code></td>
-<td>Show program version and exit (handled by <code>vcfx::handle_common_flags</code>)</td>
+<td><code>-i</code>, <code>--input FILE</code></td>
+<td>Input VCF file (uses memory-mapped I/O)</td>
 </tr>
 <tr>
 <td><code>-s</code>, <code>--strict</code></td>
-<td>Enable stricter validation checks</td>
+<td>Enable strict mode (warnings become errors)</td>
 </tr>
 <tr>
 <td><code>-d</code>, <code>--report-dups</code></td>
@@ -3785,162 +3742,437 @@ VCFX_validator<span class="w"> </span><span class="o">[</span>OPTIONS<span class
 </tr>
 <tr>
 <td><code>-n</code>, <code>--no-dup-check</code></td>
-<td>Skip duplicate detection entirely (faster validation)</td>
+<td>Skip duplicate detection (faster)</td>
+</tr>
+<tr>
+<td><code>-e</code>, <code>--allow-empty</code></td>
+<td>Allow VCF files with no variant records</td>
 </tr>
 <tr>
 <td><code>-b</code>, <code>--bloom-size N</code></td>
-<td>Bloom filter size in MB for duplicate detection (default: 128)</td>
-</tr>
-<tr>
-<td><code>-i</code>, <code>--input FILE</code></td>
-<td>Input VCF file path (uses memory-mapped I/O for better performance)</td>
+<td>Bloom filter size in MB (default: 128)</td>
 </tr>
 <tr>
 <td><code>-t</code>, <code>--threads N</code></td>
-<td>Number of threads (default: 1, reserved for future use)</td>
+<td>Reserved for future multi-threaded validation</td>
 </tr>
 </tbody>
 </table>
-<h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p><code>VCFX_validator</code> processes a VCF file to verify its structural validity by:</p>
-<ol>
-<li>Reading the VCF file from standard input (plain or gzip/BGZF compressed)</li>
-<li>Checking that all meta-information lines (starting with '##') are properly formatted</li>
-<li>Validating that the #CHROM header line is present and has at least 8 required columns</li>
-<li>For each data line:</li>
-<li>Ensuring it has at least 8 columns</li>
-<li>Verifying that CHROM is not empty</li>
-<li>Confirming POS is a positive integer</li>
-<li>Checking that REF and ALT contain only valid bases</li>
-<li>Validating that QUAL is either '.' or a non-negative float</li>
-<li>Ensuring FILTER is not empty</li>
-<li>Checking INFO and FORMAT fields against header definitions</li>
-<li>Validating genotype syntax</li>
-<li>Detecting duplicate records when <code>--report-dups</code> is used</li>
-<li>Reporting errors for any validation failures</li>
-<li>Returning exit code 0 if the file is valid, or 1 if it contains errors</li>
-</ol>
-<p>This tool is useful for validating VCF files before processing them with other tools, ensuring they meet the basic requirements of the VCF format specification.</p>
-<h2 id="validation-details">Validation Details<a class="headerlink" href="#validation-details" title="Permanent link">&para;</a></h2>
-<h3 id="meta-information-lines">Meta-Information Lines<a class="headerlink" href="#meta-information-lines" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Must start with '##'</li>
-<li>No specific content validation beyond the prefix</li>
-</ul>
-<h3 id="chrom-header-line">#CHROM Header Line<a class="headerlink" href="#chrom-header-line" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Must be present in the file</li>
-<li>Must start with '#CHROM'</li>
-<li>Must have at least 8 columns (CHROM, POS, ID, REF, ALT, QUAL, FILTER, INFO)</li>
-<li>Must appear before any data lines</li>
-</ul>
-<h3 id="data-lines">Data Lines<a class="headerlink" href="#data-lines" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Must have at least 8 columns</li>
-<li>CHROM: Must not be empty</li>
-<li>POS: Must be a positive integer</li>
-<li>ID: Can be empty or '.' (not validated)</li>
-<li>REF: Must contain only A,C,G,T,N</li>
-<li>ALT: Must contain only A,C,G,T,N</li>
-<li>QUAL: Must be '.' or a non-negative float</li>
-<li>FILTER: Must not be empty</li>
-<li>INFO: Keys must be defined in the header. Numeric counts are validated when numeric. Flags are allowed.</li>
-</ul>
-<h3 id="strict-mode">Strict Mode<a class="headerlink" href="#strict-mode" title="Permanent link">&para;</a></h3>
-<p>When <code>--strict</code> is used, additional checks are applied:
-- The number of columns in every data line must exactly match the <code>#CHROM</code> header.
-- If FORMAT/sample columns are present, each sample field must contain the same
-  number of sub-fields as specified in the FORMAT column.
-- Any warning that would normally be emitted is treated as an error and causes
-  the validator to exit with a non-zero status.</p>
+<h3 id="gatk-compatible-validation-options">GATK-Compatible Validation Options<a class="headerlink" href="#gatk-compatible-validation-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>GATK Equivalent</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-R</code>, <code>--reference FILE</code></td>
+<td><code>--reference</code></td>
+<td>Validate REF alleles against FASTA reference</td>
+</tr>
+<tr>
+<td><code>-D</code>, <code>--dbsnp FILE</code></td>
+<td><code>--dbsnp</code></td>
+<td>Validate variant IDs against dbSNP VCF</td>
+</tr>
+<tr>
+<td><code>-g</code>, <code>--gvcf</code></td>
+<td><code>--gvcf</code></td>
+<td>Enable GVCF-specific validation</td>
+</tr>
+<tr>
+<td><code>-S</code>, <code>--no-sorting-check</code></td>
+<td>N/A</td>
+<td>Skip variant sorting validation</td>
+</tr>
+<tr>
+<td><code>-C</code>, <code>--no-chr-counts</code></td>
+<td>N/A</td>
+<td>Skip AN/AC consistency validation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="validation-checks">Validation Checks<a class="headerlink" href="#validation-checks" title="Permanent link">&para;</a></h2>
+<h3 id="default-validations-always-on">Default Validations (Always On)<a class="headerlink" href="#default-validations-always-on" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VCF Structure</strong></td>
+<td>Meta-info lines (##), header line (#CHROM), column count</td>
+</tr>
+<tr>
+<td><strong>Header Definitions</strong></td>
+<td>INFO/FORMAT fields have valid Type, Number, Description</td>
+</tr>
+<tr>
+<td><strong>Position Values</strong></td>
+<td>POS is a positive integer</td>
+</tr>
+<tr>
+<td><strong>REF/ALT Sequences</strong></td>
+<td>Contains only valid bases (A, C, G, T, N)</td>
+</tr>
+<tr>
+<td><strong>QUAL Values</strong></td>
+<td>Either <code>.</code> or a non-negative number</td>
+</tr>
+<tr>
+<td><strong>FILTER Field</strong></td>
+<td>Not empty</td>
+</tr>
+<tr>
+<td><strong>Genotype Format</strong></td>
+<td>Valid GT syntax (0/1, 1|0, etc.)</td>
+</tr>
+<tr>
+<td><strong>ALT Allele Observation</strong></td>
+<td>ALT alleles are observed in sample genotypes (GATK ALLELES check)</td>
+</tr>
+<tr>
+<td><strong>Variant Sorting</strong></td>
+<td>Records are sorted by CHROM and POS (disable with <code>-S</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="strict-mode-validations-strict">Strict Mode Validations (<code>--strict</code>)<a class="headerlink" href="#strict-mode-validations-strict" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Column Count</strong></td>
+<td>Data lines must match header column count exactly</td>
+</tr>
+<tr>
+<td><strong>FORMAT Field Count</strong></td>
+<td>Sample fields must have correct sub-field count</td>
+</tr>
+<tr>
+<td><strong>AN/AC Consistency</strong></td>
+<td>Allele counts (AC) sum must not exceed total alleles (AN)</td>
+</tr>
+<tr>
+<td><strong>Duplicate Detection</strong></td>
+<td>Reports duplicate variants</td>
+</tr>
+<tr>
+<td><strong>Warnings as Errors</strong></td>
+<td>All warnings become errors</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-validations">Optional Validations<a class="headerlink" href="#optional-validations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>REF Validation</strong></td>
+<td><code>-R &lt;fasta&gt;</code></td>
+<td>REF allele matches reference FASTA at position</td>
+</tr>
+<tr>
+<td><strong>ID Validation</strong></td>
+<td><code>-D &lt;dbsnp.vcf&gt;</code></td>
+<td>Variant IDs exist in dbSNP</td>
+</tr>
+<tr>
+<td><strong>GVCF Validation</strong></td>
+<td><code>-g</code></td>
+<td><code>&lt;NON_REF&gt;</code> allele, END tag, coverage continuity</td>
+</tr>
+</tbody>
+</table>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <h3 id="basic-validation">Basic Validation<a class="headerlink" href="#basic-validation" title="Permanent link">&para;</a></h3>
-<p>Check if a VCF file is valid:
-<div class="highlight"><pre><span></span><code>VCFX_validator<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>validated.vcf
-</code></pre></div></p>
-<h3 id="using-file-input-recommended-for-large-files">Using File Input (Recommended for Large Files)<a class="headerlink" href="#using-file-input-recommended-for-large-files" title="Permanent link">&para;</a></h3>
-<p>Use the <code>-i</code> option for better performance with large files:
-<div class="highlight"><pre><span></span><code>VCFX_validator<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>validated.vcf
-VCFX_validator<span class="w"> </span>--input<span class="w"> </span>large_file.vcf<span class="w"> </span>&gt;<span class="w"> </span>validated.vcf
-</code></pre></div></p>
-<h3 id="using-strict-mode">Using Strict Mode<a class="headerlink" href="#using-strict-mode" title="Permanent link">&para;</a></h3>
-<p>Enable stricter validation with additional checks:
-<div class="highlight"><pre><span></span><code>VCFX_validator<span class="w"> </span>--strict<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>validated.vcf
-VCFX_validator<span class="w"> </span>--strict<span class="w"> </span>-i<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>validated.vcf
-</code></pre></div></p>
-<p>When the input is valid, the original VCF is written unchanged to standard output,
-allowing <code>VCFX_validator</code> to be used as a filter in processing pipelines. Informational
-messages such as <code>VCF file is valid.</code> are printed to standard error.</p>
-<h3 id="redirecting-error-messages">Redirecting Error Messages<a class="headerlink" href="#redirecting-error-messages" title="Permanent link">&para;</a></h3>
-<p>Save validation errors to a file:
-<div class="highlight"><pre><span></span><code>VCFX_validator<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>validation_errors.txt
-</code></pre></div></p>
-<h2 id="example-output">Example Output<a class="headerlink" href="#example-output" title="Permanent link">&para;</a></h2>
-<h3 id="for-valid-files">For Valid Files<a class="headerlink" href="#for-valid-files" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>VCF file is valid.
+<div class="highlight"><pre><span></span><code><span class="c1"># Validate from stdin</span>
+VCFX_validator<span class="w"> </span>&lt;<span class="w"> </span>input.vcf
+
+<span class="c1"># Validate from file (uses mmap for better performance)</span>
+VCFX_validator<span class="w"> </span>input.vcf
+
+<span class="c1"># Validate compressed file</span>
+zcat<span class="w"> </span>input.vcf.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_validator
 </code></pre></div>
-<h3 id="for-invalid-files">For Invalid Files<a class="headerlink" href="#for-invalid-files" title="Permanent link">&para;</a></h3>
-<p><div class="highlight"><pre><span></span><code>Error: line 15 has &lt;8 columns.
+<h3 id="strict-validation">Strict Validation<a class="headerlink" href="#strict-validation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Enable all strict checks</span>
+VCFX_validator<span class="w"> </span>--strict<span class="w"> </span>input.vcf
+
+<span class="c1"># Strict mode with duplicate reporting</span>
+VCFX_validator<span class="w"> </span>--strict<span class="w"> </span>--report-dups<span class="w"> </span>input.vcf
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Error: line 42 POS must be &gt;0.
+<h3 id="gatk-compatible-validation">GATK-Compatible Validation<a class="headerlink" href="#gatk-compatible-validation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Validate REF against reference genome</span>
+VCFX_validator<span class="w"> </span>--reference<span class="w"> </span>hg38.fa<span class="w"> </span>input.vcf
+
+<span class="c1"># Validate IDs against dbSNP</span>
+VCFX_validator<span class="w"> </span>--dbsnp<span class="w"> </span>dbsnp156.vcf<span class="w"> </span>input.vcf
+
+<span class="c1"># Full GATK-style validation</span>
+VCFX_validator<span class="w"> </span>--strict<span class="w"> </span>--reference<span class="w"> </span>hg38.fa<span class="w"> </span>--dbsnp<span class="w"> </span>dbsnp156.vcf<span class="w"> </span>input.vcf
+
+<span class="c1"># GVCF validation</span>
+VCFX_validator<span class="w"> </span>--gvcf<span class="w"> </span>sample.g.vcf
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Error: no #CHROM line found in file.
-</code></pre></div></p>
-<h2 id="special-case-handling">Special Case Handling<a class="headerlink" href="#special-case-handling" title="Permanent link">&para;</a></h2>
-<h3 id="empty-lines">Empty Lines<a class="headerlink" href="#empty-lines" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Empty lines are ignored during validation</li>
-</ul>
-<h3 id="malformed-header-lines">Malformed Header Lines<a class="headerlink" href="#malformed-header-lines" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Lines starting with '#' that are neither '##' meta-information lines nor the '#CHROM' header line are considered errors</li>
-</ul>
-<h3 id="missing-chrom-line">Missing #CHROM Line<a class="headerlink" href="#missing-chrom-line" title="Permanent link">&para;</a></h3>
-<ul>
-<li>If no #CHROM line is found in the file, an error is reported</li>
-<li>Data lines encountered before a #CHROM line will cause validation to fail</li>
-</ul>
-<h3 id="whitespace">Whitespace<a class="headerlink" href="#whitespace" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Leading and trailing whitespace is trimmed from field values before validation</li>
-</ul>
-<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="pipeline-integration">Pipeline Integration<a class="headerlink" href="#pipeline-integration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Validate before processing</span>
+VCFX_validator<span class="w"> </span>input.vcf<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>VCFX_allele_freq_calc<span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span>&gt;<span class="w"> </span>freqs.tsv
+
+<span class="c1"># Filter and validate</span>
+VCFX_phred_filter<span class="w"> </span>-p<span class="w"> </span><span class="m">30</span><span class="w"> </span>&lt;<span class="w"> </span>input.vcf<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_validator
+
+<span class="c1"># Save validation errors</span>
+VCFX_validator<span class="w"> </span>input.vcf<span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>validation_errors.txt
+</code></pre></div>
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">&para;</a></h2>
+<h3 id="validation-report">Validation Report<a class="headerlink" href="#validation-report" title="Permanent link">&para;</a></h3>
+<p>When validation completes, a summary report is printed:</p>
+<div class="highlight"><pre><span></span><code>=== VCF Validation Report ===
+Status: PASSED
+
+File Statistics:
+  Total lines:     1000004
+  Header lines:    4
+  Variant records: 1000000
+  Samples:         4
+
+Header Definitions:
+  INFO fields:     1
+  FORMAT fields:   1
+
+Validation Checks Performed:
+  [OK] VCF header structure
+  [OK] Meta-information lines (##)
+  [OK] Column header (#CHROM)
+  [OK] Required columns
+  [OK] Position values (POS &gt; 0)
+  [OK] REF/ALT allele sequences
+  [OK] QUAL values
+  [OK] INFO field definitions
+  [OK] FORMAT field definitions
+  [OK] Genotype values
+  [OK] ALT alleles observed (GATK ALLELES)
+  [OK] Variant sorting
+  [OK] Duplicate detection
+</code></pre></div>
+<h3 id="error-messages">Error Messages<a class="headerlink" href="#error-messages" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code># Missing Type in header
+Error: header line missing Type at line 2.
+
+# Invalid Number value
+Error: invalid Number &#39;XXX&#39; in header at line 2 (must be a non-negative integer, A, R, G, or .).
+
+# ALT not observed (warning)
+Warning: ALT allele 2 at position chr1:14804770 is not observed in any sample genotype on line 4.
+
+# Unsorted variants (warning)
+Warning: Variants not sorted: position 100 comes after 200 on chr1 at line 6.
+
+# AN/AC mismatch (strict mode error)
+Error: AC sum (99) exceeds AN (4) on line 6.
+
+# Empty VCF
+Error: VCF file contains no variant records (header-only file).
+       Use --allow-empty to accept VCF files without variant data.
+
+# REF mismatch (with -R)
+Error: REF &#39;T&#39; does not match reference &#39;A&#39; at chr1:100 on line 5.
+</code></pre></div>
+<h3 id="exit-codes">Exit Codes<a class="headerlink" href="#exit-codes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Valid VCF (no errors)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Invalid VCF (errors found)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h2>
 <h3 id="optimizations">Optimizations<a class="headerlink" href="#optimizations" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Memory-mapped I/O</strong>: When using file path argument, the tool uses memory-mapped file access with <code>MADV_SEQUENTIAL</code> hints for optimal read-ahead</li>
-<li><strong>SIMD-optimized parsing</strong>: Uses AVX2/SSE2 vectorized operations on x86_64 for newline finding and character counting</li>
-<li><strong>Bloom filter</strong>: Memory-efficient duplicate detection using a configurable bloom filter (default 128MB)</li>
-<li><strong>DNA lookup table</strong>: Fast base validation using a 256-byte lookup table instead of conditional checks</li>
-<li><strong>FORMAT caching</strong>: The FORMAT field is cached to avoid redundant parsing when consecutive lines use the same format</li>
-<li><strong>Zero-copy parsing</strong>: Uses <code>string_view</code> for efficient parsing without unnecessary string copies</li>
-<li><strong>Stdin support</strong>: For stdin input, the tool supports both plain text and gzip/BGZF compressed streams</li>
+<li><strong>Memory-mapped I/O</strong>: File path arguments use mmap with <code>MADV_SEQUENTIAL</code> for optimal read-ahead</li>
+<li><strong>SIMD parsing</strong>: AVX2/SSE2 vectorized newline detection on x86_64</li>
+<li><strong>Bloom filter</strong>: Memory-efficient duplicate and dbSNP ID detection (default 128MB)</li>
+<li><strong>DNA lookup table</strong>: 256-byte LUT for O(1) base validation</li>
+<li><strong>FORMAT caching</strong>: Avoids re-parsing identical FORMAT strings</li>
+<li><strong>Zero-copy parsing</strong>: <code>string_view</code> throughout for allocation-free parsing</li>
+<li><strong>Reference mmap</strong>: FASTA reference is memory-mapped for fast REF validation</li>
 </ul>
 <h3 id="benchmarks">Benchmarks<a class="headerlink" href="#benchmarks" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Validates 427K variants with 2504 samples in ~20-25 seconds</li>
-<li>With <code>--no-dup-check</code>: ~20 seconds (skips bloom filter operations)</li>
-<li>Memory usage: ~128MB for bloom filter + minimal overhead</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Variants</th>
+<th>Samples</th>
+<th>Size</th>
+<th>Time</th>
+<th>Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1M synthetic</td>
+<td>1,000,000</td>
+<td>4</td>
+<td>49 MB</td>
+<td>0.47s</td>
+<td>104 MB/s</td>
+</tr>
+<tr>
+<td>chr21 1KG</td>
+<td>427,409</td>
+<td>2,504</td>
+<td>4.3 GB</td>
+<td>~40s</td>
+<td>110 MB/s</td>
+</tr>
+</tbody>
+</table>
 <h3 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h3>
-<p>For best performance with large files (multi-GB):
-<div class="highlight"><pre><span></span><code><span class="c1"># Use file path argument for memory-mapped I/O (fastest)</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Use file path for mmap (fastest)</span>
 VCFX_validator<span class="w"> </span>large_file.vcf
 
-<span class="c1"># Skip duplicate checking if data is known to be clean</span>
+<span class="c1"># Skip duplicate check for known-clean data</span>
 VCFX_validator<span class="w"> </span>--no-dup-check<span class="w"> </span>large_file.vcf
 
-<span class="c1"># Reduce memory usage with smaller bloom filter</span>
+<span class="c1"># Reduce memory with smaller bloom filter</span>
 VCFX_validator<span class="w"> </span>--bloom-size<span class="w"> </span><span class="m">64</span><span class="w"> </span>large_file.vcf
 
-<span class="c1"># For compressed files, decompress and pipe (stdin mode)</span>
-zcat<span class="w"> </span>large_file.vcf.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>VCFX_validator
-</code></pre></div></p>
+<span class="c1"># Skip sorting check for pre-sorted files</span>
+VCFX_validator<span class="w"> </span>--no-sorting-check<span class="w"> </span>large_file.vcf
+</code></pre></div>
+<h2 id="comparison-with-other-tools">Comparison with Other Tools<a class="headerlink" href="#comparison-with-other-tools" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>VCFX_validator</th>
+<th>GATK ValidateVariants</th>
+<th>bcftools view</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic VCF validation</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Header Type/Number check</td>
+<td>✓</td>
+<td>✓</td>
+<td>Partial</td>
+</tr>
+<tr>
+<td>ALT allele observation</td>
+<td>✓</td>
+<td>✓ (ALLELES)</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>REF vs FASTA</td>
+<td>✓</td>
+<td>✓ (REF)</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>dbSNP ID check</td>
+<td>✓</td>
+<td>✓ (IDS)</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>AN/AC consistency</td>
+<td>✓</td>
+<td>✓ (CHR_COUNTS)</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Sorting check</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>GVCF validation</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Empty file detection</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Duplicate detection</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Memory-mapped I/O</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Streaming stdin</td>
+<td>✓</td>
+<td>✗</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Throughput</td>
+<td>~110 MB/s</td>
+<td>~20 MB/s</td>
+<td>~80 MB/s</td>
+</tr>
+</tbody>
+</table>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Does not validate VCF version compatibility</li>
-<li>No validation of the content of meta-information lines beyond the '##' prefix</li>
-<li>Bloom filter may report false positive duplicates (rare, &lt;1% at 100M variants with 128MB filter)</li>
+<li>VCF version compatibility is not strictly enforced</li>
 <li>Threading (<code>-t</code>) is reserved for future implementation</li>
+<li>Bloom filter may produce rare false positives for duplicates (&lt;1% at 100M variants)</li>
+<li>Reference validation requires indexed FASTA (simple sequential scan, not faidx)</li>
+</ul>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../VCFX_concordance_checker/">VCFX_concordance_checker</a> - Compare genotypes between VCF files</li>
+<li><a href="../VCFX_missing_detector/">VCFX_missing_detector</a> - Detect missing genotype data</li>
+<li><a href="../../file-management/VCFX_duplicate_remover/">VCFX_duplicate_remover</a> - Remove duplicate variants</li>
 </ul>
 
 
@@ -4028,10 +4260,10 @@ zcat<span class="w"> </span>large_file.vcf.gz<span class="w"> </span><span class
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
