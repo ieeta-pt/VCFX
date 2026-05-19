@@ -68,7 +68,15 @@ find_package(Threads REQUIRED)
 # Locate zlib if we need it (some tools do)
 # On macOS with Homebrew, you might need to specify paths. E.g.:
 # list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/zlib" "/opt/homebrew/opt/zlib")
-find_package(ZLIB REQUIRED)
+# Emscripten ships zlib as a port; the system find_package can't locate it,
+# so we enable the port directly via compile/link flags when building for WASM.
+# See https://emscripten.org/docs/compiling/Building-Projects.html#emscripten-ports
+if(BUILD_WASM)
+    add_compile_options(-sUSE_ZLIB=1)
+    add_link_options(-sUSE_ZLIB=1)
+else()
+    find_package(ZLIB REQUIRED)
+endif()
 
 # If building natively on ARM, e.g. Apple M1
 if((NOT BUILD_WASM) AND (CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64"))
