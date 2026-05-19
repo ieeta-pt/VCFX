@@ -7,4 +7,9 @@ add_executable(VCFX_compressor
 )
 
 # Link against the core library + ZLIB
-target_link_libraries(VCFX_compressor PRIVATE vcfx_core ZLIB::ZLIB)
+# When building for WebAssembly, zlib comes from the emscripten port (enabled
+# via -sUSE_ZLIB=1 in the top-level CMakeLists), not from a find_package target.
+target_link_libraries(VCFX_compressor PRIVATE vcfx_core)
+if(NOT BUILD_WASM)
+    target_link_libraries(VCFX_compressor PRIVATE ZLIB::ZLIB)
+endif()
