@@ -4,11 +4,10 @@ set -e
 mkdir -p build_wasm
 cd build_wasm
 
-# Turn on BUILD_WASM using emcmake if available
 if command -v emcmake >/dev/null 2>&1; then
-    emcmake cmake -DBUILD_WASM=ON ..
+    emcmake cmake -DBUILD_WASM=ON -DPYTHON_BINDINGS=OFF ..
 else
-    cmake -DBUILD_WASM=ON ..
+    cmake -DBUILD_WASM=ON -DPYTHON_BINDINGS=OFF ..
 fi
 
 cmake --build .
