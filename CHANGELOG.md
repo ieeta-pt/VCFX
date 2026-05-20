@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.5] - 2026-05-20
+### Fixed
+- WebAssembly build: route zlib through the Emscripten port (`-sUSE_ZLIB=1`) instead of `find_package(ZLIB REQUIRED)`, which cannot locate libz when cross-compiling to WASM. Native builds are unchanged.
+
+### Added
+- Top-level `Makefile` wrapper around the CMake build, flattening the resulting binaries into `bin/`. Lets external tooling that expects a Makefile (e.g. BioChef Hub's native builder) build VCFX without reaching for CMake directly.
+
 ## [1.1.4] - 2025-12-18
 ### Added
 - GATK-compatible validation checks for VCFX_validator:
